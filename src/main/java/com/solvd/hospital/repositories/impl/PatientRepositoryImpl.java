@@ -104,12 +104,11 @@ public class PatientRepositoryImpl implements PatientRepository {
     }
 
     private Patient resultSetToPatient(ResultSet resultSet) throws SQLException {
-        Patient patient = new Patient();
-        patient.setId(resultSet.getLong("id"));
-        patient.setFirstName(resultSet.getString("first_name"));
-        patient.setLastName(resultSet.getString("last_name"));
-        patient.setBirthDate(resultSet.getDate("birth_date").toLocalDate());
-        patient.setGender(Gender.valueOf(resultSet.getString("gender")));
-        return patient;
+        return new Patient()
+                .setId(resultSet.getLong("id"))
+                .setFirstName(resultSet.getString("first_name"))
+                .setLastName(resultSet.getString("last_name"))
+                .setBirthDate(resultSet.getDate("birth_date").toLocalDate())
+                .setGender(Gender.valueOf(resultSet.getString("gender")));
     }
 }

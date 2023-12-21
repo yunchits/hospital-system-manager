@@ -49,11 +49,11 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     public List<Appointment> getByPatientId(long patientId) {
         List<Appointment> appointments = new ArrayList<>();
         try (ReusableConnection connection = POOL.getConnection();
-        PreparedStatement statement = connection.prepareStatement(GET_APPOINTMENT_BY_ID_QUERY)) {
+             PreparedStatement statement = connection.prepareStatement(GET_APPOINTMENT_BY_ID_QUERY)) {
 
             statement.setLong(1, patientId);
 
-            try (ResultSet resultSet = statement.executeQuery()){
+            try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     appointments.add(resultSetToAppointment(resultSet));
                 }
@@ -81,11 +81,10 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     private Appointment resultSetToAppointment(ResultSet resultSet) throws SQLException {
-        Appointment appointment = new Appointment();
-        appointment.setId(resultSet.getLong("id"));
-        appointment.setPatientId(resultSet.getLong("patient_id"));
-        appointment.setDoctorId(resultSet.getLong("doctor_id"));
-        appointment.setAppointmentDateTime(resultSet.getTimestamp("appointment_datetime").toLocalDateTime());
-        return appointment;
+        return new Appointment()
+                .setId(resultSet.getLong("id"))
+                .setPatientId(resultSet.getLong("patient_id"))
+                .setDoctorId(resultSet.getLong("doctor_id"))
+                .setAppointmentDateTime(resultSet.getTimestamp("appointment_datetime").toLocalDateTime());
     }
 }

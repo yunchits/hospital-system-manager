@@ -1,33 +1,45 @@
 package com.solvd.hospital;
 
-import com.solvd.hospital.common.database.ConnectionPool;
+import com.solvd.hospital.entities.Appointment;
+import com.solvd.hospital.entities.patient.Gender;
+import com.solvd.hospital.entities.patient.Patient;
+import com.solvd.hospital.repositories.AppointmentRepository;
+import com.solvd.hospital.repositories.impl.AppointmentRepositoryImpl;
+import com.solvd.hospital.repositories.impl.PatientRepositoryImpl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.time.LocalDate;
+import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        ConnectionPool pool = ConnectionPool.getInstance();
+        AppointmentRepository appointmentRepository = new AppointmentRepositoryImpl();
 
-        try (Connection connection = pool.getConnection()) {
-            String sql = "INSERT INTO patients (first_name, last_name, birth_date, gender) VALUES (?, ?, ?, ?)";
+//        Appointment newAppointment = new Appointment();
+//        newAppointment.setPatientId(1);
+//        newAppointment.setDoctorId(1);
+//        newAppointment.setAppointmentDateTime(LocalDateTime.now().plusDays(1));
+//
+//        Appointment createdAppointment = appointmentRepository.create(newAppointment);
+//
+//        System.out.println( createdAppointment.toString());
 
-            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                preparedStatement.setString(1, "John");
-                preparedStatement.setString(2, "Doe");
-                preparedStatement.setString(3, "1990-01-01");
-                preparedStatement.setString(4, "MALE");
+//        long patientIdToRetrieve = createdAppointment.getPatientId();
+        List<Appointment> retrievedAppointment = appointmentRepository.getByPatientId(1);
 
-                preparedStatement.executeUpdate();
+        System.out.println("Retrieved Appointment: " + retrievedAppointment);
 
-                System.out.println("Patient added successfully.");
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        PatientRepositoryImpl patientRepository = new PatientRepositoryImpl();
+
+        Patient patient = new Patient();
+
+        patient.setFirstName("name");
+        patient.setLastName("surname");
+        patient.setGender(Gender.FEMALE);
+        patient.setBirthDate(LocalDate.now().minusYears(10));
+
+        Patient patient1 = patientRepository.create(patient);
+
+        System.out.println(patient1);
     }
 }
