@@ -1,4 +1,4 @@
-package com.solvd.hospital.models.doctor;
+package com.solvd.hospital.entities.doctor;
 
 import lombok.Getter;
 import lombok.Setter;

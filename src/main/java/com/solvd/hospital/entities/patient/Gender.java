@@ -1,4 +1,4 @@
-package com.solvd.hospital.models.patient;
+package com.solvd.hospital.entities.patient;
 
 public enum Gender {
     MALE,

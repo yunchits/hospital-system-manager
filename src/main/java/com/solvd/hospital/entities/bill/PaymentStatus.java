@@ -1,4 +1,4 @@
-package com.solvd.hospital.models.bill;
+package com.solvd.hospital.entities.bill;
 
 public enum PaymentStatus {
     PAID,

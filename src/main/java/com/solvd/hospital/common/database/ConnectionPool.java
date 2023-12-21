@@ -1,7 +1,6 @@
 package com.solvd.hospital.common.database;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -23,9 +22,10 @@ public class ConnectionPool {
         }
     }
 
-    public Connection getConnection() {
+    public ReusableConnection getConnection() {
         try {
-            return connections.take();
+            Connection connection = connections.take();
+            return new ReusableConnection(connection, this);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Error getting a connection from the pool.", e);
@@ -33,12 +33,7 @@ public class ConnectionPool {
     }
 
     public void releaseConnection(Connection connection) {
-        try {
-            connection.close();
-            connections.offer(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException("Error releasing connection back to the pool.", e);
-        }
+        connections.offer(connection);
     }
 
     private static final class InstanceHolder {
