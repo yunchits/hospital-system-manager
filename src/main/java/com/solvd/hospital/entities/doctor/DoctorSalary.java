@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @ToString
 public class DoctorSalary {
     private long id;
-    private long doctorId;
     private double salary;
     private LocalDate paymentDate;
 }

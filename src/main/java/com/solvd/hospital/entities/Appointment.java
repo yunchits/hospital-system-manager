@@ -1,5 +1,7 @@
 package com.solvd.hospital.entities;
 
+import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.patient.Patient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @ToString
 public class Appointment {
     private long id;
-    private long patientId; //todo Patient patient
-    private long doctorId;
+    private Patient patient;
+    private Doctor doctor;
     private LocalDateTime appointmentDateTime;
 }

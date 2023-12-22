@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface PrescriptionRepository {
     Prescription create(Prescription prescription);
-    List<Prescription> getByPatientId(long patientId);
-    boolean deleteAllByPatientId(long patientId);
+    List<Prescription> findByPatientId(long patientId);
+    boolean deleteByPatientId(long patientId);
 }

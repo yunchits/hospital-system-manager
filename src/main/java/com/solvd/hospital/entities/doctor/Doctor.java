@@ -14,4 +14,5 @@ public class Doctor {
     private String firstName;
     private String lastName;
     private String specialization;
+    private DoctorSalary salary;
 }

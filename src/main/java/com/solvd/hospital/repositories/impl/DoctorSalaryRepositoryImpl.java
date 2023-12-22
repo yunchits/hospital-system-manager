@@ -7,15 +7,16 @@ import com.solvd.hospital.repositories.DoctorSalaryRepository;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.Optional;
 
 public class DoctorSalaryRepositoryImpl implements DoctorSalaryRepository {
 
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
-    private static final String CREATE_SALARY_QUERY = "INSERT INTO doctor_salaries (doctor_id, salary, date) " +
-            "VALUES (?, ?, ?)";
-    private static final String GET_SALARY_BY_DOCTOR_ID_QUERY = "SELECT * FROM doctor_salaries WHERE doctor_id = ?";
-    private static final String UPDATE_SALARY_QUERY = "UPDATE doctor_salaries SET salary = ?, date = ? WHERE id = ?";
+    private static final String CREATE_SALARY_QUERY = "INSERT INTO doctor_salaries (salary, payment_date) " +
+            "VALUES (?, ?)";
+    private static final String GET_SALARY_BY_ID_QUERY = "SELECT * FROM doctor_salaries WHERE id = ?";
+    private static final String UPDATE_SALARY_QUERY = "UPDATE doctor_salaries SET salary = ?, payment_date = ? WHERE id = ?";
     private static final String DELETE_SALARY_QUERY = "DELETE FROM doctor_salaries WHERE id = ?";
 
     @Override
@@ -24,9 +25,8 @@ public class DoctorSalaryRepositoryImpl implements DoctorSalaryRepository {
              PreparedStatement statement = connection
                      .prepareStatement(CREATE_SALARY_QUERY, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setLong(1, salary.getDoctorId());
-            statement.setBigDecimal(2, BigDecimal.valueOf(salary.getSalary()));
-            statement.setDate(3, Date.valueOf(salary.getPaymentDate()));
+            statement.setBigDecimal(1, BigDecimal.valueOf(salary.getSalary()));
+            statement.setDate(2, Date.valueOf(salary.getPaymentDate()));
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
@@ -48,22 +48,22 @@ public class DoctorSalaryRepositoryImpl implements DoctorSalaryRepository {
     }
 
     @Override
-    public DoctorSalary getByDoctorId(long id) {
+    public Optional<DoctorSalary> findById(long id) {
         try (ReusableConnection connection = POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(GET_SALARY_BY_DOCTOR_ID_QUERY)) {
+             PreparedStatement statement = connection.prepareStatement(GET_SALARY_BY_ID_QUERY)) {
 
             statement.setLong(1, id);
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSetToSalary(resultSet);
+                    return Optional.of(resultSetToSalary(resultSet));
                 }
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override
@@ -104,7 +104,6 @@ public class DoctorSalaryRepositoryImpl implements DoctorSalaryRepository {
     private DoctorSalary resultSetToSalary(ResultSet resultSet) throws SQLException {
         return new DoctorSalary()
                 .setId(resultSet.getLong("id"))
-                .setDoctorId(resultSet.getLong("doctor_id"))
                 .setSalary(resultSet.getBigDecimal("salary").doubleValue());
     }
 }

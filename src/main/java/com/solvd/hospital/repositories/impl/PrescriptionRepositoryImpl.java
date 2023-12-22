@@ -2,8 +2,12 @@ package com.solvd.hospital.repositories.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.NotFoundException;
 import com.solvd.hospital.entities.Prescription;
 import com.solvd.hospital.repositories.PrescriptionRepository;
+import com.solvd.hospital.services.impl.DoctorServiceImpl;
+import com.solvd.hospital.services.impl.MedicationServiceImpl;
+import com.solvd.hospital.services.impl.PatientServiceImpl;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,20 +21,23 @@ public class PrescriptionRepositoryImpl implements PrescriptionRepository {
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
     private static final String CREATE_PRESCRIPTION_QUERY = "INSERT INTO prescriptions (doctor_id, patient_id, medication_id) " +
-            "VALUES (?, ?, ?)";
+        "VALUES (?, ?, ?)";
     private static final String GET_PRESCRIPTION_BY_PATIENT_ID_QUERY = "SELECT * FROM prescriptions WHERE id = ?";
     private static final String DELETE_PRESCRIPTIONS_BY_PATIENT_ID_QUERY = "DELETE FROM prescriptions WHERE patient_id = ?";
 
+    private final PatientServiceImpl patientService = new PatientServiceImpl();
+    private final DoctorServiceImpl doctorService = new DoctorServiceImpl();
+    private final MedicationServiceImpl medicationService = new MedicationServiceImpl();
 
     @Override
     public Prescription create(Prescription prescription) {
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection
-                     .prepareStatement(CREATE_PRESCRIPTION_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+                 .prepareStatement(CREATE_PRESCRIPTION_QUERY, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setLong(1, prescription.getDoctorId());
-            statement.setLong(2, prescription.getPatientId());
-            statement.setLong(3, prescription.getMedicationId());
+            statement.setLong(1, prescription.getDoctor().getId());
+            statement.setLong(2, prescription.getPatient().getId());
+            statement.setLong(3, prescription.getMedication().getId());
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
@@ -52,7 +59,7 @@ public class PrescriptionRepositoryImpl implements PrescriptionRepository {
     }
 
     @Override
-    public List<Prescription> getByPatientId(long patientId) {
+    public List<Prescription> findByPatientId(long patientId) {
         List<Prescription> prescriptions = new ArrayList<>();
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_PRESCRIPTION_BY_PATIENT_ID_QUERY)) {
@@ -63,6 +70,8 @@ public class PrescriptionRepositoryImpl implements PrescriptionRepository {
                 while (resultSet.next()) {
                     prescriptions.add(resultSetToPrescription(resultSet));
                 }
+            } catch (NotFoundException e) {
+                throw new RuntimeException(e);
             }
 
         } catch (SQLException e) {
@@ -72,7 +81,7 @@ public class PrescriptionRepositoryImpl implements PrescriptionRepository {
     }
 
     @Override
-    public boolean deleteAllByPatientId(long patientId) {
+    public boolean deleteByPatientId(long patientId) {
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection.prepareStatement(DELETE_PRESCRIPTIONS_BY_PATIENT_ID_QUERY)) {
 
@@ -86,11 +95,11 @@ public class PrescriptionRepositoryImpl implements PrescriptionRepository {
         }
     }
 
-    private Prescription resultSetToPrescription(ResultSet resultSet) throws SQLException {
+    private Prescription resultSetToPrescription(ResultSet resultSet) throws SQLException, NotFoundException {
         return new Prescription()
-                .setId(resultSet.getLong("id"))
-                .setPatientId(resultSet.getLong("patient_id"))
-                .setDoctorId(resultSet.getLong("doctor_id"))
-                .setMedicationId(resultSet.getLong("medication_id"));
+            .setId(resultSet.getLong("id"))
+            .setPatient(patientService.findById(resultSet.getLong("patient_id")))
+            .setDoctor(doctorService.findById(resultSet.getLong("doctor_id")))
+            .setMedication(medicationService.findById(resultSet.getLong("medication_id")));
     }
 }

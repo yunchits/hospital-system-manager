@@ -2,10 +2,14 @@ package com.solvd.hospital.repositories.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.NotFoundException;
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.repositories.AppointmentRepository;
+import com.solvd.hospital.services.impl.DoctorServiceImpl;
+import com.solvd.hospital.services.impl.PatientServiceImpl;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +20,11 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     private static final String CREATE_APPOINTMENT_QUERY = "INSERT INTO appointments (patient_id, doctor_id, appointment_datetime) " +
             "VALUES (?, ?, ?)";
     private static final String GET_APPOINTMENT_BY_ID_QUERY = "SELECT * FROM appointments WHERE patient_id = ?";
-    private static final String DELETE_APPOINTMENT_BY_ID_QUERY = "DELETE FROM patients WHERE id = ?";
+    private static final String DELETE_APPOINTMENT_BY_PATIENT_ID_QUERY = "DELETE FROM patients WHERE patient_id = ?";
+    private static final String DELETE_APPOINTMENT_BY_ID_AND_DATETIME_QUERY = "DELETE FROM patients WHERE patient_id = ? AND appointment_datetime = ?";
+
+    private final PatientServiceImpl patientService = new PatientServiceImpl();
+    private final DoctorServiceImpl doctorService = new DoctorServiceImpl();
 
     @Override
     public Appointment create(Appointment appointment) {
@@ -24,8 +32,8 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
              PreparedStatement statement = connection
                      .prepareStatement(CREATE_APPOINTMENT_QUERY, Statement.RETURN_GENERATED_KEYS)) {
 
-            statement.setLong(1, appointment.getPatientId());
-            statement.setLong(2, appointment.getDoctorId());
+            statement.setLong(1, appointment.getPatient().getId());
+            statement.setLong(2, appointment.getDoctor().getId());
             statement.setTimestamp(3, Timestamp.valueOf(appointment.getAppointmentDateTime()));
 
             int affectedRows = statement.executeUpdate();
@@ -46,7 +54,7 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     @Override
-    public List<Appointment> getByPatientId(long patientId) {
+    public List<Appointment> findByPatientId(long patientId) {
         List<Appointment> appointments = new ArrayList<>();
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_APPOINTMENT_BY_ID_QUERY)) {
@@ -57,6 +65,8 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
                 while (resultSet.next()) {
                     appointments.add(resultSetToAppointment(resultSet));
                 }
+            } catch (NotFoundException e) {
+                throw new RuntimeException(e);
             }
 
         } catch (SQLException e) {
@@ -66,11 +76,11 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     @Override
-    public boolean delete(long id) {
+    public boolean deleteByPatient(long patientId) {
         try (ReusableConnection connection = POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(DELETE_APPOINTMENT_BY_ID_QUERY)) {
+             PreparedStatement statement = connection.prepareStatement(DELETE_APPOINTMENT_BY_PATIENT_ID_QUERY)) {
 
-            statement.setLong(1, id);
+            statement.setLong(1, patientId);
 
             int affectedRows = statement.executeUpdate();
             return affectedRows > 0;
@@ -80,11 +90,27 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         }
     }
 
-    private Appointment resultSetToAppointment(ResultSet resultSet) throws SQLException {
+    @Override
+    public boolean deleteByPatientAndDateTime(long patientId, LocalDateTime dateTime) {
+        try (ReusableConnection connection = POOL.getConnection();
+             PreparedStatement statement = connection.prepareStatement(DELETE_APPOINTMENT_BY_ID_AND_DATETIME_QUERY)) {
+
+            statement.setLong(1, patientId);
+            statement.setTimestamp(2, Timestamp.valueOf(dateTime));
+
+            int affectedRows = statement.executeUpdate();
+            return affectedRows > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Appointment resultSetToAppointment(ResultSet resultSet) throws SQLException, NotFoundException {
         return new Appointment()
                 .setId(resultSet.getLong("id"))
-                .setPatientId(resultSet.getLong("patient_id"))
-                .setDoctorId(resultSet.getLong("doctor_id"))
+                .setPatient(patientService.findById(resultSet.getLong("patient_id")))
+                .setDoctor(doctorService.findById(resultSet.getLong("doctor_id")))
                 .setAppointmentDateTime(resultSet.getTimestamp("appointment_datetime").toLocalDateTime());
     }
 }

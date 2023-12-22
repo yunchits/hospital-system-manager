@@ -1,5 +1,6 @@
 package com.solvd.hospital.entities;
 
+import com.solvd.hospital.entities.patient.Patient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @ToString
 public class Hospitalization {
     private long id;
-    private long patientId;
+    private Patient patient;
     private LocalDate admissionDate;
     private LocalDate dischargeDate;
 }

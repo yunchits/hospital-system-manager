@@ -2,9 +2,11 @@ package com.solvd.hospital.repositories;
 
 import com.solvd.hospital.entities.patient.Insurance;
 
+import java.util.Optional;
+
 public interface PatientInsuranceRepository {
     Insurance create(Insurance insurance);
-    Insurance getByPatientId(long id);
+    Optional<Insurance> findById(long id);
     Insurance update(Insurance insurance);
-    Insurance delete(long id);
+    boolean delete(long id);
 }

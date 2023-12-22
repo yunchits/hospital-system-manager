@@ -1,11 +1,13 @@
 package com.solvd.hospital.repositories;
 
-import com.solvd.hospital.entities.Diagnosis;
+import com.solvd.hospital.entities.PatientDiagnosis;
 
 import java.util.List;
 
 public interface PatientDiagnosisRepository {
-    Diagnosis create(Diagnosis diagnosis);
-    List<Diagnosis> getAllByPatientId(long patientId);
-    boolean delete (long patientId, String diagnosisName);
+    PatientDiagnosis create(PatientDiagnosis patientDiagnosis);
+
+    List<PatientDiagnosis> findAllByPatientId(long patientId);
+
+    boolean delete(long patientId, long diagnosisId);
 }

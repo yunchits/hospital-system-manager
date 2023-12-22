@@ -9,6 +9,7 @@ import com.solvd.hospital.repositories.PatientRepository;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class PatientRepositoryImpl implements PatientRepository {
 
@@ -45,6 +46,7 @@ public class PatientRepositoryImpl implements PatientRepository {
                     throw new SQLException("Creating patient failed, no ID obtained");
                 }
             }
+            connection.getConnection().commit();
         } catch (SQLException e) {
             throw new RuntimeException("Error creating patient", e);
         }
@@ -52,7 +54,7 @@ public class PatientRepositoryImpl implements PatientRepository {
     }
 
     @Override
-    public List<Patient> getAll() {
+    public List<Patient> findAll() {
         List<Patient> patients = new ArrayList<>();
 
         try (ReusableConnection connection = POOL.getConnection();
@@ -70,7 +72,7 @@ public class PatientRepositoryImpl implements PatientRepository {
     }
 
     @Override
-    public Patient getById(long id) {
+    public Optional<Patient> findById(long id) {
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection.prepareStatement(GET_PATIENT_BY_ID_QUERY)) {
 
@@ -78,14 +80,14 @@ public class PatientRepositoryImpl implements PatientRepository {
 
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return resultSetToPatient(resultSet);
+                    return Optional.of(resultSetToPatient(resultSet));
                 }
             }
 
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

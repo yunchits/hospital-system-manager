@@ -1,5 +1,7 @@
 package com.solvd.hospital.entities;
 
+import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.patient.Patient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -11,7 +13,7 @@ import lombok.experimental.Accessors;
 @ToString
 public class Prescription {
     private long id;
-    private Long doctorId;
-    private long patientId;
-    private long medicationId;
+    private Doctor doctor;
+    private Patient patient;
+    private Medication medication;
 }

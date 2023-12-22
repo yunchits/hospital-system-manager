@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface HospitalizationRepository {
     Hospitalization create(Hospitalization hospitalization);
-    List<Hospitalization> getByPatientId(long patientId);
+    List<Hospitalization> findByPatientId(long patientId);
+    boolean delete (long id);
 }
