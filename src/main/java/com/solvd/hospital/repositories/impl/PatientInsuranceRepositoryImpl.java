@@ -21,7 +21,6 @@ public class PatientInsuranceRepositoryImpl implements PatientInsuranceRepositor
     private static final String UPDATE_INSURANCE_QUERY = "UPDATE patient_insurances SET policy_number = ?, expiration_date = ?, coverage_amount = ?, type = ?, insurance_provider = ? WHERE patient_id = ?";
     private static final String DELETE_INSURANCE_QUERY = "DELETE FROM patient_insurances WHERE patient_id = ?";
 
-
     @Override
     public Insurance create(Insurance insurance) {
         try (ReusableConnection connection = POOL.getConnection();

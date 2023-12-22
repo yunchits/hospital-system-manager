@@ -15,10 +15,10 @@ public class HospitalizationRepositoryImpl implements HospitalizationRepository 
 
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
-    private static final String CREATE_HOSPITALIZATION_QUERY = "INSERT INTO hospitalization (patient_id, admission_date, discharge_date) " +
+    private static final String CREATE_HOSPITALIZATION_QUERY = "INSERT INTO hospitalizations (patient_id, admission_date, discharge_date) " +
             "VALUES (?, ?, ?)";
-    private static final String GET_HOSPITALIZATION_BY_PATIENT_ID_QUERY = "SELECT * FROM hospitalization WHERE patient_id = ?";
-    private static final String DELETE_HOSPITALIZATION_BY_ID_QUERY = "DELETE FROM hospitalization WHERE id = ?";
+    private static final String GET_HOSPITALIZATION_BY_PATIENT_ID_QUERY = "SELECT * FROM hospitalizations WHERE patient_id = ?";
+    private static final String DELETE_HOSPITALIZATION_BY_ID_QUERY = "DELETE FROM hospitalizations WHERE id = ?";
 
     private final PatientServiceImpl patientService = new PatientServiceImpl();
 

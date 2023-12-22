@@ -22,7 +22,7 @@ public class PrescriptionRepositoryImpl implements PrescriptionRepository {
 
     private static final String CREATE_PRESCRIPTION_QUERY = "INSERT INTO prescriptions (doctor_id, patient_id, medication_id) " +
         "VALUES (?, ?, ?)";
-    private static final String GET_PRESCRIPTION_BY_PATIENT_ID_QUERY = "SELECT * FROM prescriptions WHERE id = ?";
+    private static final String GET_PRESCRIPTION_BY_PATIENT_ID_QUERY = "SELECT * FROM prescriptions WHERE patient_id = ?";
     private static final String DELETE_PRESCRIPTIONS_BY_PATIENT_ID_QUERY = "DELETE FROM prescriptions WHERE patient_id = ?";
 
     private final PatientServiceImpl patientService = new PatientServiceImpl();

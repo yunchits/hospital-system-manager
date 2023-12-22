@@ -46,7 +46,6 @@ public class PatientRepositoryImpl implements PatientRepository {
                     throw new SQLException("Creating patient failed, no ID obtained");
                 }
             }
-            connection.getConnection().commit();
         } catch (SQLException e) {
             throw new RuntimeException("Error creating patient", e);
         }

@@ -10,5 +10,4 @@ public interface AppointmentRepository {
     Appointment create(Appointment appointment);
     List<Appointment> findByPatientId(long patientId);
     boolean deleteByPatient(long patientId);
-    boolean deleteByPatientAndDateTime(long patientId, LocalDateTime dateTime);
 }

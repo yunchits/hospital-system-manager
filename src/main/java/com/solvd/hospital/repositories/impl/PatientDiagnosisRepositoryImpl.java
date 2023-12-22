@@ -17,10 +17,10 @@ public class PatientDiagnosisRepositoryImpl implements PatientDiagnosisRepositor
 
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
-    private static final String CREATE_PATIENT_DIAGNOSIS_QUERY = "INSERT INTO patient_diagnosis (patient_id, diagnosis_id) " +
+    private static final String CREATE_PATIENT_DIAGNOSIS_QUERY = "INSERT INTO patients_diagnoses (patient_id, diagnosis_id) " +
         "VALUES (?, ?)";
-    private static final String FIND_ALL_BY_PATIENT_ID_QUERY = "SELECT * FROM patient_diagnosis WHERE patient_id = ?";
-    private static final String DELETE_PATIENT_DIAGNOSIS_QUERY = "DELETE FROM patient_diagnosis WHERE patient_id = ? AND diagnosis_id = ?";
+    private static final String FIND_ALL_BY_PATIENT_ID_QUERY = "SELECT * FROM patients_diagnoses WHERE patient_id = ?";
+    private static final String DELETE_PATIENT_DIAGNOSIS_QUERY = "DELETE FROM patients_diagnoses WHERE patient_id = ? AND diagnosis_id = ?";
 
     private final DiagnosisServiceImpl diagnosisService = new DiagnosisServiceImpl();
 

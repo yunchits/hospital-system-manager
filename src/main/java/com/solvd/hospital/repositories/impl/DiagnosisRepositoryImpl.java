@@ -15,11 +15,11 @@ public class DiagnosisRepositoryImpl implements DiagnosisRepository {
 
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
-    private static final String CREATE_DIAGNOSIS_QUERY = "INSERT INTO diagnosis (diagnosis_name, diagnosis_description) " +
+    private static final String CREATE_DIAGNOSIS_QUERY = "INSERT INTO diagnoses (diagnosis_name, diagnosis_description) " +
         "VALUES (?, ?)";
-    private static final String FIND_BY_ID_QUERY = "SELECT * FROM diagnosis WHERE id = ?";
-    private static final String FIND_BY_NAME_QUERY = "SELECT * FROM diagnosis WHERE diagnosis_name = ?";
-    private static final String DELETE_DIAGNOSIS_QUERY = "DELETE FROM diagnosis WHERE id = ?";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM diagnoses WHERE id = ?";
+    private static final String FIND_BY_NAME_QUERY = "SELECT * FROM diagnoses WHERE diagnosis_name = ?";
+    private static final String DELETE_DIAGNOSIS_QUERY = "DELETE FROM diagnoses WHERE id = ?";
 
     @Override
     public Diagnosis create(Diagnosis diagnosis) {
