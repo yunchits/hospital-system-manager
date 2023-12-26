@@ -36,10 +36,28 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
+    public List<Bill> findByPatientIdAndPaymentStatus(long patientId, PaymentStatus status) throws EntityNotFoundException {
+        List<Bill> bills = dao.findByPatientIdAndPaymentStatus(patientId, status);
+
+        if (bills.isEmpty()) {
+            throw new EntityNotFoundException("No " + status.name() + " Bills for Patient With ID: " + patientId);
+        }
+
+        return bills;
+    }
+
+    @Override
+    public Bill findById(long id) throws EntityNotFoundException {
+        return dao.findById(id).orElseThrow(
+            () -> new EntityNotFoundException("Bill with ID: " + id + " not found")
+        );
+    }
+
+    @Override
     public Bill update(long id, long patientId, double amount, LocalDate billingDate, PaymentStatus paymentStatus) throws EntityNotFoundException {
         Bill bill = new Bill();
 
-        validateBillExist(id);
+        findById(id);
 
         bill.setId(id);
         bill.setPatientId(patientId);
@@ -57,9 +75,4 @@ public class BillServiceImpl implements BillService {
         }
     }
 
-    private void validateBillExist(long id) throws EntityNotFoundException {
-        if (dao.findById(id).isEmpty()) {
-            throw new EntityNotFoundException("Appointment with ID: " + id + " doesn't exist");
-        }
-    }
 }

@@ -3,6 +3,8 @@ package com.solvd.hospital.menus;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Appointment;
+import com.solvd.hospital.entities.bill.Bill;
+import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.menus.handlers.PatientMenuHandler;
@@ -11,7 +13,9 @@ import com.solvd.hospital.services.impl.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PatientMenu implements Menu {
 
@@ -58,7 +62,7 @@ public class PatientMenu implements Menu {
             LOGGER.info("8 - Display unpaid Bills");
             LOGGER.info("0 - Exit");
 
-            choice = scanner.scanInt(0, 7);
+            choice = scanner.scanInt(0, 8);
 
             switch (choice) {
                 case 1:
@@ -83,7 +87,7 @@ public class PatientMenu implements Menu {
                     displayHospitalizations();
                     break;
                 case 8:
-//                    displayUnpaidBills();
+                    unpaidBills();
                     break;
                 case 0:
                     LOGGER.info("Exiting...");
@@ -195,5 +199,127 @@ public class PatientMenu implements Menu {
         } catch (EntityNotFoundException e) {
             LOGGER.error("You don't have any prescriptions");
         }
+    }
+
+    private void unpaidBills() {
+        displayUnpaidBills();
+
+        int choice;
+
+        LOGGER.info("1 - Pay the Bill");
+        LOGGER.info("2 - Display unpaid Bills");
+        LOGGER.info("0 - Back");
+
+        choice = scanner.scanInt(0, 2);
+
+        switch (choice) {
+            case 1:
+                payTheBill();
+                break;
+            case 2:
+                displayUnpaidBills();
+                break;
+            case 0:
+                LOGGER.info("Exiting...");
+                break;
+        }
+    }
+
+    private void displayUnpaidBills() {
+        try {
+            LOGGER.info(billService.findByPatientIdAndPaymentStatus(patient.getId(), PaymentStatus.UNPAID));
+        } catch (EntityNotFoundException e) {
+            LOGGER.error(e);
+        }
+    }
+
+    private void payTheBill() {
+        List<Bill> all = billService.findAll();
+
+        LOGGER.info("Enter Bill ID:");
+        int id = scanner.scanInt(0, all.size());
+
+        Bill bill;
+        try {
+            bill = billService.findById(id);
+        } catch (EntityNotFoundException e) {
+            LOGGER.error(e);
+            return;
+        }
+
+        Insurance insurance = null;
+        try {
+            insurance = insuranceService.findById(patient.getId());
+        } catch (EntityNotFoundException e) {
+            LOGGER.error(e);
+        }
+
+        double amount = bill.getAmount();
+
+        if (insurance == null) {
+            processBillWithoutInsurance(amount);
+        } else if (insurance.getExpirationDate().isBefore(LocalDate.now())) {
+            processExpiredInsurance(amount);
+        } else if (insurance.getCoverageAmount() <= amount) {
+            processCoveredBill(amount, insurance.getCoverageAmount());
+        } else {
+            processFullyCoveredBill(insurance, amount);
+        }
+
+        try {
+            LOGGER.info(billService.update(id, patient.getId(), amount, LocalDate.now(), PaymentStatus.PAID));
+        } catch (EntityNotFoundException e) {
+            LOGGER.error(e);
+        }
+    }
+
+    private void processBillWithoutInsurance(double amount) {
+        LOGGER.info("You don't have insurance");
+        LOGGER.info("Payment is " + amount + " BYN");
+    }
+
+    private void processExpiredInsurance(double amount) {
+        LOGGER.info("Your insurance has expired");
+        LOGGER.info("Payment is " + amount + " BYN");
+
+        if (!deleteInsurance()) {
+            LOGGER.error("Error deleting insurance.");
+        }
+    }
+
+    private void processCoveredBill(double amount, double coverageAmount) {
+        double remainingAmount = amount - coverageAmount;
+        LOGGER.info("Payment is " + remainingAmount + " BYN");
+
+        if (!deleteInsurance()) {
+            LOGGER.error("Error deleting insurance.");
+        }
+    }
+
+    private void processFullyCoveredBill(Insurance insurance, double amount) {
+        insurance.setCoverageAmount(insurance.getCoverageAmount() - amount);
+        try {
+            insuranceService.update(
+                insurance.getPatientId(),
+                insurance.getPolicyNumber(),
+                insurance.getExpirationDate(),
+                insurance.getCoverageAmount(),
+                insurance.getType(),
+                insurance.getInsuranceProvider());
+        } catch (EntityNotFoundException e) {
+            LOGGER.error("Error updating insurance.");
+        }
+
+        LOGGER.info("Your insurance fully covered the bill");
+    }
+
+    private boolean deleteInsurance() {
+        try {
+            insuranceService.delete(patient.getId());
+        } catch (EntityNotFoundException e) {
+            LOGGER.error(e);
+            return false;
+        }
+        return true;
     }
 }

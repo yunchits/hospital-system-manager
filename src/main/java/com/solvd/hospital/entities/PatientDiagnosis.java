@@ -14,7 +14,7 @@ public class PatientDiagnosis {
     @Override
     public String toString() {
         return String.format(
-            "Patient ID: %d, Diagnosis: %s",
+            "%nPatient ID: %d, Diagnosis: %s",
             patientId, diagnosis
         );
     }

@@ -51,7 +51,7 @@ public class InsuranceServiceImpl implements InsuranceService {
     @Override
     public Insurance findById(long id) throws EntityNotFoundException {
         return dao.findById(id).orElseThrow(
-            () -> new EntityNotFoundException("Insurance with Patient ID " + " not found")
+            () -> new EntityNotFoundException("Insurance with Patient ID " + id + " not found")
         );
     }
 
@@ -62,7 +62,7 @@ public class InsuranceServiceImpl implements InsuranceService {
                             double coverageAmount,
                             InsuranceType type,
                             String insuranceProvider) throws EntityNotFoundException {
-        validateInsuranceExists(id);
+        findById(id);
 
         return dao.update(new Insurance()
             .setPatientId(id)
@@ -71,12 +71,6 @@ public class InsuranceServiceImpl implements InsuranceService {
             .setCoverageAmount(coverageAmount)
             .setType(type)
             .setInsuranceProvider(insuranceProvider));
-    }
-
-    private void validateInsuranceExists(long id) throws EntityNotFoundException {
-        if (dao.findById(id).isEmpty()) {
-            throw new EntityNotFoundException("Insurance with this Patient ID " + id + " not found");
-        }
     }
 
     private void validateInsuranceDoesNotExist(long id) throws DuplicateKeyException {

@@ -15,6 +15,10 @@ public interface BillService {
 
     List<Bill> findAll();
 
+    List<Bill> findByPatientIdAndPaymentStatus(long patientId, PaymentStatus status) throws EntityNotFoundException;
+
+    Bill findById(long id) throws EntityNotFoundException;
+
     Bill update(long id,
                 long patientId,
                 double amount,
