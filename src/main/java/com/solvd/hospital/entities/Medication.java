@@ -2,15 +2,21 @@ package com.solvd.hospital.entities;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 @Getter
 @Setter
 @Accessors(chain = true)
-@ToString
 public class Medication {
     private long id;
-    private String medicationName;
-    private String medicationDescription;
+    private String name;
+    private String description;
+
+    @Override
+    public String toString() {
+        return String.format(
+            "[%d] - Medication: %s, Description: %s",
+            id, name, description
+        );
+    }
 }

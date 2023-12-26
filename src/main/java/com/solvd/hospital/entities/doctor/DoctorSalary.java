@@ -6,13 +6,22 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
 @Accessors(chain = true)
-@ToString
 public class DoctorSalary {
     private long id;
     private double salary;
     private LocalDate paymentDate;
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String formattedPaymentDate = paymentDate.format(formatter);
+
+        return String.format("%n[%d] - Salary: %.2f, Payment Date: %s",
+            id, salary, formattedPaymentDate);
+    }
 }
