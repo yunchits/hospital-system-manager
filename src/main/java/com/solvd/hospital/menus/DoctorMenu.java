@@ -1,5 +1,6 @@
 package com.solvd.hospital.menus;
 
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
@@ -11,7 +12,6 @@ import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.services.*;
-import com.solvd.hospital.services.impl.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,14 +41,14 @@ public class DoctorMenu implements Menu {
 
     public DoctorMenu() {
         this.scanner = new InputScanner();
-        this.doctorService = new DoctorServiceImpl();
-        this.appointmentService = new AppointmentServiceImpl();
-        this.diagnosisService = new DiagnosisServiceImpl();
-        this.patientDiagnosisService = new PatientDiagnosisServiceImpl();
-        this.billService = new BillServiceImpl();
-        this.hospitalizationService = new HospitalizationServiceImpl();
-        this.prescriptionService = new PrescriptionServiceImpl();
-        this.medicationService = new MedicationServiceImpl();
+        this.doctorService = new DoctorService();
+        this.appointmentService = new AppointmentService();
+        this.diagnosisService = new DiagnosisService();
+        this.patientDiagnosisService = new PatientDiagnosisService();
+        this.billService = new BillService();
+        this.hospitalizationService = new HospitalizationService();
+        this.prescriptionService = new PrescriptionService();
+        this.medicationService = new MedicationService();
     }
 
     @Override
@@ -173,7 +173,7 @@ public class DoctorMenu implements Menu {
 
         try {
             LOGGER.info(patientDiagnosisService.create(patient.getId(), diagnosisId));
-        } catch (RelatedEntityNotFound e) {
+        } catch (RelatedEntityNotFound | EntityAlreadyExistsException e) {
             LOGGER.error("Diagnosis creation failed\n" + e);
         }
     }
@@ -186,7 +186,7 @@ public class DoctorMenu implements Menu {
 
         Medication medication = null;
         try {
-             medication = medicationService.findById(medicationId);
+            medication = medicationService.findById(medicationId);
         } catch (EntityNotFoundException e) {
             LOGGER.info("Wrong medication ID");
             createPrescription(patient);
@@ -204,7 +204,7 @@ public class DoctorMenu implements Menu {
 
         try {
             hospitalizationService.create(patient.getId(), admissionDate, dischargeDate);
-        } catch (EntityNotFoundException | RelatedEntityNotFound e) {
+        } catch (RelatedEntityNotFound e) {
             LOGGER.error("Failed to create hospitalization record\n" + e);
         }
     }
@@ -226,9 +226,9 @@ public class DoctorMenu implements Menu {
 
     private Bill createBill(long id, double billingAmount) {
         return billService.create(
-            id,
-            billingAmount,
-            LocalDate.now(),
-            PaymentStatus.UNPAID);
+                id,
+                billingAmount,
+                LocalDate.now(),
+                PaymentStatus.UNPAID);
     }
 }

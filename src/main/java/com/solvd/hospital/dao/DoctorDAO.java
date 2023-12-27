@@ -7,8 +7,12 @@ import java.util.Optional;
 
 public interface DoctorDAO {
     Doctor create(Doctor doctor);
+
     List<Doctor> findAll();
+
     Optional<Doctor> findById(long id);
+
     Doctor update(Doctor doctor);
-    boolean delete(long id);
+
+    void delete(long id);
 }

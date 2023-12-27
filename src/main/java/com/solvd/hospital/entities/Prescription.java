@@ -18,8 +18,10 @@ public class Prescription {
     @Override
     public String toString() {
         return String.format(
-            "%n[%d] Doctor: %s, Patient: %s, Medication: %s",
-            id, doctor, patient, medication
+            "%nPrescription [%d] - Medication: %s (Doctor: %s, Patient: %s)",
+                id, medication,
+                doctor.getFirstName() + " " + doctor.getLastName(),
+                patient.getFirstName() + " " + patient.getLastName()
         );
     }
 }

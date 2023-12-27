@@ -2,7 +2,7 @@ package jdbc.dao;
 
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.dao.MedicationDAO;
-import com.solvd.hospital.dao.impl.JDBCMedicationDAOImpl;
+import com.solvd.hospital.dao.jdbc.impl.JDBCMedicationDAOImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

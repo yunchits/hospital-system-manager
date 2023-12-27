@@ -7,8 +7,12 @@ import java.util.Optional;
 
 public interface MedicationDAO {
     Medication create(Medication medication);
+
     List<Medication> findAll();
+
     Optional<Medication> findById(long id);
+
     Medication update(Medication medication);
-    boolean delete(long id);
+
+    void delete(long id);
 }

@@ -3,7 +3,7 @@ package jdbc.dao;
 import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.dao.PatientDAO;
-import com.solvd.hospital.dao.impl.JDBCPatientDAOImpl;
+import com.solvd.hospital.dao.jdbc.impl.JDBCPatientDAOImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

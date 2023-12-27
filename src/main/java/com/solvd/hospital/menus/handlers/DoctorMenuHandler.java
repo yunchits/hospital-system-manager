@@ -5,7 +5,6 @@ import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.DoctorService;
-import com.solvd.hospital.services.impl.DoctorServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,7 +20,7 @@ public class DoctorMenuHandler implements Menu {
 
     public DoctorMenuHandler() {
         this.scanner = new InputScanner();
-        this.doctorService = new DoctorServiceImpl();
+        this.doctorService = new DoctorService();
     }
 
 

@@ -20,7 +20,7 @@ public class Insurance {
     @Override
     public String toString() {
         return String.format(
-            "%n[%d] Policy Number: %s, Expiration Date: %s, Coverage Amount: %.2f, Type: %s, Provider: %s",
+            "%n Patient Insurance [%d] - Policy Number: %s, Expiration Date: %s, Coverage Amount: %.2f, Type: %s, Provider: %s",
             patientId, policyNumber, expirationDate, coverageAmount, type, insuranceProvider
         );
     }

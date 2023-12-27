@@ -24,7 +24,11 @@ public class Hospitalization {
         String formattedAdmissionDate = admissionDate.format(formatter);
         String formattedDischargeDate = dischargeDate.format(formatter);
 
-        return String.format("%n[%d] - Patient: %s (Admission Date: %s, Discharge Date: %s)",
-            id, patient, formattedAdmissionDate, formattedDischargeDate);
+        return String.format("%nHospitalization [%d] - Patient: %s (Admission Date: %s, Discharge Date: %s)",
+                id,
+                patient.getFirstName() + " " + patient.getLastName(),
+                formattedAdmissionDate,
+                formattedDischargeDate
+        );
     }
 }

@@ -14,9 +14,6 @@ public class Medication {
 
     @Override
     public String toString() {
-        return String.format(
-            "%n[%d] - Medication: %s, Description: %s",
-            id, name, description
-        );
+        return String.format("%nMedication [%d] - %s: %s", id, name, description);
     }
 }

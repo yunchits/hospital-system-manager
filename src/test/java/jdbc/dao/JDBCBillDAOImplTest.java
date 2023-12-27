@@ -3,7 +3,7 @@ package jdbc.dao;
 import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.dao.BillDAO;
-import com.solvd.hospital.dao.impl.JDBCBillDAOImpl;
+import com.solvd.hospital.dao.jdbc.impl.JDBCBillDAOImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

@@ -16,7 +16,7 @@ public class Doctor {
 
     @Override
     public String toString() {
-        return String.format("%n[%d] - Dr. %s %s (Specialization: %s)",
-            id, firstName, lastName, specialization);
+        return String.format("%nDoctor [%d] - Dr. %s %s (Specialization: %s, Salary: %.2f)",
+            id, firstName, lastName, specialization, salary.getSalary());
     }
 }

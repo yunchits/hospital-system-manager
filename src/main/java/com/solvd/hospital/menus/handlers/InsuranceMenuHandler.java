@@ -9,7 +9,6 @@ import com.solvd.hospital.entities.patient.InsuranceType;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.InsuranceService;
-import com.solvd.hospital.services.impl.InsuranceServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +24,7 @@ public class InsuranceMenuHandler implements Menu {
 
     public InsuranceMenuHandler() {
         this.scanner = new InputScanner();
-        this.insuranceService = new InsuranceServiceImpl();
+        this.insuranceService = new InsuranceService();
     }
 
 

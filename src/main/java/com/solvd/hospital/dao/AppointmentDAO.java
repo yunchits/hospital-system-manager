@@ -19,7 +19,7 @@ public interface AppointmentDAO {
 
     Appointment update(Appointment appointment);
 
-    boolean delete(long id);
+    void delete(long id);
 
-    boolean deleteByPatient(long patientId);
+    void deleteByPatient(long patientId);
 }

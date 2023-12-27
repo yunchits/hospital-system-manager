@@ -6,7 +6,6 @@ import com.solvd.hospital.entities.doctor.DoctorSalary;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.DoctorSalaryService;
-import com.solvd.hospital.services.impl.DoctorSalaryServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +21,7 @@ public class DoctorSalaryMenuHandler implements Menu {
 
     public DoctorSalaryMenuHandler() {
         this.scanner = new InputScanner();
-        this.doctorSalaryService = new DoctorSalaryServiceImpl();
+        this.doctorSalaryService = new DoctorSalaryService();
     }
 
 

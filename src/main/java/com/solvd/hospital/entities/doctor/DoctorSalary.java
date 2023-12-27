@@ -21,7 +21,7 @@ public class DoctorSalary {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String formattedPaymentDate = paymentDate.format(formatter);
 
-        return String.format("%n[%d] - Salary: %.2f, Payment Date: %s",
+        return String.format("%nSalary [%d] - Salary: %.2f, Payment Date: %s",
             id, salary, formattedPaymentDate);
     }
 }

@@ -16,5 +16,5 @@ public interface DiagnosisDAO {
 
     Diagnosis update(Diagnosis diagnosis);
 
-    boolean delete(long id);
+    void delete(long id);
 }

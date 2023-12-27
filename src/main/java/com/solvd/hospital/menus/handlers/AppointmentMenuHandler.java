@@ -6,7 +6,6 @@ import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.AppointmentService;
-import com.solvd.hospital.services.impl.AppointmentServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +21,7 @@ public class AppointmentMenuHandler implements Menu {
 
     public AppointmentMenuHandler() {
         this.scanner = new InputScanner();
-        this.appointmentService = new AppointmentServiceImpl();
+        this.appointmentService = new AppointmentService();
     }
 
     @Override

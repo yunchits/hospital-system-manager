@@ -6,7 +6,6 @@ import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.MedicationService;
-import com.solvd.hospital.services.impl.MedicationServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +19,7 @@ public class MedicationMenuHandler implements Menu {
 
     public MedicationMenuHandler() {
         this.scanner = new InputScanner();
-        this.medicationService = new MedicationServiceImpl();
+        this.medicationService = new MedicationService();
     }
 
 

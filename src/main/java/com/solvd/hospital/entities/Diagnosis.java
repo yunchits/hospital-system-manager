@@ -14,6 +14,6 @@ public class Diagnosis {
 
     @Override
     public String toString() {
-        return String.format("%n[%d] - %s: %s", id, name, description);
+        return String.format("%nDiagnosis [%d] - %s: %s", id, name, description);
     }
 }

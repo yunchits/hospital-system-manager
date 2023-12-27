@@ -7,7 +7,6 @@ import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.HospitalizationService;
-import com.solvd.hospital.services.impl.HospitalizationServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +22,7 @@ public class HospitalizationMenuHandler implements Menu {
 
     public HospitalizationMenuHandler() {
         this.scanner = new InputScanner();
-        this.hospitalizationService = new HospitalizationServiceImpl();
+        this.hospitalizationService = new HospitalizationService();
     }
 
 
@@ -70,7 +69,7 @@ public class HospitalizationMenuHandler implements Menu {
 
         try {
             return hospitalizationService.create(patientId, admissionDate, dischargeDate);
-        } catch (EntityNotFoundException | RelatedEntityNotFound e) {
+        } catch (RelatedEntityNotFound e) {
             LOGGER.error("Creation failed\n" + e);
         }
         return null;

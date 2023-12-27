@@ -7,9 +7,14 @@ import java.util.Optional;
 
 public interface HospitalizationDAO {
     Hospitalization create(Hospitalization hospitalization);
+
     List<Hospitalization> findAll();
+
     List<Hospitalization> findByPatientId(long patientId);
+
     Optional<Hospitalization> findById(long id);
+
     Hospitalization update(Hospitalization hospitalization);
-    boolean delete (long id);
+
+    void delete(long id);
 }

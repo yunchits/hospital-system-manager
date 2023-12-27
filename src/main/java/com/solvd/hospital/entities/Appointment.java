@@ -23,8 +23,12 @@ public class Appointment {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String formattedDateTime = appointmentDateTime.format(formatter);
 
-        return String.format("%n[%d] - Patient: %s, Doctor: %s, Date and Time: %s",
-            id, patient, doctor, formattedDateTime);
+        return String.format("%nAppointment [%d] - Date and Time: %s (Patient: %s, Doctor: %s)",
+                id,
+                formattedDateTime,
+                patient.getFirstName() + " " + patient.getLastName(),
+                doctor.getFirstName() + " " + doctor.getLastName()
+        );
     }
 }
 

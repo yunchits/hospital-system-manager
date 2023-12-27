@@ -9,11 +9,18 @@ import java.util.Optional;
 
 public interface BillDAO {
     Bill create(Bill bill);
+
     List<Bill> findAll();
+
     Optional<Bill> findById(long id);
+
     List<Bill> findByPatientId(long patientId);
+
     List<Bill> findByPatientIdAndBillingDate(long patientId, LocalDate date);
+
     List<Bill> findByPatientIdAndPaymentStatus(long patientId, PaymentStatus status);
-    Bill update (Bill bill);
-    boolean delete(long id);
+
+    Bill update(Bill bill);
+
+    void delete(long id);
 }

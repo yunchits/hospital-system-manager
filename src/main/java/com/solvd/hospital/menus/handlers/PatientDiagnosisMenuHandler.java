@@ -1,12 +1,12 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.PatientDiagnosisService;
-import com.solvd.hospital.services.impl.PatientDiagnosisServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +20,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
 
     public PatientDiagnosisMenuHandler() {
         this.scanner = new InputScanner();
-        this.patientDiagnosisService = new PatientDiagnosisServiceImpl();
+        this.patientDiagnosisService = new PatientDiagnosisService();
     }
 
     @Override
@@ -63,7 +63,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
 
         try {
             patientDiagnosisService.create(patientId, diagnosisId);
-        } catch (RelatedEntityNotFound e) {
+        } catch (RelatedEntityNotFound | EntityAlreadyExistsException e) {
             LOGGER.error("Creation failed \n" + e);
         }
     }
@@ -75,8 +75,14 @@ public class PatientDiagnosisMenuHandler implements Menu {
         LOGGER.info("Enter Diagnosis ID you want to update:");
         long diagnosisId = scanner.scanPositiveInt();
 
+        LOGGER.info("Enter new Patient ID:");
+        long newPatientId = scanner.scanPositiveInt();
+
+        LOGGER.info("Enter new Diagnosis ID:");
+        long newDiagnosisId = scanner.scanPositiveInt();
+
         try {
-            patientDiagnosisService.update(patientId, diagnosisId);
+            patientDiagnosisService.update(patientId, diagnosisId, newPatientId, newDiagnosisId);
         } catch (RelatedEntityNotFound e) {
             LOGGER.error("Update failed \n" + e);
         }
@@ -91,7 +97,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
 
         try {
             patientDiagnosisService.delete(patientId, diagnosisId);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | RelatedEntityNotFound e) {
             LOGGER.error("Update failed \n" + e);
         }
     }

@@ -20,17 +20,17 @@ public class HospitalAdminMenu implements Menu {
         int choice;
         do {
             LOGGER.info("Hospital Management System");
-            LOGGER.info("1 - Appointments");
-            LOGGER.info("2 - Bills");
-            LOGGER.info("3 - Diagnosis");
-            LOGGER.info("4 - Doctors");
-            LOGGER.info("5 - Doctor's Salaries");
-            LOGGER.info("6 - Hospitalizations");
-            LOGGER.info("7 - Medications");
-            LOGGER.info("8 - Patients");
-            LOGGER.info("9 - Patient's diagnosis");
-            LOGGER.info("10 - Patient Insurances");
-            LOGGER.info("11 - Prescriptions");
+            LOGGER.info("1 - Appointments Management");
+            LOGGER.info("2 - Bills Management");
+            LOGGER.info("3 - Diagnosis Management");
+            LOGGER.info("4 - Doctors Management");
+            LOGGER.info("5 - Doctor's Salaries Management");
+            LOGGER.info("6 - Hospitalizations Management");
+            LOGGER.info("7 - Medications Management");
+            LOGGER.info("8 - Patients Management");
+            LOGGER.info("9 - Patient's Diagnosis Management");
+            LOGGER.info("10 - Patient Insurances Management");
+            LOGGER.info("11 - Prescriptions Management");
             LOGGER.info("0 - Exit");
 
             choice = scanner.scanInt(0, 11);

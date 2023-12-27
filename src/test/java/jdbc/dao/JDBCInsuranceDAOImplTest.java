@@ -4,7 +4,7 @@ import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.InsuranceType;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.dao.InsuranceDAO;
-import com.solvd.hospital.dao.impl.JDBCInsuranceDAOImpl;
+import com.solvd.hospital.dao.jdbc.impl.JDBCInsuranceDAOImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

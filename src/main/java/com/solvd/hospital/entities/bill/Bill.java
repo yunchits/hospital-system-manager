@@ -19,7 +19,7 @@ public class Bill {
     @Override
     public String toString() {
         return String.format(
-            "%n[%d] - Patient ID: %d, Amount: %.2f, Billing Date: %s, Payment Status: %s",
+            "%nBill [%d] - Patient ID: %d, Amount: %.2f, Billing Date: %s, Payment Status: %s",
             id, patientId, amount, billingDate, paymentStatus
         );
     }

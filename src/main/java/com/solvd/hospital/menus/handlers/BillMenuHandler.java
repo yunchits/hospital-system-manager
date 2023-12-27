@@ -6,7 +6,6 @@ import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.BillService;
-import com.solvd.hospital.services.impl.BillServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,7 +21,7 @@ public class BillMenuHandler implements Menu {
 
     public BillMenuHandler() {
         this.scanner = new InputScanner();
-        this.billService = new BillServiceImpl();
+        this.billService = new BillService();
     }
 
     @Override

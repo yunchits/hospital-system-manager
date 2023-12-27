@@ -1,6 +1,7 @@
 package com.solvd.hospital.menus;
 
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.entities.bill.Bill;
@@ -9,7 +10,6 @@ import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.menus.handlers.PatientMenuHandler;
 import com.solvd.hospital.services.*;
-import com.solvd.hospital.services.impl.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,14 +36,14 @@ public class PatientMenu implements Menu {
 
     public PatientMenu() {
         this.scanner = new InputScanner();
-        this.patientService = new PatientServiceImpl();
-        this.insuranceService = new InsuranceServiceImpl();
-        this.appointmentService = new AppointmentServiceImpl();
-        this.doctorService = new DoctorServiceImpl();
-        this.prescriptionService = new PrescriptionServiceImpl();
-        this.diagnosisService = new PatientDiagnosisServiceImpl();
-        this.hospitalizationService = new HospitalizationServiceImpl();
-        this.billService = new BillServiceImpl();
+        this.patientService = new PatientService();
+        this.insuranceService = new InsuranceService();
+        this.appointmentService = new AppointmentService();
+        this.doctorService = new DoctorService();
+        this.prescriptionService = new PrescriptionService();
+        this.diagnosisService = new PatientDiagnosisService();
+        this.hospitalizationService = new HospitalizationService();
+        this.billService = new BillService();
     }
 
     @Override
@@ -188,7 +188,7 @@ public class PatientMenu implements Menu {
     private void displayDiagnoses() {
         try {
             LOGGER.info(diagnosisService.findByPatientId(patient.getId()));
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | RelatedEntityNotFound e) {
             LOGGER.error("You don't have any diagnoses");
         }
     }
@@ -300,12 +300,12 @@ public class PatientMenu implements Menu {
         insurance.setCoverageAmount(insurance.getCoverageAmount() - amount);
         try {
             insuranceService.update(
-                insurance.getPatientId(),
-                insurance.getPolicyNumber(),
-                insurance.getExpirationDate(),
-                insurance.getCoverageAmount(),
-                insurance.getType(),
-                insurance.getInsuranceProvider());
+                    insurance.getPatientId(),
+                    insurance.getPolicyNumber(),
+                    insurance.getExpirationDate(),
+                    insurance.getCoverageAmount(),
+                    insurance.getType(),
+                    insurance.getInsuranceProvider());
         } catch (EntityNotFoundException e) {
             LOGGER.error("Error updating insurance.");
         }

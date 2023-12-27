@@ -22,7 +22,7 @@ public class Patient {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String formattedBirthDate = birthDate.format(formatter);
 
-        return String.format("%n[%d] - %s %s (Birth Date: %s, Gender: %s)",
+        return String.format("%nPatient [%d] - %s %s (Birth Date: %s, Gender: %s)",
             id, firstName, lastName, formattedBirthDate, gender);
     }
 }

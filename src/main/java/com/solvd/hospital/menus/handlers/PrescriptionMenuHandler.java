@@ -13,10 +13,6 @@ import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.MedicationService;
 import com.solvd.hospital.services.PatientService;
 import com.solvd.hospital.services.PrescriptionService;
-import com.solvd.hospital.services.impl.DoctorServiceImpl;
-import com.solvd.hospital.services.impl.MedicationServiceImpl;
-import com.solvd.hospital.services.impl.PatientServiceImpl;
-import com.solvd.hospital.services.impl.PrescriptionServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -33,10 +29,10 @@ public class PrescriptionMenuHandler implements Menu {
 
     public PrescriptionMenuHandler() {
         this.scanner = new InputScanner();
-        this.prescriptionService = new PrescriptionServiceImpl();
-        this.doctorService = new DoctorServiceImpl();
-        this.patientService = new PatientServiceImpl();
-        this.medicationService = new MedicationServiceImpl();
+        this.prescriptionService = new PrescriptionService();
+        this.doctorService = new DoctorService();
+        this.patientService = new PatientService();
+        this.medicationService = new MedicationService();
     }
 
 
@@ -147,7 +143,7 @@ public class PrescriptionMenuHandler implements Menu {
 
         try {
             prescriptionService.update(id, doctor, patient, medication);
-        } catch (DuplicateKeyException e) {
+        } catch (EntityNotFoundException e) {
             LOGGER.info("Update failed\n" + e);
         }
     }

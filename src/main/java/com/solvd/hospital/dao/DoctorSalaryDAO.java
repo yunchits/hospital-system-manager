@@ -7,8 +7,12 @@ import java.util.Optional;
 
 public interface DoctorSalaryDAO {
     DoctorSalary create(DoctorSalary salary);
+
     List<DoctorSalary> findAll();
+
     Optional<DoctorSalary> findById(long id);
+
     DoctorSalary update(DoctorSalary salary);
-    boolean delete(long id);
+
+    void delete(long id);
 }

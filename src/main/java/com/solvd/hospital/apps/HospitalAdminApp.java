@@ -6,10 +6,8 @@ import com.solvd.hospital.menus.Menu;
 public class HospitalAdminApp {
 
     public static void main(String[] args) {
-
         Menu menu = new HospitalAdminMenu();
 
         menu.display();
-
     }
 }
