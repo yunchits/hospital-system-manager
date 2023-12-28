@@ -3,6 +3,7 @@ package com.solvd.hospital.dao.mybatis.impl;
 import com.solvd.hospital.common.MyBatisConfig;
 import com.solvd.hospital.dao.PatientDiagnosisDAO;
 import com.solvd.hospital.dao.mybatis.mappers.PatientDiagnosisMapper;
+import com.solvd.hospital.entities.Diagnosis;
 import com.solvd.hospital.entities.PatientDiagnosis;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -52,13 +53,13 @@ public class MyBatisPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
     }
 
     @Override
-    public PatientDiagnosis update(PatientDiagnosis patientDiagnosis, PatientDiagnosis newPatientDiagnosis) {
+    public PatientDiagnosis update(PatientDiagnosis patientDiagnosis, Diagnosis newDiagnosis) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             PatientDiagnosisMapper patientDiagnosisMapper = session.getMapper(PatientDiagnosisMapper.class);
-            patientDiagnosisMapper.update(patientDiagnosis, newPatientDiagnosis);
+            patientDiagnosisMapper.update(patientDiagnosis, newDiagnosis);
             session.commit();
         }
-        return newPatientDiagnosis;
+        return patientDiagnosis.setDiagnosis(newDiagnosis);
     }
 
     @Override

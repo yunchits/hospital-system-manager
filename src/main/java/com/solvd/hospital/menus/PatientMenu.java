@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class PatientMenu implements Menu {
 
@@ -229,15 +228,13 @@ public class PatientMenu implements Menu {
         try {
             LOGGER.info(billService.findByPatientIdAndPaymentStatus(patient.getId(), PaymentStatus.UNPAID));
         } catch (EntityNotFoundException e) {
-            LOGGER.error(e);
+            LOGGER.info("You have no unpaid Bills");
         }
     }
 
     private void payTheBill() {
-        List<Bill> all = billService.findAll();
-
         LOGGER.info("Enter Bill ID:");
-        int id = scanner.scanInt(0, all.size());
+        int id = scanner.scanPositiveInt();
 
         Bill bill;
         try {
@@ -250,9 +247,7 @@ public class PatientMenu implements Menu {
         Insurance insurance = null;
         try {
             insurance = insuranceService.findById(patient.getId());
-        } catch (EntityNotFoundException e) {
-            LOGGER.error(e);
-        }
+        } catch (EntityNotFoundException ignored) {}
 
         double amount = bill.getAmount();
 

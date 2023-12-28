@@ -74,14 +74,6 @@ public class DoctorMenu implements Menu {
                 case 3:
                     startAppointment();
                     break;
-                case 4:
-                    break;
-                case 5:
-                    break;
-                case 6:
-                    break;
-                case 7:
-                    break;
                 case 0:
                     LOGGER.info("Exiting...");
                     break;
@@ -125,12 +117,11 @@ public class DoctorMenu implements Menu {
             return;
         }
 
-        Patient patient = appointment.getPatient();
-
-        appointmentMenu(patient);
+        appointmentMenu(appointment);
     }
 
-    private void appointmentMenu(Patient patient) {
+    private void appointmentMenu(Appointment appointment) {
+        Patient patient = appointment.getPatient();
         double billingAmount = 0;
 
         int choice;
@@ -160,6 +151,11 @@ public class DoctorMenu implements Menu {
                     LOGGER.info(patient);
                     Bill bill = createBill(patient.getId(), billingAmount);
                     LOGGER.info("He will be billed for the amount: " + bill.getAmount());
+                    try {
+                        appointmentService.delete(appointment.getId());
+                    } catch (EntityNotFoundException e) {
+                        LOGGER.info(e);
+                    }
                     break;
             }
         } while (choice != 0);
@@ -173,8 +169,10 @@ public class DoctorMenu implements Menu {
 
         try {
             LOGGER.info(patientDiagnosisService.create(patient.getId(), diagnosisId));
-        } catch (RelatedEntityNotFound | EntityAlreadyExistsException e) {
-            LOGGER.error("Diagnosis creation failed\n" + e);
+        } catch (EntityAlreadyExistsException e) {
+            LOGGER.info("Your patient already has this diagnosis");
+        } catch (RelatedEntityNotFound e) {
+            LOGGER.info(e);
         }
     }
 

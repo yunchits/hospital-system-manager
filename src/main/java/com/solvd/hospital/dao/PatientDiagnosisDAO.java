@@ -1,5 +1,6 @@
 package com.solvd.hospital.dao;
 
+import com.solvd.hospital.entities.Diagnosis;
 import com.solvd.hospital.entities.PatientDiagnosis;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface PatientDiagnosisDAO {
 
     Optional<PatientDiagnosis> findByPatientIdAndDiagnosisId(long patientId, long diagnosisId);
 
-    PatientDiagnosis update(PatientDiagnosis patientDiagnosis, PatientDiagnosis newPatientDiagnosis);
+    PatientDiagnosis update(PatientDiagnosis patientDiagnosis, Diagnosis newDiagnosis);
 
     void delete(long patientId, long diagnosisId);
 }

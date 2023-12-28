@@ -35,10 +35,7 @@ public class PatientDiagnosisService {
     }
 
     public PatientDiagnosis create(long patientId, long diagnosisId) throws RelatedEntityNotFound, EntityAlreadyExistsException {
-        if (dao.findByPatientIdAndDiagnosisId(patientId, diagnosisId).isPresent()) {
-            throw new EntityAlreadyExistsException("PatientDiagnosis already exists for patient ID: " + patientId +
-                    " and diagnosis ID: " + diagnosisId);
-        }
+        validatePatientDiagnosisDoesNotExist(patientId, diagnosisId);
 
         validateRelatedPatient(patientId);
         Diagnosis diagnosis = validateAndGetRelatedDiagnosis(diagnosisId);
@@ -69,9 +66,8 @@ public class PatientDiagnosisService {
         return diagnoses;
     }
 
-    public PatientDiagnosis update(long patientId, long diagnosisId, long newPatientId, long newDiagnosisId) throws RelatedEntityNotFound {
+    public PatientDiagnosis update(long patientId, long diagnosisId, long newDiagnosisId) throws RelatedEntityNotFound, EntityAlreadyExistsException {
         validateRelatedPatient(patientId);
-        validateRelatedPatient(newPatientId);
 
         Diagnosis diagnosis = validateAndGetRelatedDiagnosis(diagnosisId);
         Diagnosis newDiagnosis = validateAndGetRelatedDiagnosis(newDiagnosisId);
@@ -80,10 +76,9 @@ public class PatientDiagnosisService {
                 .setPatientId(patientId)
                 .setDiagnosis(diagnosis);
 
-        PatientDiagnosis newPatientDiagnosis = new PatientDiagnosis()
-                .setPatientId(newPatientId)
-                .setDiagnosis(newDiagnosis);
-        return dao.update(patientDiagnosis, newPatientDiagnosis);
+        validatePatientDiagnosisDoesNotExist(patientId, newDiagnosisId);
+
+        return dao.update(patientDiagnosis, newDiagnosis);
     }
 
     public void delete(long patientId, long diagnosisId) throws EntityNotFoundException, RelatedEntityNotFound {
@@ -106,6 +101,13 @@ public class PatientDiagnosisService {
             patientService.findById(patientId);
         } catch (EntityNotFoundException e) {
             throw new RelatedEntityNotFound("Patient not found for ID " + patientId);
+        }
+    }
+
+    private void validatePatientDiagnosisDoesNotExist(long patientId, long diagnosisId) throws EntityAlreadyExistsException {
+        if (dao.findByPatientIdAndDiagnosisId(patientId, diagnosisId).isPresent()) {
+            throw new EntityAlreadyExistsException("PatientDiagnosis already exists for patient ID: " + patientId +
+                    " and diagnosis ID: " + diagnosisId);
         }
     }
 }

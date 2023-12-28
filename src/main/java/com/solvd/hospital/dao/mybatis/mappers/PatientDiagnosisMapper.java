@@ -1,5 +1,6 @@
 package com.solvd.hospital.dao.mybatis.mappers;
 
+import com.solvd.hospital.entities.Diagnosis;
 import com.solvd.hospital.entities.PatientDiagnosis;
 import org.apache.ibatis.annotations.*;
 
@@ -34,11 +35,11 @@ public interface PatientDiagnosisMapper {
 
 
     @Update("UPDATE patients_diagnoses " +
-            "SET patient_id = #{newPatientDiagnosis.patientId}, diagnosis_id = #{newPatientDiagnosis.diagnosis.id} " +
+            "SET diagnosis_id = #{newDiagnosis.id} " +
             "WHERE patient_id = #{patientDiagnosis.patientId} AND diagnosis_id = #{patientDiagnosis.diagnosis.id}")
-    void update(@Param("patientDiagnosis") PatientDiagnosis patientDiagnosis, @Param("newPatientDiagnosis") PatientDiagnosis newPatientDiagnosis);
+    void update(@Param("patientDiagnosis") PatientDiagnosis patientDiagnosis, @Param("newDiagnosisId") Diagnosis newDiagnosis);
 
     @Delete("DELETE FROM patients_diagnoses " +
-            "WHERE patient_id = #{patientId} AND diagnosis_id = #{diagnosis.id}")
+            "WHERE patient_id = #{patientId} AND diagnosis_id = #{diagnosisId}")
     void delete(@Param("patientId") long patientId, @Param("diagnosisId") long diagnosisId);
 }

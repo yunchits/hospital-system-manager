@@ -3,8 +3,9 @@ package com.solvd.hospital.dao.jdbc.impl;
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
-import com.solvd.hospital.entities.PatientDiagnosis;
 import com.solvd.hospital.dao.PatientDiagnosisDAO;
+import com.solvd.hospital.entities.Diagnosis;
+import com.solvd.hospital.entities.PatientDiagnosis;
 import com.solvd.hospital.services.DiagnosisService;
 
 import java.sql.PreparedStatement;
@@ -19,13 +20,13 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
     private static final String CREATE_PATIENT_DIAGNOSIS_QUERY = "INSERT INTO patients_diagnoses (patient_id, diagnosis_id) " +
-        "VALUES (?, ?)";
+            "VALUES (?, ?)";
     private static final String FIND_ALL_PATIENT_DIAGNOSIS_QUERY = "SELECT * FROM patients_diagnoses";
     private static final String FIND_ALL_BY_PATIENT_ID_QUERY = "SELECT * FROM patients_diagnoses WHERE patient_id = ?";
     private static final String FIND_BY_PATIENT_ID_AND_DIAGNOSIS_ID_QUERY = "SELECT * FROM patients_diagnoses " +
             "WHERE patient_id = ? AND diagnosis_id = ?";
     private static final String UPDATE_PATIENT_DIAGNOSIS_QUERY = "UPDATE patients_diagnoses " +
-        "SET patient_id = ?, diagnosis_id = ? WHERE patient_id = ? AND diagnosis_id = ?";
+            "SET diagnosis_id = ? WHERE patient_id = ? AND diagnosis_id = ?";
     private static final String DELETE_PATIENT_DIAGNOSIS_QUERY = "DELETE FROM patients_diagnoses WHERE patient_id = ? AND diagnosis_id = ?";
 
     private final DiagnosisService diagnosisService = new DiagnosisService();
@@ -34,7 +35,7 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
     public PatientDiagnosis create(PatientDiagnosis patientDiagnosis) {
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection
-                 .prepareStatement(CREATE_PATIENT_DIAGNOSIS_QUERY)) {
+                     .prepareStatement(CREATE_PATIENT_DIAGNOSIS_QUERY)) {
 
             statement.setLong(1, patientDiagnosis.getPatientId());
             statement.setLong(2, patientDiagnosis.getDiagnosis().getId());
@@ -114,14 +115,13 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
     }
 
     @Override
-    public PatientDiagnosis update(PatientDiagnosis patientDiagnosis, PatientDiagnosis newPatientDiagnosis) {
+    public PatientDiagnosis update(PatientDiagnosis patientDiagnosis, Diagnosis newDiagnosis) {
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection.prepareStatement(UPDATE_PATIENT_DIAGNOSIS_QUERY)) {
 
-            statement.setLong(1, newPatientDiagnosis.getPatientId());
-            statement.setLong(2, newPatientDiagnosis.getDiagnosis().getId());
-            statement.setLong(3, patientDiagnosis.getPatientId());
-            statement.setLong(4, patientDiagnosis.getDiagnosis().getId());
+            statement.setLong(1, newDiagnosis.getId());
+            statement.setLong(2, patientDiagnosis.getPatientId());
+            statement.setLong(3, patientDiagnosis.getDiagnosis().getId());
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
@@ -150,8 +150,8 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
 
     private PatientDiagnosis resultSetToPatientDiagnosis(ResultSet resultSet) throws SQLException, EntityNotFoundException {
         return new PatientDiagnosis()
-            .setPatientId(resultSet.getLong("patient_id"))
-            .setDiagnosis(diagnosisService.findById(resultSet.getLong("diagnosis_id")));
+                .setPatientId(resultSet.getLong("patient_id"))
+                .setDiagnosis(diagnosisService.findById(resultSet.getLong("diagnosis_id")));
 
     }
 }

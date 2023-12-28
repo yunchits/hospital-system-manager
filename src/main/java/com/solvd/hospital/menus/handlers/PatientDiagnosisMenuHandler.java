@@ -75,15 +75,12 @@ public class PatientDiagnosisMenuHandler implements Menu {
         LOGGER.info("Enter Diagnosis ID you want to update:");
         long diagnosisId = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter new Patient ID:");
-        long newPatientId = scanner.scanPositiveInt();
-
         LOGGER.info("Enter new Diagnosis ID:");
         long newDiagnosisId = scanner.scanPositiveInt();
 
         try {
-            patientDiagnosisService.update(patientId, diagnosisId, newPatientId, newDiagnosisId);
-        } catch (RelatedEntityNotFound e) {
+            patientDiagnosisService.update(patientId, diagnosisId, newDiagnosisId);
+        } catch (RelatedEntityNotFound | EntityAlreadyExistsException e) {
             LOGGER.error("Update failed \n" + e);
         }
     }
@@ -97,6 +94,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
 
         try {
             patientDiagnosisService.delete(patientId, diagnosisId);
+            LOGGER.info("The delete operation completed successfully");
         } catch (EntityNotFoundException | RelatedEntityNotFound e) {
             LOGGER.error("Update failed \n" + e);
         }
