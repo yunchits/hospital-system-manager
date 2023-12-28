@@ -2,6 +2,7 @@ package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.dao.AppointmentDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCAppointmentDAOImpl;
@@ -34,7 +35,9 @@ public class AppointmentService {
         this.doctorService = new DoctorService();
     }
 
-    public Appointment create(long patientId, long doctorId, LocalDateTime appointmentDateTime) throws EntityNotFoundException {
+    public Appointment create(long patientId, long doctorId, LocalDateTime appointmentDateTime) throws EntityNotFoundException, InvalidArgumentException {
+        validateDateTime(appointmentDateTime);
+
         Appointment appointment = new Appointment();
 
         Patient patient = patientService.findById(patientId);
@@ -77,7 +80,9 @@ public class AppointmentService {
         return appointments;
     }
 
-    public Appointment update(long id, long patientId, long doctorId, LocalDateTime appointmentDateTime) throws RelatedEntityNotFound, EntityNotFoundException {
+    public Appointment update(long id, long patientId, long doctorId, LocalDateTime appointmentDateTime) throws RelatedEntityNotFound, EntityNotFoundException, InvalidArgumentException {
+        validateDateTime(appointmentDateTime);
+
         Appointment appointment = new Appointment();
 
         findById(id);
@@ -104,5 +109,11 @@ public class AppointmentService {
     public void delete(long id) throws EntityNotFoundException {
         findById(id);
         dao.delete(id);
+    }
+
+    private void validateDateTime(LocalDateTime appointmentDateTime) throws InvalidArgumentException {
+        if (appointmentDateTime.isBefore(LocalDateTime.now())) {
+            throw new InvalidArgumentException("The appointment date and time must be in the future");
+        }
     }
 }

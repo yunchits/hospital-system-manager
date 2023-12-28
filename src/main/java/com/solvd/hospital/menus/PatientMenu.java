@@ -2,9 +2,9 @@ package com.solvd.hospital.menus;
 
 import com.solvd.hospital.common.exceptions.AuthenticationException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
-import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.entities.patient.Insurance;
@@ -93,7 +93,7 @@ public class PatientMenu implements Menu {
                     displayPatientInfo();
                     break;
                 case 2:
-                    LOGGER.info(makeAppointment());
+                    makeAppointment();
                     break;
                 case 3:
                     displayAppointments();
@@ -151,7 +151,7 @@ public class PatientMenu implements Menu {
         displayMainMenu();
     }
 
-    private Appointment makeAppointment() {
+    private void makeAppointment() {
         LOGGER.info(doctorService.findAll());
 
         LOGGER.info("Select the doctor you want to make an appointment with and enter his ID: ");
@@ -161,11 +161,10 @@ public class PatientMenu implements Menu {
         LocalDateTime appointmentDateTime = scanner.scanLocalDateTime();
 
         try {
-            return appointmentService.create(patient.getId(), doctorId, appointmentDateTime);
-        } catch (EntityNotFoundException e) {
+            LOGGER.info(appointmentService.create(patient.getId(), doctorId, appointmentDateTime));
+        } catch (EntityNotFoundException | InvalidArgumentException e) {
             LOGGER.error(e);
         }
-        return null;
     }
 
     private void displayInsuranceInfo() {
@@ -264,7 +263,8 @@ public class PatientMenu implements Menu {
         Insurance insurance = null;
         try {
             insurance = insuranceService.findById(patient.getId());
-        } catch (EntityNotFoundException ignored) {}
+        } catch (EntityNotFoundException ignored) {
+        }
 
         double amount = bill.getAmount();
 
@@ -312,12 +312,12 @@ public class PatientMenu implements Menu {
         insurance.setCoverageAmount(insurance.getCoverageAmount() - amount);
         try {
             insuranceService.update(
-                    insurance.getPatientId(),
-                    insurance.getPolicyNumber(),
-                    insurance.getExpirationDate(),
-                    insurance.getCoverageAmount(),
-                    insurance.getType(),
-                    insurance.getInsuranceProvider());
+                insurance.getPatientId(),
+                insurance.getPolicyNumber(),
+                insurance.getExpirationDate(),
+                insurance.getCoverageAmount(),
+                insurance.getType(),
+                insurance.getInsuranceProvider());
         } catch (EntityNotFoundException e) {
             LOGGER.error("Error updating insurance.");
         }

@@ -1,9 +1,6 @@
 package com.solvd.hospital.menus;
 
-import com.solvd.hospital.common.exceptions.AuthenticationException;
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
-import com.solvd.hospital.common.exceptions.EntityNotFoundException;
-import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
+import com.solvd.hospital.common.exceptions.*;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.entities.Diagnosis;
@@ -238,7 +235,7 @@ public class DoctorMenu implements Menu {
 
         try {
             hospitalizationService.create(patient.getId(), admissionDate, dischargeDate);
-        } catch (RelatedEntityNotFound e) {
+        } catch (RelatedEntityNotFound | InvalidArgumentException e) {
             LOGGER.error("Failed to create hospitalization record\n" + e);
         }
     }

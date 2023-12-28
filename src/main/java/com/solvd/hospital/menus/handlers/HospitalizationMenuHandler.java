@@ -1,6 +1,7 @@
 package com.solvd.hospital.menus.handlers;
 
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Hospitalization;
@@ -69,7 +70,7 @@ public class HospitalizationMenuHandler implements Menu {
 
         try {
             return hospitalizationService.create(patientId, admissionDate, dischargeDate);
-        } catch (RelatedEntityNotFound e) {
+        } catch (RelatedEntityNotFound | InvalidArgumentException e) {
             LOGGER.error("Creation failed\n" + e);
         }
         return null;
@@ -90,7 +91,7 @@ public class HospitalizationMenuHandler implements Menu {
 
         try {
             hospitalizationService.update(id, patientId, admissionDate, dischargeDate);
-        } catch (EntityNotFoundException | RelatedEntityNotFound e) {
+        } catch (EntityNotFoundException | RelatedEntityNotFound | InvalidArgumentException e) {
             LOGGER.info("Update failed\n" + e);
         }
     }

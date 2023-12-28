@@ -2,6 +2,7 @@ package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.dao.HospitalizationDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCHospitalizationDAOImpl;
@@ -31,7 +32,9 @@ public class HospitalizationService {
         this.patientService = new PatientService();
     }
 
-    public Hospitalization create(long patientId, LocalDate admissionDate, LocalDate dischargeDate) throws RelatedEntityNotFound {
+    public Hospitalization create(long patientId, LocalDate admissionDate, LocalDate dischargeDate) throws RelatedEntityNotFound, InvalidArgumentException {
+        validateDate(admissionDate, dischargeDate);
+
         Patient patient;
         try {
             patient = patientService.findById(patientId);
@@ -40,9 +43,9 @@ public class HospitalizationService {
         }
 
         return dao.create(new Hospitalization()
-                .setPatient(patient)
-                .setAdmissionDate(admissionDate)
-                .setDischargeDate(dischargeDate));
+            .setPatient(patient)
+            .setAdmissionDate(admissionDate)
+            .setDischargeDate(dischargeDate));
     }
 
     public List<Hospitalization> findAll() {
@@ -60,11 +63,13 @@ public class HospitalizationService {
 
     public Hospitalization findById(long id) throws EntityNotFoundException {
         return dao.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Hospitalization with id: " + id + " not found")
+            () -> new EntityNotFoundException("Hospitalization with id: " + id + " not found")
         );
     }
 
-    public Hospitalization update(long id, long patientId, LocalDate admissionDate, LocalDate dischargeDate) throws RelatedEntityNotFound, EntityNotFoundException {
+    public Hospitalization update(long id, long patientId, LocalDate admissionDate, LocalDate dischargeDate) throws RelatedEntityNotFound, EntityNotFoundException, InvalidArgumentException {
+        validateDate(admissionDate, dischargeDate);
+
         findById(id);
 
         Patient patient;
@@ -75,14 +80,21 @@ public class HospitalizationService {
         }
 
         return dao.update(new Hospitalization()
-                .setId(id)
-                .setPatient(patient)
-                .setAdmissionDate(admissionDate)
-                .setDischargeDate(dischargeDate));
+            .setId(id)
+            .setPatient(patient)
+            .setAdmissionDate(admissionDate)
+            .setDischargeDate(dischargeDate));
     }
 
     public void delete(long id) throws EntityNotFoundException {
         findById(id);
         dao.delete(id);
+    }
+
+    private static void validateDate(LocalDate admissionDate, LocalDate dischargeDate) throws InvalidArgumentException {
+        if (admissionDate.isAfter(LocalDate.now()) && admissionDate.isBefore(dischargeDate)) {
+            throw new InvalidArgumentException("Admission date and time must be in the future " +
+                "and discharge date must be after admission date");
+        }
     }
 }

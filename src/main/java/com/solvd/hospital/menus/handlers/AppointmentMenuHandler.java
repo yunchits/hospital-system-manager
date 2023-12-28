@@ -1,6 +1,7 @@
 package com.solvd.hospital.menus.handlers;
 
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.menus.Menu;
@@ -67,7 +68,7 @@ public class AppointmentMenuHandler implements Menu {
 
         try {
             appointmentService.create(patientId, doctorId, appointmentDateTime);
-        } catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException | InvalidArgumentException e) {
             LOGGER.error("Creation failed \n" + e);
         }
     }
@@ -87,7 +88,7 @@ public class AppointmentMenuHandler implements Menu {
 
         try {
             appointmentService.update(id, patientId, doctorId, appointmentDateTime);
-        } catch (RelatedEntityNotFound | EntityNotFoundException e) {
+        } catch (RelatedEntityNotFound | EntityNotFoundException | InvalidArgumentException e) {
             LOGGER.error("Update failed \n" + e);
         }
     }
