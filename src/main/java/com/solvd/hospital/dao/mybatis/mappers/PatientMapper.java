@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.EnumTypeHandler;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PatientMapper {
     @Insert("INSERT INTO patients (first_name, last_name, birth_date, gender, user_id) " +
@@ -21,7 +22,7 @@ public interface PatientMapper {
             @Result(property = "birthDate", column = "birth_date"),
             @Result(property = "gender", column = "gender", typeHandler = EnumTypeHandler.class)
     })
-    Patient findById(long id);
+    Optional<Patient> findById(long id);
 
     @Select("SELECT * FROM patients WHERE user_id = #{userId}")
     @Results({
@@ -32,7 +33,7 @@ public interface PatientMapper {
             @Result(property = "birthDate", column = "birth_date"),
             @Result(property = "gender", column = "gender", typeHandler = EnumTypeHandler.class)
     })
-    Patient findByUserId(long userId);
+    Optional<Patient> findByUserId(long userId);
 
     @Select("SELECT * FROM patients")
     @Results({

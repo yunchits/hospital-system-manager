@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface BillMapper {
     @Insert("INSERT INTO bills (patient_id, amount, billing_date, payment_status) " +
@@ -21,7 +22,7 @@ public interface BillMapper {
             @Result(property = "billingDate", column = "billing_date"),
             @Result(property = "paymentStatus", column = "payment_status", javaType = PaymentStatus.class),
     })
-    Bill findById(long id);
+    Optional<Bill> findById(long id);
 
     @Select("SELECT * FROM bills")
     @Results({

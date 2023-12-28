@@ -33,7 +33,7 @@ public class MyBatisBillDAOImpl implements BillDAO {
     public Optional<Bill> findById(long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             BillMapper billMapper = session.getMapper(BillMapper.class);
-            return Optional.ofNullable(billMapper.findById(id));
+            return billMapper.findById(id);
         }
     }
 

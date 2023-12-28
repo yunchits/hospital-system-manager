@@ -39,7 +39,7 @@ public class MyBatisInsuranceDAOImpl implements InsuranceDAO {
     public Optional<Insurance> findById(long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             InsuranceMapper insuranceMapper = session.getMapper(InsuranceMapper.class);
-            return Optional.ofNullable(insuranceMapper.findById(id));
+            return insuranceMapper.findById(id);
         }
     }
 

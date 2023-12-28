@@ -31,7 +31,7 @@ public class MyBatisPatientDAOImpl implements PatientDAO {
     public Optional<Patient> findById(long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             PatientMapper patientMapper = session.getMapper(PatientMapper.class);
-            return Optional.ofNullable(patientMapper.findById(id));
+            return patientMapper.findById(id);
         }
     }
 
@@ -39,7 +39,7 @@ public class MyBatisPatientDAOImpl implements PatientDAO {
     public Optional<Patient> findByUserId(long userId) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             PatientMapper patientMapper = session.getMapper(PatientMapper.class);
-            return Optional.ofNullable(patientMapper.findByUserId(userId));
+            return patientMapper.findByUserId(userId);
         }
     }
 

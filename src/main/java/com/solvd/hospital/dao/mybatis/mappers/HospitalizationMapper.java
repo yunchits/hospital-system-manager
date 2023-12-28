@@ -4,6 +4,7 @@ import com.solvd.hospital.entities.Hospitalization;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HospitalizationMapper {
     @Insert("INSERT INTO hospitalizations (patient_id, admission_date, discharge_date) VALUES (#{patient.id}, #{admissionDate}, #{dischargeDate})")
@@ -35,7 +36,7 @@ public interface HospitalizationMapper {
             @Result(property = "admissionDate", column = "admission_date"),
             @Result(property = "dischargeDate", column = "discharge_date")
     })
-    Hospitalization findById(long id);
+    Optional<Hospitalization> findById(long id);
 
     @Update("UPDATE hospitalizations SET patient_id = #{patient.id}, admission_date = #{admissionDate}, discharge_date = #{dischargeDate} WHERE id = #{id}")
     void update(Hospitalization hospitalization);

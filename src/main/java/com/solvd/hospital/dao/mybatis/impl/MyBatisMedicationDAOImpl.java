@@ -31,7 +31,7 @@ public class MyBatisMedicationDAOImpl implements MedicationDAO {
     public Optional<Medication> findById(long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             MedicationMapper medicationMapper = session.getMapper(MedicationMapper.class);
-            return Optional.ofNullable(medicationMapper.findById(id));
+            return medicationMapper.findById(id);
         }
     }
 

@@ -31,7 +31,7 @@ public class MyBatisDiagnosisDAOImpl implements DiagnosisDAO {
     public Optional<Diagnosis> findById(long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             DiagnosisMapper diagnosisMapper = session.getMapper(DiagnosisMapper.class);
-            return Optional.ofNullable(diagnosisMapper.findById(id));
+            return diagnosisMapper.findById(id);
         }
     }
 

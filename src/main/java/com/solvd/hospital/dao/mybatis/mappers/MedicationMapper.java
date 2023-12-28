@@ -4,6 +4,7 @@ import com.solvd.hospital.entities.Medication;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MedicationMapper {
     @Insert("INSERT INTO medications (medication_name, medication_description) " +
@@ -17,7 +18,7 @@ public interface MedicationMapper {
             @Result(property = "name", column = "medication_name"),
             @Result(property = "description", column = "medication_description")
     })
-    Medication findById(long id);
+    Optional<Medication> findById(long id);
 
     @Select("SELECT * FROM medications")
     @Results({

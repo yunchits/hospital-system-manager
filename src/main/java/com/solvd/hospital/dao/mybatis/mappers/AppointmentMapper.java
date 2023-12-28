@@ -4,6 +4,7 @@ import com.solvd.hospital.entities.Appointment;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AppointmentMapper {
     @Insert("INSERT INTO appointments (patient_id, doctor_id, appointment_datetime) " +
@@ -18,7 +19,7 @@ public interface AppointmentMapper {
             @Result(property = "doctor", column = "doctor_id", one = @One(select = "com.solvd.hospital.dao.mybatis.mappers.DoctorMapper.findById")),
             @Result(property = "appointmentDateTime", column = "appointment_datetime")
     })
-    Appointment findById(long id);
+    Optional<Appointment> findById(long id);
 
     @Select("SELECT * FROM appointments")
     @Results({

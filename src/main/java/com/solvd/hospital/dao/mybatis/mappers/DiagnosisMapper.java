@@ -11,14 +11,6 @@ public interface DiagnosisMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void create(Diagnosis diagnosis);
 
-    @Select("SELECT * FROM diagnoses WHERE id = #{id}")
-    @Results({
-            @Result(property = "id", column = "id"),
-            @Result(property = "name", column = "diagnosis_name"),
-            @Result(property = "description", column = "diagnosis_description")
-    })
-    Diagnosis findById(long id);
-
     @Select("SELECT * FROM diagnoses")
     @Results({
             @Result(property = "id", column = "id"),
@@ -26,6 +18,14 @@ public interface DiagnosisMapper {
             @Result(property = "description", column = "diagnosis_description")
     })
     List<Diagnosis> findAll();
+
+    @Select("SELECT * FROM diagnoses WHERE id = #{id}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "diagnosis_name"),
+            @Result(property = "description", column = "diagnosis_description")
+    })
+    Optional<Diagnosis> findById(long id);
 
     @Select("SELECT * FROM diagnoses WHERE diagnosis_name = #{name}")
     @Results({

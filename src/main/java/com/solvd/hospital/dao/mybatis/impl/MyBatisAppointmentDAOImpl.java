@@ -31,7 +31,7 @@ public class MyBatisAppointmentDAOImpl implements AppointmentDAO {
     public Optional<Appointment> findById(long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             AppointmentMapper appointmentMapper = session.getMapper(AppointmentMapper.class);
-            return Optional.ofNullable(appointmentMapper.findById(id));
+            return appointmentMapper.findById(id);
         }
     }
 

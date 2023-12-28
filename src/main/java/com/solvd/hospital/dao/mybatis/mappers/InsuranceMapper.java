@@ -31,7 +31,7 @@ public interface InsuranceMapper {
             @Result(property = "type", column = "type"),
             @Result(property = "insuranceProvider", column = "insurance_provider")
     })
-    Insurance findById(long id);
+    Optional<Insurance> findById(long id);
 
 
     @Update("UPDATE patient_insurances SET policy_number = #{policyNumber}, expiration_date = #{expirationDate}, " +

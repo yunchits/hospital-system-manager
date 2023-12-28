@@ -47,7 +47,7 @@ public class MyBatisHospitalizationDAOImpl implements HospitalizationDAO {
     public Optional<Hospitalization> findById(long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             HospitalizationMapper hospitalizationMapper = session.getMapper(HospitalizationMapper.class);
-            return Optional.ofNullable(hospitalizationMapper.findById(id));
+            return hospitalizationMapper.findById(id);
         }
     }
 

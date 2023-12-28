@@ -4,6 +4,7 @@ import com.solvd.hospital.entities.doctor.Doctor;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface DoctorMapper {
     @Insert("INSERT INTO doctors (first_name, last_name, specialization, user_id) " +
@@ -19,7 +20,7 @@ public interface DoctorMapper {
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "specialization", column = "specialization")
     })
-    Doctor findById(long id);
+    Optional<Doctor> findById(long id);
 
     @Select("SELECT * FROM doctors WHERE user_id = #{userId}")
     @Results({
@@ -29,7 +30,7 @@ public interface DoctorMapper {
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "specialization", column = "specialization")
     })
-    Doctor findByUserId(long userId);
+    Optional<Doctor> findByUserId(long userId);
 
     @Select("SELECT * FROM doctors")
     @Results({
