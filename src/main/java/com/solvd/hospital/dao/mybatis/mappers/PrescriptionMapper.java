@@ -17,7 +17,7 @@ public interface PrescriptionMapper {
             @Result(property = "patient", column = "patient_id", one = @One(select = "com.solvd.hospital.dao.mybatis.mappers.PatientMapper.findById")),
             @Result(property = "medication", column = "medication_id", one = @One(select = "com.solvd.hospital.dao.mybatis.mappers.MedicationMapper.findById"))
     })
-    Prescription findById(long id);
+    Prescription findById(long id); //todo Optional everywhre
 
     @Select("SELECT * FROM prescriptions")
     @Results({

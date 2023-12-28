@@ -9,6 +9,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Doctor {
     private long id;
+    private long userId;
     private String firstName;
     private String lastName;
     private String specialization;

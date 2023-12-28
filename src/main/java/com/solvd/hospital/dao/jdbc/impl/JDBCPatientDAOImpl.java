@@ -15,10 +15,11 @@ public class JDBCPatientDAOImpl implements PatientDAO {
 
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
-    private static final String CREATE_PATIENT_QUERY = "INSERT INTO patients (first_name, last_name, birth_date, gender) " +
-            "VALUES (?, ?, ?, ?)";
-    private static final String GET_ALL_PATIENTS_QUERY = "SELECT * FROM patients";
-    private static final String GET_PATIENT_BY_ID_QUERY = "SELECT * FROM patients WHERE id = ?";
+    private static final String CREATE_PATIENT_QUERY = "INSERT INTO patients (first_name, last_name, birth_date, gender, user_id) " +
+            "VALUES (?, ?, ?, ?, ?)";
+    private static final String FIND_ALL_PATIENTS_QUERY = "SELECT * FROM patients";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM patients WHERE id = ?";
+    private static final String FIND_BY_USER_ID_QUERY = "SELECT * FROM patients WHERE user_id = ?";
     private static final String UPDATE_PATIENT_QUERY = "UPDATE patients " +
         "SET first_name = ?, last_name = ?, birth_date = ?, gender = ?  WHERE id = ?";
     private static final String DELETE_PATIENT_BY_ID_QUERY = "DELETE FROM patients WHERE id = ?";
@@ -34,6 +35,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
             statement.setString(2, patient.getLastName());
             statement.setDate(3, Date.valueOf(patient.getBirthDate()));
             statement.setString(4, patient.getGender().name());
+            statement.setLong(5, patient.getUserId());
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
@@ -59,7 +61,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
         List<Patient> patients = new ArrayList<>();
 
         try (ReusableConnection connection = POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(GET_ALL_PATIENTS_QUERY);
+             PreparedStatement statement = connection.prepareStatement(FIND_ALL_PATIENTS_QUERY);
              ResultSet resultSet = statement.executeQuery()) {
 
             while (resultSet.next()) {
@@ -74,21 +76,12 @@ public class JDBCPatientDAOImpl implements PatientDAO {
 
     @Override
     public Optional<Patient> findById(long id) {
-        try (ReusableConnection connection = POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(GET_PATIENT_BY_ID_QUERY)) {
+        return findById(id, FIND_BY_ID_QUERY);
+    }
 
-            statement.setLong(1, id);
-
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return Optional.of(resultSetToPatient(resultSet));
-                }
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return Optional.empty();
+    @Override
+    public Optional<Patient> findByUserId(long userId) {
+        return findById(userId, FIND_BY_USER_ID_QUERY);
     }
 
     @Override
@@ -126,9 +119,28 @@ public class JDBCPatientDAOImpl implements PatientDAO {
         }
     }
 
+    private Optional<Patient> findById(long id, String query) {
+        try (ReusableConnection connection = POOL.getConnection();
+             PreparedStatement statement = connection.prepareStatement(query)) {
+
+            statement.setLong(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return Optional.of(resultSetToPatient(resultSet));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return Optional.empty();
+    }
+
     private Patient resultSetToPatient(ResultSet resultSet) throws SQLException {
         return new Patient()
                 .setId(resultSet.getLong("id"))
+                .setUserId(resultSet.getLong("user_id"))
                 .setFirstName(resultSet.getString("first_name"))
                 .setLastName(resultSet.getString("last_name"))
                 .setBirthDate(resultSet.getDate("birth_date").toLocalDate())

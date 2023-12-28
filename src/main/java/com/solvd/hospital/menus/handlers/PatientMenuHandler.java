@@ -1,5 +1,6 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.patient.Gender;
@@ -39,7 +40,7 @@ public class PatientMenuHandler implements Menu {
 
             switch (choice) {
                 case 1:
-                    LOGGER.info(createPatient());
+                    createPatient();
                     break;
                 case 2:
                     printPatients();
@@ -69,7 +70,19 @@ public class PatientMenuHandler implements Menu {
 
         Gender gender = selectGender();
 
-        return patientService.create(firstName, lastName, date, gender);
+        while (true) {
+            LOGGER.info("Enter Patient's username:");
+            String username = scanner.scanString();
+
+            LOGGER.info("Enter Patient's password:");
+            String password = scanner.scanString();
+
+            try {
+                return patientService.create(firstName, lastName, date, gender, username, password);
+            } catch (EntityAlreadyExistsException e) {
+                LOGGER.info("Please try again with a different username");
+            }
+        }
     }
 
     private void updatePatient() {

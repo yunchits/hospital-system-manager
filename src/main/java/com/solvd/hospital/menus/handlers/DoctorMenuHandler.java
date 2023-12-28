@@ -1,5 +1,6 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.menus.Menu;
@@ -30,7 +31,7 @@ public class DoctorMenuHandler implements Menu {
 
         int choice;
         do {
-            LOGGER.info("Diagnosis Management");
+            LOGGER.info("Doctor Management");
             MenuMessages.printCrudMenuOptions();
 
             choice = scanner.scanInt(0, 4);
@@ -71,7 +72,17 @@ public class DoctorMenuHandler implements Menu {
         LOGGER.info("Enter Salary Payment Date:");
         LocalDate date = scanner.scanLocalDate();
 
-        doctorService.create(firstName, lastName, specialization, salary, date);
+        LOGGER.info("Enter Doctor's username:");
+        String username = scanner.scanString();
+
+        LOGGER.info("Enter Doctor's password:");
+        String password = scanner.scanString();
+
+        try {
+            doctorService.create(firstName, lastName, specialization, salary, date, username, password);
+        } catch (EntityAlreadyExistsException e) {
+            LOGGER.error(e);
+        }
     }
 
     private void updateDoctor() {

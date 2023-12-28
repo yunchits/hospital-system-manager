@@ -36,6 +36,14 @@ public class MyBatisPatientDAOImpl implements PatientDAO {
     }
 
     @Override
+    public Optional<Patient> findByUserId(long userId) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            PatientMapper patientMapper = session.getMapper(PatientMapper.class);
+            return Optional.ofNullable(patientMapper.findByUserId(userId));
+        }
+    }
+
+    @Override
     public List<Patient> findAll() {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             PatientMapper patientMapper = session.getMapper(PatientMapper.class);

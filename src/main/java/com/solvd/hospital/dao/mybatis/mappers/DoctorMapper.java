@@ -6,14 +6,15 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 public interface DoctorMapper {
-    @Insert("INSERT INTO doctors (first_name, last_name, specialization, salary_id) VALUES " +
-            "(#{firstName}, #{lastName}, #{specialization}, #{salary.id})")
+    @Insert("INSERT INTO doctors (first_name, last_name, specialization, salary_id, user_id) " +
+            "VALUES (#{firstName}, #{lastName}, #{specialization}, #{salary.id}, #{userId})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void create(Doctor doctor);
 
     @Select("SELECT * FROM doctors WHERE id = #{id}")
     @Results({
             @Result(property = "id", column = "id"),
+            @Result(property = "userId", column = "user_id"),
             @Result(property = "firstName", column = "first_name"),
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "specialization", column = "specialization"),
@@ -21,9 +22,21 @@ public interface DoctorMapper {
     })
     Doctor findById(long id);
 
+    @Select("SELECT * FROM doctors WHERE user_id = #{userId}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "userId", column = "user_id"),
+            @Result(property = "firstName", column = "first_name"),
+            @Result(property = "lastName", column = "last_name"),
+            @Result(property = "specialization", column = "specialization"),
+            @Result(property = "salary", column = "salary_id", one = @One(select = "com.solvd.hospital.dao.mybatis.mappers.DoctorSalaryMapper.findById"))
+    })
+    Doctor findByUserId(long userId);
+
     @Select("SELECT * FROM doctors")
     @Results({
             @Result(property = "id", column = "id"),
+            @Result(property = "userId", column = "user_id"),
             @Result(property = "firstName", column = "first_name"),
             @Result(property = "lastName", column = "last_name"),
             @Result(property = "specialization", column = "specialization"),

@@ -30,5 +30,6 @@
         <mapper class="com.solvd.hospital.dao.mybatis.mappers.PatientDiagnosisMapper"/>
         <mapper class="com.solvd.hospital.dao.mybatis.mappers.HospitalizationMapper"/>
         <mapper class="com.solvd.hospital.dao.mybatis.mappers.InsuranceMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.UserMapper"/>
     </mappers>
 </configuration>

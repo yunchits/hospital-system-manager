@@ -1,5 +1,6 @@
 package com.solvd.hospital.menus;
 
+import com.solvd.hospital.common.exceptions.AuthenticationException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
@@ -8,6 +9,7 @@ import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.Patient;
+import com.solvd.hospital.entities.user.User;
 import com.solvd.hospital.menus.handlers.PatientMenuHandler;
 import com.solvd.hospital.services.*;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +34,7 @@ public class PatientMenu implements Menu {
     private final PatientDiagnosisService diagnosisService;
     private final HospitalizationService hospitalizationService;
     private final BillService billService;
+    private final UserService userService;
 
     public PatientMenu() {
         this.scanner = new InputScanner();
@@ -43,12 +46,34 @@ public class PatientMenu implements Menu {
         this.diagnosisService = new PatientDiagnosisService();
         this.hospitalizationService = new HospitalizationService();
         this.billService = new BillService();
+        this.userService = new UserService();
     }
 
     @Override
     public void display() {
-        loginOrRegister();
+        int choice;
 
+        LOGGER.info("Patient Menu");
+        LOGGER.info("1 - Login");
+        LOGGER.info("2 - Register");
+        LOGGER.info("0 - Exit");
+
+        choice = scanner.scanInt(0, 2);
+
+        switch (choice) {
+            case 1:
+                login();
+                break;
+            case 2:
+                register();
+                break;
+            case 0:
+                LOGGER.info("Exiting...");
+                break;
+        }
+    }
+
+    private void displayMainMenu() {
         int choice;
         do {
             LOGGER.info("1 - Display My Information");
@@ -95,43 +120,35 @@ public class PatientMenu implements Menu {
         } while (choice != 0);
     }
 
-    private void loginOrRegister() {
-        int choice;
-
-        LOGGER.info("Patient Menu");
-        LOGGER.info("1 - Login");
-        LOGGER.info("2 - Register");
-        LOGGER.info("0 - Exit");
-
-        choice = scanner.scanInt(0, 2);
-
-        switch (choice) {
-            case 1:
-                login();
-                break;
-            case 2:
-                register();
-                break;
-            case 0:
-                LOGGER.info("Exiting...");
-                break;
-        }
-    }
-
     private void login() {
-        LOGGER.info("Enter your personal ID:");
-        int id = scanner.scanPositiveInt();
+        LOGGER.info("Enter your login:");
+        String username = scanner.scanString();
 
+        LOGGER.info("Enter your password:");
+        String password = scanner.scanString();
+
+        User user = null;
         try {
-            this.patient = patientService.findById(id);
-        } catch (EntityNotFoundException e) {
-            LOGGER.error("Patient with this ID doesn't exist, please register first: ");
-            register();
+            user = userService.login(username, password);
+        } catch (AuthenticationException e) {
+            LOGGER.info(e);
+            LOGGER.info("Try again");
+            display();
+        }
+        if (user != null) {
+            try {
+                this.patient = patientService.findByUserId(user.getId());
+                displayMainMenu();
+            } catch (EntityNotFoundException e) {
+                LOGGER.error("Patient with this login doesn't exist");
+                display();
+            }
         }
     }
 
     private void register() {
         this.patient = new PatientMenuHandler().createPatient();
+        displayMainMenu();
     }
 
     private Appointment makeAppointment() {
@@ -318,3 +335,4 @@ public class PatientMenu implements Menu {
         return true;
     }
 }
+

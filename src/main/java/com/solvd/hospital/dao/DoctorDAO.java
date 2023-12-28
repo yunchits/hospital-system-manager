@@ -12,6 +12,8 @@ public interface DoctorDAO {
 
     Optional<Doctor> findById(long id);
 
+    Optional<Doctor> findByUserId(long id);
+
     Doctor update(Doctor doctor);
 
     void delete(long id);

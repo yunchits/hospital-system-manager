@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 @Accessors(chain = true)
 public class Patient {
     private long id;
+    private long userId;
     private String firstName;
     private String lastName;
     private LocalDate birthDate;

@@ -1,12 +1,15 @@
 package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.PatientDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCPatientDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisPatientDAOImpl;
+import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
+import com.solvd.hospital.entities.user.User;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +17,8 @@ import java.util.List;
 public class PatientService {
 
     private final PatientDAO dao;
+
+    private final UserService userService;
 
     public PatientService() {
         switch (AppProperties.getProperty("dao.type")) {
@@ -26,10 +31,19 @@ public class PatientService {
             default:
                 throw new IllegalArgumentException("Invalid DAO type");
         }
+        this.userService = new UserService();
     }
 
-    public Patient create(String firstName, String lastName, LocalDate birthDate, Gender gender) {
+    public Patient create(String firstName,
+                          String lastName,
+                          LocalDate birthDate,
+                          Gender gender,
+                          String username,
+                          String password) throws EntityAlreadyExistsException {
+        User user = userService.register(username, password, Role.PATIENT);
+
         return dao.create(new Patient()
+                .setUserId(user.getId())
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setBirthDate(birthDate)
@@ -46,6 +60,12 @@ public class PatientService {
         );
     }
 
+    public Patient findByUserId(long userId) throws EntityNotFoundException {
+        return dao.findByUserId(userId).orElseThrow(
+                () -> new EntityNotFoundException("Patient with user id: " + userId + " not found")
+        );
+    }
+
     public Patient update(long id, String firstName, String lastName, LocalDate birthDate, Gender gender) throws EntityNotFoundException {
         Patient patient = new Patient();
 
@@ -57,11 +77,12 @@ public class PatientService {
         patient.setBirthDate(birthDate);
         patient.setGender(gender);
 
-        return dao.create(patient);
+        return dao.update(patient);
     }
 
     public void delete(long id) throws EntityNotFoundException {
-        findById(id);
+        Patient patient = findById(id);
         dao.delete(id);
+        userService.delete(patient.getUserId());
     }
 }
