@@ -17,12 +17,16 @@ public class Prescription {
 
     @Override
     public String toString() {
-        return String.format(
-            "%nPrescription [%d] - [%d] Medication:  %s ([%d] Doctor: %s, [%d] Patient: %s)",
-                id,
-                medication.getId(), medication.getName(),
-                doctor.getId(), doctor.getFirstName() + " " + doctor.getLastName(),
-                patient.getId(), patient.getFirstName() + " " + patient.getLastName()
-        );
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.format("%nPrescription [%d] - [%d] Medication: %s (", id, medication.getId(), medication.getName()));
+
+        if (doctor != null) {
+            builder.append(String.format("[%d] Doctor: %s", doctor.getId(), doctor.getFirstName() + " " + doctor.getLastName()));
+        } else {
+            builder.append("[Doctor: null]");
+        }
+
+        builder.append(")");
+        return builder.toString();
     }
 }

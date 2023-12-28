@@ -31,7 +31,7 @@ public class MyBatisPrescriptionDAOImpl implements PrescriptionDAO {
     public Optional<Prescription> findById(long id) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             PrescriptionMapper prescriptionMapper = session.getMapper(PrescriptionMapper.class);
-            return Optional.ofNullable(prescriptionMapper.findById(id));
+            return prescriptionMapper.findById(id);
         }
     }
 

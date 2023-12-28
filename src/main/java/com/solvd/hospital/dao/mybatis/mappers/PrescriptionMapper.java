@@ -4,6 +4,7 @@ import com.solvd.hospital.entities.Prescription;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface PrescriptionMapper {
     @Insert("INSERT INTO prescriptions (doctor_id, patient_id, medication_id) VALUES (#{doctor.id}, #{patient.id}, #{medication.id})")
@@ -17,7 +18,7 @@ public interface PrescriptionMapper {
             @Result(property = "patient", column = "patient_id", one = @One(select = "com.solvd.hospital.dao.mybatis.mappers.PatientMapper.findById")),
             @Result(property = "medication", column = "medication_id", one = @One(select = "com.solvd.hospital.dao.mybatis.mappers.MedicationMapper.findById"))
     })
-    Prescription findById(long id); //todo Optional everywhre
+    Optional<Prescription> findById(long id);
 
     @Select("SELECT * FROM prescriptions")
     @Results({

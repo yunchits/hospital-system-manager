@@ -66,12 +66,6 @@ public class DoctorMenuHandler implements Menu {
         LOGGER.info("Enter Doctor's Specialization:");
         String specialization = scanner.scanString();
 
-        LOGGER.info("Enter Doctor's Salary:");
-        double salary = scanner.scanPositiveDouble();
-
-        LOGGER.info("Enter Salary Payment Date:");
-        LocalDate date = scanner.scanLocalDate();
-
         LOGGER.info("Enter Doctor's username:");
         String username = scanner.scanString();
 
@@ -79,7 +73,7 @@ public class DoctorMenuHandler implements Menu {
         String password = scanner.scanString();
 
         try {
-            doctorService.create(firstName, lastName, specialization, salary, date, username, password);
+            doctorService.create(firstName, lastName, specialization, username, password);
         } catch (EntityAlreadyExistsException e) {
             LOGGER.error(e);
         }
@@ -98,14 +92,8 @@ public class DoctorMenuHandler implements Menu {
         LOGGER.info("Enter Doctor's Specialization:");
         String specialization = scanner.scanString();
 
-        LOGGER.info("Enter Doctor's Salary:");
-        double salary = scanner.scanPositiveDouble();
-
-        LOGGER.info("Enter Salary Payment Date:");
-        LocalDate date = scanner.scanLocalDate();
-
         try {
-            doctorService.update(id, firstName, lastName, specialization, salary, date);
+            doctorService.update(id, firstName, lastName, specialization);
         } catch (EntityNotFoundException e) {
             LOGGER.info("Update failed\n" + e);
         }

@@ -2,11 +2,8 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
-import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.DoctorDAO;
 import com.solvd.hospital.entities.doctor.Doctor;
-import com.solvd.hospital.entities.doctor.DoctorSalary;
-import com.solvd.hospital.services.DoctorSalaryService;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,37 +17,25 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
 
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
-    private static final String CREATE_DOCTOR_QUERY = "INSERT INTO doctors (first_name, last_name, specialization, salary_id, user_id) " +
-        "VALUES (?, ?, ?, ?, ?)";
-    private static final String FIND_ALL_DOCTORS_QUERY =
-        "SELECT d.*, s.id AS salary_id " +
-            "FROM doctors d " +
-            "JOIN doctor_salaries s ON d.salary_id = s.id";
-    private static final String FIND_BY_ID_QUERY =
-        "SELECT d.*, s.id AS salary_id " +
-            "FROM doctors d " +
-            "JOIN doctor_salaries s ON d.salary_id = s.id " +
-            "WHERE d.id = ?";
-    private static final String FIND_BY_USER_ID_QUERY =
-        "SELECT d.*, s.id AS salary_id " +
-            "FROM doctors d " +
-            "JOIN doctor_salaries s ON d.salary_id = s.id " +
-            "WHERE d.user_id = ?";
+    private static final String CREATE_DOCTOR_QUERY = "INSERT INTO doctors (first_name, last_name, specialization, user_id) " +
+            "VALUES (?, ?, ?, ?)";
+    private static final String FIND_ALL_DOCTORS_QUERY = "SELECT * FROM doctors";
+    private static final String FIND_BY_ID_QUERY = "SELECT * FROM doctors WHERE id = ?";
+    private static final String FIND_BY_USER_ID_QUERY = "SELECT * FROM doctors user_id = ?";
     private static final String UPDATE_DOCTOR_QUERY = "UPDATE doctors " +
-        "SET first_name = ?, last_name = ?, specialization = ?, salary_id = ?  WHERE id = ?";
+            "SET first_name = ?, last_name = ?, specialization = ?  WHERE id = ?";
     private static final String DELETE_DOCTOR_BY_ID_QUERY = "DELETE FROM doctors WHERE id = ?";
 
     @Override
     public Doctor create(Doctor doctor) {
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection
-                 .prepareStatement(CREATE_DOCTOR_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+                     .prepareStatement(CREATE_DOCTOR_QUERY, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setString(1, doctor.getFirstName());
             statement.setString(2, doctor.getLastName());
             statement.setString(3, doctor.getSpecialization());
-            statement.setLong(4, doctor.getSalary().getId());
-            statement.setLong(5, doctor.getUserId());
+            statement.setLong(4, doctor.getUserId());
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
@@ -85,8 +70,6 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
 
         } catch (SQLException e) {
             throw new RuntimeException("Error getting all doctors", e);
-        } catch (EntityNotFoundException e) {
-            throw new RuntimeException(e);
         }
         return doctors;
     }
@@ -109,8 +92,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
             statement.setString(1, doctor.getFirstName());
             statement.setString(2, doctor.getLastName());
             statement.setString(3, doctor.getSpecialization());
-            statement.setLong(4, doctor.getSalary().getId());
-            statement.setLong(5, doctor.getId());
+            statement.setLong(4, doctor.getId());
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
@@ -146,8 +128,6 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
                 if (resultSet.next()) {
                     return Optional.of(resultSetToDoctor(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
 
         } catch (SQLException e) {
@@ -156,16 +136,12 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
         return Optional.empty();
     }
 
-    private Doctor resultSetToDoctor(ResultSet resultSet) throws SQLException, EntityNotFoundException {
-        long salaryId = resultSet.getLong("salary_id");
-        DoctorSalary salary = new DoctorSalaryService().findById(salaryId);
-
+    private Doctor resultSetToDoctor(ResultSet resultSet) throws SQLException {
         return new Doctor()
-            .setId(resultSet.getLong("id"))
-            .setUserId(resultSet.getLong("user_id"))
-            .setFirstName(resultSet.getString("first_name"))
-            .setLastName(resultSet.getString("last_name"))
-            .setSpecialization(resultSet.getString("specialization"))
-            .setSalary(salary);
+                .setId(resultSet.getLong("id"))
+                .setUserId(resultSet.getLong("user_id"))
+                .setFirstName(resultSet.getString("first_name"))
+                .setLastName(resultSet.getString("last_name"))
+                .setSpecialization(resultSet.getString("specialization"));
     }
 }

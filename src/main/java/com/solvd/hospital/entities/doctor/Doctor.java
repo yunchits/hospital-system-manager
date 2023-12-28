@@ -13,11 +13,10 @@ public class Doctor {
     private String firstName;
     private String lastName;
     private String specialization;
-    private DoctorSalary salary;
 
     @Override
     public String toString() {
-        return String.format("%nDoctor [%d] - Dr. %s %s (Specialization: %s, Salary: %.2f)",
-            id, firstName, lastName, specialization, salary.getSalary());
+        return String.format("%nDoctor [%d] - Dr. %s %s (Specialization: %s)",
+            id, firstName, lastName, specialization);
     }
 }

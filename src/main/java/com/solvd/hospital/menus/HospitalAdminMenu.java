@@ -24,16 +24,15 @@ public class HospitalAdminMenu implements Menu {
             LOGGER.info("2 - Bills Management");
             LOGGER.info("3 - Diagnosis Management");
             LOGGER.info("4 - Doctors Management");
-            LOGGER.info("5 - Doctor's Salaries Management");
-            LOGGER.info("6 - Hospitalizations Management");
-            LOGGER.info("7 - Medications Management");
-            LOGGER.info("8 - Patients Management");
-            LOGGER.info("9 - Patient's Diagnosis Management");
-            LOGGER.info("10 - Patient Insurances Management");
-            LOGGER.info("11 - Prescriptions Management");
+            LOGGER.info("5 - Hospitalizations Management");
+            LOGGER.info("6 - Medications Management");
+            LOGGER.info("7 - Patients Management");
+            LOGGER.info("8 - Patient's Diagnosis Management");
+            LOGGER.info("9 - Patient Insurances Management");
+            LOGGER.info("10 - Prescriptions Management");
             LOGGER.info("0 - Exit");
 
-            choice = scanner.scanInt(0, 11);
+            choice = scanner.scanInt(0, 10);
 
             switch (choice) {
                 case 1:
@@ -49,24 +48,21 @@ public class HospitalAdminMenu implements Menu {
                     new DoctorMenuHandler().display();
                     break;
                 case 5:
-                    new DoctorSalaryMenuHandler().display();
-                    break;
-                case 6:
                     new HospitalizationMenuHandler().display();
                     break;
-                case 7:
+                case 6:
                     new MedicationMenuHandler().display();
                     break;
-                case 8:
+                case 7:
                     new PatientMenuHandler().display();
                     break;
-                case 9:
+                case 8:
                     new PatientDiagnosisMenuHandler().display();
                     break;
-                case 10:
+                case 9:
                     new InsuranceMenuHandler().display();
                     break;
-                case 11:
+                case 10:
                     new PrescriptionMenuHandler().display();
                     break;
                 case 0:

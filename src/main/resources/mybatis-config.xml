@@ -19,7 +19,6 @@
     </environments>
 
     <mappers>
-        <mapper class="com.solvd.hospital.dao.mybatis.mappers.DoctorSalaryMapper"/>
         <mapper class="com.solvd.hospital.dao.mybatis.mappers.DoctorMapper"/>
         <mapper class="com.solvd.hospital.dao.mybatis.mappers.PatientMapper"/>
         <mapper class="com.solvd.hospital.dao.mybatis.mappers.AppointmentMapper"/>
