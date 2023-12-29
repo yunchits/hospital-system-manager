@@ -6,6 +6,7 @@ import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.BillService;
+import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,6 +57,7 @@ public class BillMenuHandler implements Menu {
     }
 
     private void createBill() {
+        LOGGER.info(new PatientService().findAll());
         LOGGER.info("Enter patient ID:");
         long patientId = scanner.scanPositiveInt();
 
@@ -74,6 +76,7 @@ public class BillMenuHandler implements Menu {
         LOGGER.info("Enter bill ID you want to update:");
         long id = scanner.scanPositiveInt();
 
+        LOGGER.info(new PatientService().findAll());
         LOGGER.info("Enter patient ID:");
         long patientId = scanner.scanPositiveInt();
 

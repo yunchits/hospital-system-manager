@@ -4,7 +4,6 @@ import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
-import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.HospitalizationService;
@@ -40,7 +39,7 @@ public class HospitalizationMenuHandler implements Menu {
 
             switch (choice) {
                 case 1:
-                    LOGGER.info(createHospitalization());
+                    createHospitalization();
                     break;
                 case 2:
                     printHospitalization();
@@ -58,7 +57,7 @@ public class HospitalizationMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    private Hospitalization createHospitalization() {
+    private void createHospitalization() {
         LOGGER.info("Enter Patient ID:");
         long patientId = scanner.scanPositiveInt();
 
@@ -69,11 +68,10 @@ public class HospitalizationMenuHandler implements Menu {
         LocalDate dischargeDate = scanner.scanLocalDate();
 
         try {
-            return hospitalizationService.create(patientId, admissionDate, dischargeDate);
+            LOGGER.info(hospitalizationService.create(patientId, admissionDate, dischargeDate));
         } catch (RelatedEntityNotFound | InvalidArgumentException e) {
             LOGGER.error("Creation failed\n" + e);
         }
-        return null;
     }
 
     private void updateHospitalization() {

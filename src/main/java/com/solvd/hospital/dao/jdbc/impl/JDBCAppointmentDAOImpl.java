@@ -43,7 +43,7 @@ public class JDBCAppointmentDAOImpl implements AppointmentDAO {
 
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Creating patient failed, no rows affected");
+                throw new SQLException("Creating appointments failed, no rows affected");
             }
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {

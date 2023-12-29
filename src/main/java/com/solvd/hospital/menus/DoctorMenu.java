@@ -1,6 +1,9 @@
 package com.solvd.hospital.menus;
 
-import com.solvd.hospital.common.exceptions.*;
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
+import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.InvalidArgumentException;
+import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.entities.Diagnosis;
@@ -9,7 +12,6 @@ import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
-import com.solvd.hospital.entities.user.User;
 import com.solvd.hospital.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,9 +25,8 @@ public class DoctorMenu implements Menu {
 
     private final InputScanner scanner;
 
-    private Doctor doctor;
+    private final Doctor doctor;
 
-    private final DoctorService doctorService;
     private final AppointmentService appointmentService;
     private final DiagnosisService diagnosisService;
     private final PatientDiagnosisService patientDiagnosisService;
@@ -33,15 +34,14 @@ public class DoctorMenu implements Menu {
     private final HospitalizationService hospitalizationService;
     private final PrescriptionService prescriptionService;
     private final MedicationService medicationService;
-    private final UserService userService;
 
     private static final double DIAGNOSIS_COST = 50.0;
     private static final double PRESCRIPTION_COST = 25.0;
     private static final double HOSPITALIZATION_COST = 100.0;
 
-    public DoctorMenu() {
+    public DoctorMenu(Doctor doctor) {
+        this.doctor = doctor;
         this.scanner = new InputScanner();
-        this.doctorService = new DoctorService();
         this.appointmentService = new AppointmentService();
         this.diagnosisService = new DiagnosisService();
         this.patientDiagnosisService = new PatientDiagnosisService();
@@ -49,30 +49,10 @@ public class DoctorMenu implements Menu {
         this.hospitalizationService = new HospitalizationService();
         this.prescriptionService = new PrescriptionService();
         this.medicationService = new MedicationService();
-        this.userService = new UserService();
     }
 
     @Override
     public void display() {
-        int choice;
-
-        LOGGER.info("Doctor Login Menu");
-        LOGGER.info("1 - Login");
-        LOGGER.info("0 - Exit");
-
-        choice = scanner.scanInt(0, 1);
-
-        switch (choice) {
-            case 1:
-                login();
-                break;
-            case 0:
-                LOGGER.info("Exiting...");
-                break;
-        }
-    }
-
-    private void displayMainMenu() {
         int choice;
         do {
             LOGGER.info("1 - Display My Information");
@@ -97,33 +77,6 @@ public class DoctorMenu implements Menu {
                     break;
             }
         } while (choice != 0);
-    }
-
-    private void login() {
-        LOGGER.info("Enter your login:");
-        String username = scanner.scanString();
-
-        LOGGER.info("Enter your password:");
-        String password = scanner.scanString();
-
-        User user = null;
-        try {
-            user = userService.login(username, password);
-        } catch (AuthenticationException e) {
-            LOGGER.info(e);
-            LOGGER.info("Try again");
-            display();
-        }
-
-        if (user != null) {
-            try {
-                this.doctor = doctorService.findByUserId(user.getId());
-                displayMainMenu();
-            } catch (EntityNotFoundException e) {
-                LOGGER.error("Doctor with this login doesn't exist");
-                display();
-            }
-        }
     }
 
     private void displayDoctorInfo() {

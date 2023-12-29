@@ -3,13 +3,12 @@ package com.solvd.hospital.menus.handlers;
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.DoctorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.time.LocalDate;
 
 public class DoctorMenuHandler implements Menu {
 
@@ -56,7 +55,7 @@ public class DoctorMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    private void createDoctor() {
+    public Doctor createDoctor() {
         LOGGER.info("Enter Doctor's First Name:");
         String firstName = scanner.scanName();
 
@@ -66,16 +65,18 @@ public class DoctorMenuHandler implements Menu {
         LOGGER.info("Enter Doctor's Specialization:");
         String specialization = scanner.scanString();
 
-        LOGGER.info("Enter Doctor's username:");
-        String username = scanner.scanString();
+        while (true) {
+            LOGGER.info("Enter Doctor's username:");
+            String username = scanner.scanString();
 
-        LOGGER.info("Enter Doctor's password:");
-        String password = scanner.scanString();
+            LOGGER.info("Enter Doctor's password:");
+            String password = scanner.scanString();
 
-        try {
-            doctorService.create(firstName, lastName, specialization, username, password);
-        } catch (EntityAlreadyExistsException e) {
-            LOGGER.error(e);
+            try {
+                return doctorService.create(firstName, lastName, specialization, username, password);
+            } catch (EntityAlreadyExistsException e) {
+                LOGGER.error(e);
+            }
         }
     }
 

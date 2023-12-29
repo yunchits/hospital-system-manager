@@ -1,6 +1,5 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.solvd.hospital.common.exceptions.DuplicateKeyException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Medication;
@@ -35,7 +34,6 @@ public class PrescriptionMenuHandler implements Menu {
         this.medicationService = new MedicationService();
     }
 
-
     @Override
     public void display() {
         printPrescriptions();
@@ -68,8 +66,8 @@ public class PrescriptionMenuHandler implements Menu {
     }
 
     private Prescription createPrescription() {
-        LOGGER.info("Enter Doctor ID from list:");
         LOGGER.info(doctorService.findAll());
+        LOGGER.info("Enter Doctor ID from list:");
         long doctorId = scanner.scanPositiveInt();
 
         Doctor doctor = null;
@@ -79,8 +77,8 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Wrong Doctor ID");
         }
 
-        LOGGER.info("Enter Patient ID from list:");
         LOGGER.info(patientService.findAll());
+        LOGGER.info("Enter Patient ID from list:");
         long patientId = scanner.scanPositiveInt();
 
         Patient patient = null;
@@ -108,8 +106,8 @@ public class PrescriptionMenuHandler implements Menu {
         LOGGER.info("Enter Prescription ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter Doctor ID from list:");
         LOGGER.info(doctorService.findAll());
+        LOGGER.info("Enter Doctor ID from list:");
         long doctorId = scanner.scanPositiveInt();
 
         Doctor doctor = null;
@@ -119,8 +117,8 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Wrong Doctor ID");
         }
 
-        LOGGER.info("Enter Patient ID from list:");
         LOGGER.info(patientService.findAll());
+        LOGGER.info("Enter Patient ID from list:");
         long patientId = scanner.scanPositiveInt();
 
         Patient patient = null;
@@ -130,8 +128,8 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Patient Doctor ID");
         }
 
-        LOGGER.info("Enter Medication ID from list:");
         LOGGER.info(medicationService.findAll());
+        LOGGER.info("Enter Medication ID from list:");
         long medicationId = scanner.scanPositiveInt();
 
         Medication medication = null;
