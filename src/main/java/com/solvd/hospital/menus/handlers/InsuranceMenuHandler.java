@@ -9,6 +9,7 @@ import com.solvd.hospital.entities.patient.InsuranceType;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.InsuranceService;
+import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -60,6 +61,7 @@ public class InsuranceMenuHandler implements Menu {
     }
 
     private Insurance createHospitalization() {
+        LOGGER.info(new PatientService().findAll());
         LOGGER.info("Enter Patient ID:");
         long id = scanner.scanPositiveInt();
 

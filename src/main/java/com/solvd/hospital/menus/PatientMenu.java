@@ -24,9 +24,8 @@ public class PatientMenu implements Menu {
 
     private final InputScanner scanner;
 
-    private Patient patient;
+    private final Patient patient;
 
-    private final PatientService patientService;
     private final InsuranceService insuranceService;
     private final AppointmentService appointmentService;
     private final DoctorService doctorService;
@@ -34,11 +33,10 @@ public class PatientMenu implements Menu {
     private final PatientDiagnosisService diagnosisService;
     private final HospitalizationService hospitalizationService;
     private final BillService billService;
-    private final UserService userService;
 
-    public PatientMenu() {
+    public PatientMenu(Patient patient) {
+        this.patient = patient;
         this.scanner = new InputScanner();
-        this.patientService = new PatientService();
         this.insuranceService = new InsuranceService();
         this.appointmentService = new AppointmentService();
         this.doctorService = new DoctorService();
@@ -46,34 +44,10 @@ public class PatientMenu implements Menu {
         this.diagnosisService = new PatientDiagnosisService();
         this.hospitalizationService = new HospitalizationService();
         this.billService = new BillService();
-        this.userService = new UserService();
     }
 
     @Override
     public void display() {
-        int choice;
-
-        LOGGER.info("Patient Menu");
-        LOGGER.info("1 - Login");
-        LOGGER.info("2 - Register");
-        LOGGER.info("0 - Exit");
-
-        choice = scanner.scanInt(0, 2);
-
-        switch (choice) {
-            case 1:
-                login();
-                break;
-            case 2:
-                register();
-                break;
-            case 0:
-                LOGGER.info("Exiting...");
-                break;
-        }
-    }
-
-    private void displayMainMenu() {
         int choice;
         do {
             LOGGER.info("1 - Display My Information");
@@ -118,37 +92,6 @@ public class PatientMenu implements Menu {
                     break;
             }
         } while (choice != 0);
-    }
-
-    private void login() {
-        LOGGER.info("Enter your login:");
-        String username = scanner.scanString();
-
-        LOGGER.info("Enter your password:");
-        String password = scanner.scanString();
-
-        User user = null;
-        try {
-            user = userService.login(username, password);
-        } catch (AuthenticationException e) {
-            LOGGER.info(e);
-            LOGGER.info("Try again");
-            display();
-        }
-        if (user != null) {
-            try {
-                this.patient = patientService.findByUserId(user.getId());
-                displayMainMenu();
-            } catch (EntityNotFoundException e) {
-                LOGGER.error("Patient with this login doesn't exist");
-                display();
-            }
-        }
-    }
-
-    private void register() {
-        this.patient = new PatientMenuHandler().createPatient();
-        displayMainMenu();
     }
 
     private void makeAppointment() {

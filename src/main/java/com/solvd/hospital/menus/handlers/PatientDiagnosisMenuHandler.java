@@ -7,6 +7,7 @@ import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.PatientDiagnosisService;
+import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,6 +56,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
     }
 
     private void createAppointment() {
+        LOGGER.info(new PatientService().findAll());
         LOGGER.info("Enter Patient ID:");
         long patientId = scanner.scanPositiveInt();
 
@@ -69,6 +71,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
     }
 
     private void updatePatientDiagnosis() {
+        LOGGER.info(new PatientService().findAll());
         LOGGER.info("Enter Patient ID you want to update:");
         long patientId = scanner.scanPositiveInt();
 
