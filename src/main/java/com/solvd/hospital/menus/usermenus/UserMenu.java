@@ -1,12 +1,14 @@
-package com.solvd.hospital.menus;
+package com.solvd.hospital.menus.usermenus;
 
 import com.solvd.hospital.common.exceptions.AuthenticationException;
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
+import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.handlers.DoctorMenuHandler;
 import com.solvd.hospital.menus.handlers.PatientMenuHandler;
 import com.solvd.hospital.services.DoctorService;
@@ -118,13 +120,88 @@ public class UserMenu implements Menu {
         }
     }
 
-    private void registerPatient() {
-        Patient patient = new PatientMenuHandler().createPatient();
+    public void registerPatient() {
+        if (isDataInSystem()) {
+            registerPatientWithExistingData();
+        } else {
+            registerNewPatient();
+        }
+    }
+
+    private boolean isDataInSystem() {
+        LOGGER.info("Are your data already in the system? (true/false)");
+        return scanner.scanBoolean();
+    }
+
+    private void registerPatientWithExistingData() {
+        LOGGER.info("Enter your personal ID:");
+        int id = scanner.scanPositiveInt();
+
+        LOGGER.info("Enter username:");
+        String username = scanner.scanString();
+
+        LOGGER.info("Enter password:");
+        String password = scanner.scanString();
+
+        try {
+            Patient patient = patientService.findById(id);
+            if (patient.getUserId() != 0) {
+                LOGGER.info("This patient already have user ID");
+                return;
+            }
+
+            User user = userService.register(username, password, Role.PATIENT);
+
+            Patient updatedPatient = patientService.updateUserId(patient.getId(), user.getId());
+            new PatientMenu(updatedPatient).display();
+        } catch (EntityAlreadyExistsException | EntityNotFoundException e) {
+            LOGGER.info("Registration failed\n" + e);
+            display();
+        }
+    }
+
+    private void registerNewPatient() {
+        Patient patient = new PatientMenuHandler().createPatientFromConsole();
         new PatientMenu(patient).display();
     }
 
     private void registerDoctor() {
-        Doctor doctor = new DoctorMenuHandler().createDoctor();
+        if (isDataInSystem()) {
+            registerDoctorWithExistingData();
+        } else {
+            registerNewDoctor();
+        }
+    }
+
+    private void registerDoctorWithExistingData() {
+        LOGGER.info("Enter your personal ID:");
+        int id = scanner.scanPositiveInt();
+
+        LOGGER.info("Enter username:");
+        String username = scanner.scanString();
+
+        LOGGER.info("Enter password:");
+        String password = scanner.scanString();
+
+        try {
+            Doctor doctor = doctorService.findById(id);
+            if (doctor.getUserId() != 0) {
+                LOGGER.info("This doctor already have user ID");
+                return;
+            }
+
+            User user = userService.register(username, password, Role.DOCTOR);
+
+            Doctor updatedDoctor = doctorService.updateUserId(doctor.getId(), user.getId());
+            new DoctorMenu(updatedDoctor).display();
+        } catch (EntityAlreadyExistsException | EntityNotFoundException e) {
+            LOGGER.info("Registration failed\n" + e);
+            display();
+        }
+    }
+
+    private static void registerNewDoctor() {
+        Doctor doctor = new DoctorMenuHandler().createDoctorFromConsole();
         new DoctorMenu(doctor).display();
     }
 }

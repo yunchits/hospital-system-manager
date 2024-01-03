@@ -10,6 +10,11 @@ public interface DoctorMapper {
     @Insert("INSERT INTO doctors (first_name, last_name, specialization, user_id) " +
             "VALUES (#{firstName}, #{lastName}, #{specialization}, #{userId})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
+    void createWithUserId(Doctor doctor);
+
+    @Insert("INSERT INTO doctors (first_name, last_name, specialization) " +
+            "VALUES (#{firstName}, #{lastName}, #{specialization})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     void create(Doctor doctor);
 
     @Select("SELECT * FROM doctors WHERE id = #{id}")
@@ -45,6 +50,9 @@ public interface DoctorMapper {
     @Update("UPDATE doctors SET first_name = #{firstName}, last_name = #{lastName}, " +
             "specialization = #{specialization} WHERE id = #{id}")
     void update(Doctor doctor);
+
+    @Update("UPDATE doctors SET user_id = #{userId} WHERE id = #{id}")
+    void updateUserId(Doctor doctor);
 
     @Delete("DELETE FROM doctors WHERE id = #{id}")
     void delete(long id);

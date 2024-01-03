@@ -18,6 +18,16 @@ public class MyBatisPatientDAOImpl implements PatientDAO {
     }
 
     @Override
+    public Patient createWithUser(Patient patient) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            PatientMapper patientMapper = session.getMapper(PatientMapper.class);
+            patientMapper.createWithUserId(patient);
+            session.commit();
+        }
+        return patient;
+    }
+
+    @Override
     public Patient create(Patient patient) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             PatientMapper patientMapper = session.getMapper(PatientMapper.class);
@@ -56,6 +66,16 @@ public class MyBatisPatientDAOImpl implements PatientDAO {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             PatientMapper patientMapper = session.getMapper(PatientMapper.class);
             patientMapper.update(patient);
+            session.commit();
+        }
+        return patient;
+    }
+
+    @Override
+    public Patient updateUserId(Patient patient) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            PatientMapper patientMapper = session.getMapper(PatientMapper.class);
+            patientMapper.updateUserId(patient);
             session.commit();
         }
         return patient;

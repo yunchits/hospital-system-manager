@@ -27,12 +27,8 @@ public class DoctorSAXHandler extends DefaultHandler {
     public void characters(char[] ch, int start, int length) {
         String value = new String(ch, start, length).trim();
 
-        if (!value.isEmpty()) {
-            if ("id".equals(currentElement)) {
-                currentDoctor.setId(Long.parseLong(value));
-            } else if ("userId".equals(currentElement)) {
-                currentDoctor.setUserId(Long.parseLong(value));
-            } else if ("firstName".equals(currentElement)) {
+        if (!value.isEmpty() && currentDoctor != null) {
+            if ("firstName".equals(currentElement)) {
                 currentDoctor.setFirstName(value);
             } else if ("lastName".equals(currentElement)) {
                 currentDoctor.setLastName(value);

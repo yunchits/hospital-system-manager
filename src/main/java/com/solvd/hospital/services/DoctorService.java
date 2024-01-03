@@ -33,15 +33,24 @@ public class DoctorService {
 
     public Doctor create(String firstName,
                          String lastName,
-                         String specialization,
-                         String username,
-                         String password) throws EntityAlreadyExistsException {
-        User user = userService.register(username, password, Role.DOCTOR);
+                         String specialization) {
         return dao.create(new Doctor()
-                .setUserId(user.getId())
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setSpecialization(specialization));
+    }
+
+    public Doctor createWithUser(String firstName,
+                                 String lastName,
+                                 String specialization,
+                                 String username,
+                                 String password) throws EntityAlreadyExistsException {
+        User user = userService.register(username, password, Role.DOCTOR);
+        return dao.createWithUser(new Doctor()
+            .setUserId(user.getId())
+            .setFirstName(firstName)
+            .setLastName(lastName)
+            .setSpecialization(specialization));
     }
 
     public List<Doctor> findAll() {
@@ -71,6 +80,11 @@ public class DoctorService {
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setSpecialization(specialization));
+    }
+
+    public Doctor updateUserId(long id, long userId) throws EntityNotFoundException {
+        Doctor doctor = findById(id);
+        return dao.updateUserId(doctor.setUserId(userId));
     }
 
     public void delete(long id) throws EntityNotFoundException {

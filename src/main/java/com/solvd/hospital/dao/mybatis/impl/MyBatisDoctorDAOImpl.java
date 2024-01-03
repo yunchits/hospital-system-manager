@@ -18,6 +18,16 @@ public class MyBatisDoctorDAOImpl implements DoctorDAO {
     }
 
     @Override
+    public Doctor createWithUser(Doctor doctor) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            DoctorMapper doctorMapper = session.getMapper(DoctorMapper.class);
+            doctorMapper.createWithUserId(doctor);
+            session.commit();
+        }
+        return doctor;
+    }
+
+    @Override
     public Doctor create(Doctor doctor) {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             DoctorMapper doctorMapper = session.getMapper(DoctorMapper.class);
@@ -56,6 +66,16 @@ public class MyBatisDoctorDAOImpl implements DoctorDAO {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             DoctorMapper doctorMapper = session.getMapper(DoctorMapper.class);
             doctorMapper.update(doctor);
+            session.commit();
+        }
+        return doctor;
+    }
+
+    @Override
+    public Doctor updateUserId(Doctor doctor) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            DoctorMapper doctorMapper = session.getMapper(DoctorMapper.class);
+            doctorMapper.updateUserId(doctor);
             session.commit();
         }
         return doctor;

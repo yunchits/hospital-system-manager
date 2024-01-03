@@ -6,9 +6,13 @@ import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
+import com.solvd.hospital.parser.HospitalSAXParser;
+import com.solvd.hospital.parser.handlers.DoctorSAXHandler;
 import com.solvd.hospital.services.DoctorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 public class DoctorMenuHandler implements Menu {
 
@@ -22,7 +26,6 @@ public class DoctorMenuHandler implements Menu {
         this.scanner = new InputScanner();
         this.doctorService = new DoctorService();
     }
-
 
     @Override
     public void display() {
@@ -55,7 +58,20 @@ public class DoctorMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    public Doctor createDoctor() {
+    private void createDoctor() {
+        LOGGER.info("Choose source for doctor creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file");
+        int choice = scanner.scanInt(1, 2);
+
+        if (choice == 1) {
+            createDoctorFromConsole();
+        } else if (choice == 2) {
+            createDoctorFromXML();
+        }
+    }
+
+    public Doctor createDoctorFromConsole() {
         LOGGER.info("Enter Doctor's First Name:");
         String firstName = scanner.scanName();
 
@@ -73,10 +89,37 @@ public class DoctorMenuHandler implements Menu {
             String password = scanner.scanString();
 
             try {
-                return doctorService.create(firstName, lastName, specialization, username, password);
+                return doctorService.createWithUser(firstName, lastName, specialization, username, password);
             } catch (EntityAlreadyExistsException e) {
                 LOGGER.error(e);
             }
+        }
+    }
+
+    private void createDoctorFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        DoctorSAXHandler doctorSAXHandler = new DoctorSAXHandler();
+        HospitalSAXParser saxParser = new HospitalSAXParser(doctorSAXHandler);
+
+        try {
+            saxParser.parse(xmlFilePath);
+            List<Doctor> doctors = doctorSAXHandler.getDoctors();
+            if (doctors != null && !doctors.isEmpty()) {
+                for (Doctor doctor : doctors) {
+                    doctorService.create(
+                        doctor.getFirstName(),
+                        doctor.getLastName(),
+                        doctor.getSpecialization()
+                    );
+                }
+                LOGGER.info("Doctors created successfully from XML file.");
+            } else {
+                LOGGER.info("No doctors found in the XML file.");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error parsing XML file: " + e.getMessage());
         }
     }
 

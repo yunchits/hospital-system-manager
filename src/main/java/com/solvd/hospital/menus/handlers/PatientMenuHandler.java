@@ -7,11 +7,14 @@ import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
+import com.solvd.hospital.parser.HospitalSAXParser;
+import com.solvd.hospital.parser.handlers.PatientSAXHandler;
 import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class PatientMenuHandler implements Menu {
 
@@ -58,7 +61,20 @@ public class PatientMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    public Patient createPatient() {
+    private void createPatient() {
+        LOGGER.info("Choose source for patient creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file");
+        int choice = scanner.scanInt(1, 2);
+
+        if (choice == 1) {
+            createPatientFromConsole();
+        } else if (choice == 2) {
+            createPatientFromXML();
+        }
+    }
+
+    public Patient createPatientFromConsole() {
         LOGGER.info("Enter Patient's First Name:");
         String firstName = scanner.scanName();
 
@@ -78,10 +94,39 @@ public class PatientMenuHandler implements Menu {
             String password = scanner.scanString();
 
             try {
-                return patientService.create(firstName, lastName, date, gender, username, password);
+                return patientService.createWithUser(firstName, lastName, date, gender, username, password);
             } catch (EntityAlreadyExistsException e) {
                 LOGGER.info("Please try again with a different username");
             }
+        }
+    }
+
+    private void createPatientFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        PatientSAXHandler patientSAXHandler = new PatientSAXHandler();
+        HospitalSAXParser saxParser = new HospitalSAXParser(patientSAXHandler);
+
+        try {
+            saxParser.parse(xmlFilePath);
+            List<Patient> patients = patientSAXHandler.getPatients();
+            if (patients != null && !patients.isEmpty()) {
+                for (Patient patient : patients) {
+                    patientService.create(
+                        patient.getFirstName(),
+                        patient.getLastName(),
+                        patient.getBirthDate(),
+                        patient.getGender()
+                    );
+                }
+                LOGGER.info("Patients created successfully from XML file.");
+            } else {
+                LOGGER.info("No patients found in the XML file.");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error parsing XML file: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

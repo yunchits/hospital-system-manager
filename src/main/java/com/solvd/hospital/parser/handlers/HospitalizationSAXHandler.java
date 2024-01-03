@@ -30,10 +30,8 @@ public class HospitalizationSAXHandler extends DefaultHandler {
     public void characters(char[] ch, int start, int length) {
         String value = new String(ch, start, length).trim();
 
-        if (!value.isEmpty()) {
-            if ("id".equals(currentElement)) {
-                currentHospitalization.setId(Long.parseLong(value));
-            } else if ("patientId".equals(currentElement)) {
+        if (!value.isEmpty() && currentHospitalization != null) {
+            if ("patientId".equals(currentElement)) {
                 currentHospitalization.setPatient(new Patient().setId(Long.parseLong(value)));
             } else if ("admissionDate".equals(currentElement)) {
                 currentHospitalization.setAdmissionDate(LocalDate.parse(value));

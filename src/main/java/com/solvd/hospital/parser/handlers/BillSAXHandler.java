@@ -30,10 +30,8 @@ public class BillSAXHandler extends DefaultHandler {
     public void characters(char[] ch, int start, int length) {
         String value = new String(ch, start, length).trim();
 
-        if (!value.isEmpty()) {
-            if ("id".equals(currentElement)) {
-                currentBill.setId(Long.parseLong(value));
-            } else if ("patientId".equals(currentElement)) {
+        if (!value.isEmpty() && currentBill != null) {
+            if ("patientId".equals(currentElement)) {
                 currentBill.setPatientId(Long.parseLong(value));
             } else if ("amount".equals(currentElement)) {
                 currentBill.setAmount(Double.parseDouble(value));

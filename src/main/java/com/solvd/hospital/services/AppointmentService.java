@@ -35,7 +35,9 @@ public class AppointmentService {
         this.doctorService = new DoctorService();
     }
 
-    public Appointment create(long patientId, long doctorId, LocalDateTime appointmentDateTime) throws EntityNotFoundException, InvalidArgumentException {
+    public Appointment create(long patientId,
+                              long doctorId,
+                              LocalDateTime appointmentDateTime) throws EntityNotFoundException, InvalidArgumentException {
         validateDateTime(appointmentDateTime);
 
         Appointment appointment = new Appointment();

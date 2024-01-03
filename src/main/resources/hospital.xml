@@ -2,8 +2,6 @@
 <hospital xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="hospital.xsd">
     <patients>
         <patient>
-            <id>1</id>
-            <userId>1</userId>
             <firstName>Gary</firstName>
             <lastName>Payton</lastName>
             <birthDate>1985-01-20</birthDate>
@@ -11,8 +9,6 @@
         </patient>
 
         <patient>
-            <id>2</id>
-            <userId>2</userId>
             <firstName>Samanta</firstName>
             <lastName>Rohas</lastName>
             <birthDate>1997-10-01</birthDate>
@@ -20,8 +16,6 @@
         </patient>
 
         <patient>
-            <id>3</id>
-            <userId>3</userId>
             <firstName>Gaby</firstName>
             <lastName>Bush</lastName>
             <birthDate>1998-08-01</birthDate>
@@ -31,24 +25,18 @@
 
     <doctors>
         <doctor>
-            <id>1</id>
-            <userId>4</userId>
             <firstName>Hippocrates</firstName>
             <lastName>Kos</lastName>
             <specialization>Cardiology</specialization>
         </doctor>
 
         <doctor>
-            <id>2</id>
-            <userId>5</userId>
             <firstName>Pergamon</firstName>
             <lastName>Galen</lastName>
             <specialization>Neurologist</specialization>
         </doctor>
 
         <doctor>
-            <id>3</id>
-            <userId>6</userId>
             <firstName>Andrea</firstName>
             <lastName>Vesalio</lastName>
             <specialization>Ophthalmologist</specialization>
@@ -57,25 +45,22 @@
 
     <bills>
         <bill>
-            <id>1</id>
             <patientId>1</patientId>
-            <amount>150.50</amount>
+            <amount>10.50</amount>
             <billingDate>2023-02-20</billingDate>
             <paymentStatus>PAID</paymentStatus>
         </bill>
 
         <bill>
-            <id>2</id>
             <patientId>1</patientId>
-            <amount>150.50</amount>
+            <amount>11.50</amount>
             <billingDate>2023-02-20</billingDate>
             <paymentStatus>UNPAID</paymentStatus>
         </bill>
 
         <bill>
-            <id>3</id>
             <patientId>1</patientId>
-            <amount>150.50</amount>
+            <amount>12.50</amount>
             <billingDate>2023-02-20</billingDate>
             <paymentStatus>UNPAID</paymentStatus>
         </bill>
@@ -83,21 +68,18 @@
 
     <appointments>
         <appointment>
-            <id>1</id>
             <patientId>1</patientId>
             <doctorId>1</doctorId>
             <appointmentDateTime>2024-02-01T12:45:00</appointmentDateTime>
         </appointment>
 
         <appointment>
-            <id>2</id>
             <patientId>2</patientId>
             <doctorId>2</doctorId>
             <appointmentDateTime>2024-02-02T15:00:00</appointmentDateTime>
         </appointment>
 
         <appointment>
-            <id>3</id>
             <patientId>3</patientId>
             <doctorId>3</doctorId>
             <appointmentDateTime>2024-03-05T11:30:00</appointmentDateTime>
@@ -106,21 +88,18 @@
 
     <hospitalizations>
         <hospitalization>
-            <id>1</id>
             <patientId>1</patientId>
             <admissionDate>2024-04-05</admissionDate>
             <dischargeDate>2024-04-15</dischargeDate>
         </hospitalization>
 
         <hospitalization>
-            <id>2</id>
             <patientId>2</patientId>
             <admissionDate>2024-04-10</admissionDate>
             <dischargeDate>2024-04-25</dischargeDate>
         </hospitalization>
 
         <hospitalization>
-            <id>2</id>
             <patientId>3</patientId>
             <admissionDate>2024-05-05</admissionDate>
             <dischargeDate>2024-05-10</dischargeDate>
