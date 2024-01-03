@@ -7,8 +7,8 @@ import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.parser.HospitalSAXParser;
-import com.solvd.hospital.parser.handlers.HospitalizationSAXHandler;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.HospitalizationSAXHandler;
 import com.solvd.hospital.services.HospitalizationService;
 import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
@@ -65,7 +65,7 @@ public class HospitalizationMenuHandler implements Menu {
     private void createHospitalization() {
         LOGGER.info("Choose source for hospitalization creation:");
         LOGGER.info("1 - Console input");
-        LOGGER.info("2 - Read from XML file");
+        LOGGER.info("2 - Read from XML file (SAX)");
         int choice = scanner.scanInt(1, 2);
 
         if (choice == 1) {

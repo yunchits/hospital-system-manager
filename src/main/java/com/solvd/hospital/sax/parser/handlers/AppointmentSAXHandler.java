@@ -1,11 +1,9 @@
-package com.solvd.hospital.parser.handlers;
+package com.solvd.hospital.sax.parser.handlers;
 
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 

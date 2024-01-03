@@ -4,12 +4,21 @@ import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.entities.Hospital;
+import com.solvd.hospital.entities.PatientDiagnosis;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.PatientDiagnosisService;
 import com.solvd.hospital.services.PatientService;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.List;
 
 public class PatientDiagnosisMenuHandler implements Menu {
 
@@ -37,7 +46,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
 
             switch (choice) {
                 case 1:
-                    createAppointment();
+                    createPatientDiagnosis();
                     break;
                 case 2:
                     printPatientDiagnosis();
@@ -55,7 +64,20 @@ public class PatientDiagnosisMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    private void createAppointment() {
+    private void createPatientDiagnosis() {
+        LOGGER.info("Choose source for patient diagnosis creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (JAXB)");
+        int choice = scanner.scanInt(1, 2);
+
+        if (choice == 1) {
+            createPatientDiagnosisFromConsole();
+        } else if (choice == 2) {
+            createMedicationFromXML();
+        }
+    }
+
+    private void createPatientDiagnosisFromConsole() {
         LOGGER.info(new PatientService().findAll());
         LOGGER.info("Enter Patient ID:");
         long patientId = scanner.scanPositiveInt();
@@ -67,6 +89,29 @@ public class PatientDiagnosisMenuHandler implements Menu {
             patientDiagnosisService.create(patientId, diagnosisId);
         } catch (RelatedEntityNotFound | EntityAlreadyExistsException e) {
             LOGGER.error("Creation failed \n" + e);
+        }
+    }
+
+    private void createMedicationFromXML() {
+        LOGGER.info("Enter XML file path for patient diagnoses:");
+        String xmlFilePath = scanner.scanString();
+
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Hospital.class);
+
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+            Hospital hospital = (Hospital) unmarshaller.unmarshal(new FileReader(xmlFilePath));
+
+            List<PatientDiagnosis> patientDiagnoses = hospital.getPatientDiagnoses();
+
+            for (PatientDiagnosis patientDiagnosis : patientDiagnoses) {
+                patientDiagnosisService.create(patientDiagnosis.getPatientId(), patientDiagnosis.getDiagnosis().getId());
+            }
+            LOGGER.info("Patient diagnoses created successfully from XML file.");
+        } catch (JAXBException | FileNotFoundException | RelatedEntityNotFound | EntityAlreadyExistsException e) {
+            e.printStackTrace();
+            LOGGER.info("Creation failed\n" + e);
         }
     }
 

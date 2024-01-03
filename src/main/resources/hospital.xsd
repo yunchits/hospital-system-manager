@@ -8,6 +8,8 @@
                 <xs:element name="bills" type="BillsType"/>
                 <xs:element name="appointments" type="AppointmentsType"/>
                 <xs:element name="hospitalizations" type="HospitalizationsType"/>
+                <xs:element name="medications" type="MedicationsType"/>
+                <xs:element name="patientDiagnoses" type="PatientDiagnosesType"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -95,6 +97,32 @@
     <xs:complexType name="HospitalizationsType">
         <xs:sequence>
             <xs:element name="hospitalization" type="HospitalizationType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MedicationType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MedicationsType">
+        <xs:sequence>
+            <xs:element name="medication" type="MedicationType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PatientDiagnosisType">
+        <xs:sequence>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="diagnosisId" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PatientDiagnosesType">
+        <xs:sequence>
+            <xs:element name="patientDiagnosis" type="PatientDiagnosisType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 </xs:schema>

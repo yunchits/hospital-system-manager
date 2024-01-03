@@ -18,6 +18,7 @@
         <mysql-connector-version>8.2.0</mysql-connector-version>
         <junit-version>5.10.1</junit-version>
         <mybatis-version>3.5.15</mybatis-version>
+        <jaxb-version>4.0.4</jaxb-version>
     </properties>
 
     <dependencies>
@@ -51,6 +52,18 @@
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
             <version>${mybatis-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>${jaxb-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>${jaxb-version}</version>
         </dependency>
 
     </dependencies>

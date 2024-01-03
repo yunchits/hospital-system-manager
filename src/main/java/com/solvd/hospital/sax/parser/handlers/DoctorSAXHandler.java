@@ -1,4 +1,4 @@
-package com.solvd.hospital.parser.handlers;
+package com.solvd.hospital.sax.parser.handlers;
 
 import com.solvd.hospital.entities.doctor.Doctor;
 import lombok.Getter;

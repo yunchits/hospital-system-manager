@@ -6,8 +6,8 @@ import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.parser.HospitalSAXParser;
-import com.solvd.hospital.parser.handlers.DoctorSAXHandler;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.DoctorSAXHandler;
 import com.solvd.hospital.services.DoctorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,7 +61,7 @@ public class DoctorMenuHandler implements Menu {
     private void createDoctor() {
         LOGGER.info("Choose source for doctor creation:");
         LOGGER.info("1 - Console input");
-        LOGGER.info("2 - Read from XML file");
+        LOGGER.info("2 - Read from XML file (SAX)");
         int choice = scanner.scanInt(1, 2);
 
         if (choice == 1) {

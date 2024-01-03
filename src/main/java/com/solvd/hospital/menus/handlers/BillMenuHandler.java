@@ -6,8 +6,8 @@ import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.parser.HospitalSAXParser;
-import com.solvd.hospital.parser.handlers.BillSAXHandler;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.BillSAXHandler;
 import com.solvd.hospital.services.BillService;
 import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
@@ -63,7 +63,7 @@ public class BillMenuHandler implements Menu {
     private void createBill() {
         LOGGER.info("Choose source for bill creation:");
         LOGGER.info("1 - Console input");
-        LOGGER.info("2 - Read from XML file");
+        LOGGER.info("2 - Read from XML file (SAX)");
         int choice = scanner.scanInt(1, 2);
 
         if (choice == 1) {

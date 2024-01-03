@@ -7,8 +7,8 @@ import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.parser.HospitalSAXParser;
-import com.solvd.hospital.parser.handlers.AppointmentSAXHandler;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.AppointmentSAXHandler;
 import com.solvd.hospital.services.AppointmentService;
 import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.PatientService;
@@ -65,7 +65,7 @@ public class AppointmentMenuHandler implements Menu {
     private void createAppointment() {
         LOGGER.info("Choose source for appointment creation:");
         LOGGER.info("1 - Console input");
-        LOGGER.info("2 - Read from XML file");
+        LOGGER.info("2 - Read from XML file (SAX)");
         int choice = scanner.scanInt(1, 2);
 
         if (choice == 1) {
@@ -90,7 +90,7 @@ public class AppointmentMenuHandler implements Menu {
         try {
             appointmentService.create(patientId, doctorId, appointmentDateTime);
         } catch (EntityNotFoundException | InvalidArgumentException e) {
-            LOGGER.error("Creation failed \n" + e);
+            LOGGER.error("Creation failed\n" + e);
         }
     }
 
@@ -113,9 +113,9 @@ public class AppointmentMenuHandler implements Menu {
                         appointment.getAppointmentDateTime()
                     );
                 }
-                LOGGER.info("Appointments created successfully from XML file.");
+                LOGGER.info("Appointments created successfully from XML file");
             } else {
-                LOGGER.info("No appointments found in the XML file.");
+                LOGGER.info("No appointments found in the XML file");
             }
         } catch (Exception e) {
             LOGGER.error("Error parsing XML file: " + e.getMessage());

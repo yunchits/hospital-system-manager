@@ -105,4 +105,33 @@
             <dischargeDate>2024-05-10</dischargeDate>
         </hospitalization>
     </hospitalizations>
+
+    <medications>
+        <medication>
+            <name>Paracetamol</name>
+            <description>Fever reducer</description>
+        </medication>
+
+        <medication>
+            <name>Actonel</name>
+            <description>Treatment of Paget's disease of bone</description>
+        </medication>
+
+        <medication>
+            <name>Cefaclor</name>
+            <description>Antibiotic in the cephalosporin family of antibiotics</description>
+        </medication>
+    </medications>
+
+    <patientDiagnoses>
+        <patientDiagnosis>
+            <patientId>1</patientId>
+            <diagnosisId>3</diagnosisId>
+        </patientDiagnosis>
+
+        <patientDiagnosis>
+            <patientId>3</patientId>
+            <diagnosisId>1</diagnosisId>
+        </patientDiagnosis>
+    </patientDiagnoses>
 </hospital>

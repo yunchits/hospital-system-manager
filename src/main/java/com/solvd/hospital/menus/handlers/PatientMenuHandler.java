@@ -7,8 +7,8 @@ import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.parser.HospitalSAXParser;
-import com.solvd.hospital.parser.handlers.PatientSAXHandler;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.PatientSAXHandler;
 import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -64,7 +64,7 @@ public class PatientMenuHandler implements Menu {
     private void createPatient() {
         LOGGER.info("Choose source for patient creation:");
         LOGGER.info("1 - Console input");
-        LOGGER.info("2 - Read from XML file");
+        LOGGER.info("2 - Read from XML file (SAX)");
         int choice = scanner.scanInt(1, 2);
 
         if (choice == 1) {
