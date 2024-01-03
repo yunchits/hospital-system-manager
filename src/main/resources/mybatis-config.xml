@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <properties resource="application.properties"/>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${jdbc.driver}"/>
+                <property name="url" value="${jdbc.url}"/>
+                <property name="username" value="${jdbc.username}"/>
+                <property name="password" value="${jdbc.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.DoctorMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.PatientMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.AppointmentMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.BillMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.MedicationMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.PrescriptionMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.DiagnosisMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.PatientDiagnosisMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.HospitalizationMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.InsuranceMapper"/>
+        <mapper class="com.solvd.hospital.dao.mybatis.mappers.UserMapper"/>
+    </mappers>
+</configuration>
