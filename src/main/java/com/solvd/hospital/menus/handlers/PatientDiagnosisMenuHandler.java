@@ -78,12 +78,9 @@ public class PatientDiagnosisMenuHandler implements Menu {
     }
 
     private void createPatientDiagnosisFromConsole() {
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter Patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getNewDiagnosisId();
 
-        LOGGER.info("Enter Diagnosis ID:");
-        long diagnosisId = scanner.scanPositiveInt();
+        long diagnosisId = getDiagnosisId();
 
         try {
             patientDiagnosisService.create(patientId, diagnosisId);
@@ -115,21 +112,33 @@ public class PatientDiagnosisMenuHandler implements Menu {
     }
 
     private void updatePatientDiagnosis() {
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter Patient ID you want to update:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info("Enter Diagnosis ID you want to update:");
-        long diagnosisId = scanner.scanPositiveInt();
+        long diagnosisId = getDiagnosisId();
 
-        LOGGER.info("Enter new Diagnosis ID:");
-        long newDiagnosisId = scanner.scanPositiveInt();
+        long newDiagnosisId = getNewDiagnosisId();
 
         try {
             patientDiagnosisService.update(patientId, diagnosisId, newDiagnosisId);
         } catch (RelatedEntityNotFound | EntityAlreadyExistsException e) {
             LOGGER.error("Update failed \n" + e);
         }
+    }
+
+    private long getNewDiagnosisId() {
+        LOGGER.info("Enter new Diagnosis ID:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getDiagnosisId() {
+        LOGGER.info("Enter Diagnosis ID you want to update:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter Patient ID you want to update:");
+        return scanner.scanPositiveInt();
     }
 
     private void deletePatientDiagnosis() {

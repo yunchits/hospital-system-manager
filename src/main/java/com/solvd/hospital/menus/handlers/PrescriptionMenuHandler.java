@@ -87,9 +87,7 @@ public class PrescriptionMenuHandler implements Menu {
     }
 
     private void createPrescriptionFromConsole() {
-        LOGGER.info(doctorService.findAll());
-        LOGGER.info("Enter Doctor ID from list:");
-        long doctorId = scanner.scanPositiveInt();
+        long doctorId = getDoctorId();
 
         Doctor doctor = null;
         try {
@@ -98,9 +96,7 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Wrong Doctor ID");
         }
 
-        LOGGER.info(patientService.findAll());
-        LOGGER.info("Enter Patient ID from list:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
         Patient patient = null;
         try {
@@ -153,9 +149,7 @@ public class PrescriptionMenuHandler implements Menu {
         LOGGER.info("Enter Prescription ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info(doctorService.findAll());
-        LOGGER.info("Enter Doctor ID from list:");
-        long doctorId = scanner.scanPositiveInt();
+        long doctorId = getDoctorId();
 
         Doctor doctor = null;
         try {
@@ -164,9 +158,7 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Wrong Doctor ID");
         }
 
-        LOGGER.info(patientService.findAll());
-        LOGGER.info("Enter Patient ID from list:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
         Patient patient = null;
         try {
@@ -175,9 +167,7 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Patient Doctor ID");
         }
 
-        LOGGER.info(medicationService.findAll());
-        LOGGER.info("Enter Medication ID from list:");
-        long medicationId = scanner.scanPositiveInt();
+        long medicationId = getMedicationId();
 
         Medication medication = null;
         try {
@@ -206,5 +196,23 @@ public class PrescriptionMenuHandler implements Menu {
 
     private void printPrescriptions() {
         LOGGER.info(prescriptionService.findAll());
+    }
+
+    private long getDoctorId() {
+        LOGGER.info(doctorService.findAll());
+        LOGGER.info("Enter Doctor ID from list:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(patientService.findAll());
+        LOGGER.info("Enter Patient ID from list:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getMedicationId() {
+        LOGGER.info(medicationService.findAll());
+        LOGGER.info("Enter Medication ID from list:");
+        return scanner.scanPositiveInt();
     }
 }

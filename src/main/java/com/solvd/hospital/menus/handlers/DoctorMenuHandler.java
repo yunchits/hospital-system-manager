@@ -72,20 +72,17 @@ public class DoctorMenuHandler implements Menu {
     }
 
     public Doctor createDoctorFromConsole() {
-        LOGGER.info("Enter Doctor's First Name:");
-        String firstName = scanner.scanName();
+        String firstName = getFirstName();
 
-        LOGGER.info("Enter Doctor's Last Name:");
-        String lastName = scanner.scanName();
+        String lastName = getLastName();
 
-        LOGGER.info("Enter Doctor's Specialization:");
-        String specialization = scanner.scanString();
+        String specialization = getSpecialization();
 
         while (true) {
-            LOGGER.info("Enter Doctor's username:");
+            LOGGER.info("Enter doctor's username:");
             String username = scanner.scanString();
 
-            LOGGER.info("Enter Doctor's password:");
+            LOGGER.info("Enter doctor's password:");
             String password = scanner.scanString();
 
             try {
@@ -124,23 +121,35 @@ public class DoctorMenuHandler implements Menu {
     }
 
     private void updateDoctor() {
-        LOGGER.info("Enter Doctor ID to update:");
+        LOGGER.info("Enter doctor ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter Doctor's First Name:");
-        String firstName = scanner.scanName();
+        String firstName = getFirstName();
 
-        LOGGER.info("Enter Doctor's Last Name:");
-        String lastName = scanner.scanName();
+        String lastName = getLastName();
 
-        LOGGER.info("Enter Doctor's Specialization:");
-        String specialization = scanner.scanString();
+        String specialization = getSpecialization();
 
         try {
             doctorService.update(id, firstName, lastName, specialization);
         } catch (EntityNotFoundException e) {
             LOGGER.info("Update failed\n" + e);
         }
+    }
+
+    private String getSpecialization() {
+        LOGGER.info("Enter doctor's specialization:");
+        return scanner.scanString();
+    }
+
+    private String getLastName() {
+        LOGGER.info("Enter doctor's last name:");
+        return scanner.scanName();
+    }
+
+    private String getFirstName() {
+        LOGGER.info("Enter doctor's first name:");
+        return scanner.scanName();
     }
 
     private void deleteDoctors() {

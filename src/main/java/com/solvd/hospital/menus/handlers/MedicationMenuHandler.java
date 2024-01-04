@@ -76,11 +76,9 @@ public class MedicationMenuHandler implements Menu {
     }
 
     private void createMedicationFromConsole() {
-        LOGGER.info("Enter medication name:");
-        String name = scanner.scanString();
+        String name = getName();
 
-        LOGGER.info("Enter medication description:");
-        String description = scanner.scanString();
+        String description = getDescription();
 
         medicationService.create(name, description);
     }
@@ -111,11 +109,9 @@ public class MedicationMenuHandler implements Menu {
         LOGGER.info("Enter medication ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter medication name:");
-        String name = scanner.scanString();
+        String name = getName();
 
-        LOGGER.info("Enter medication description:");
-        String description = scanner.scanString();
+        String description = getDescription();
 
         try {
             medicationService.update(id, name, description);
@@ -137,5 +133,15 @@ public class MedicationMenuHandler implements Menu {
 
     private void printMedications() {
         LOGGER.info(medicationService.findAll());
+    }
+
+    private String getDescription() {
+        LOGGER.info("Enter medication description:");
+        return scanner.scanString();
+    }
+
+    private String getName() {
+        LOGGER.info("Enter medication name:");
+        return scanner.scanString();
     }
 }

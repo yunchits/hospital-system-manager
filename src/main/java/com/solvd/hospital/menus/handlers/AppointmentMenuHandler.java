@@ -76,22 +76,34 @@ public class AppointmentMenuHandler implements Menu {
     }
 
     private void createAppointmentFromConsole() {
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info(new DoctorService().findAll());
-        LOGGER.info("Enter doctor ID:");
-        long doctorId = scanner.scanPositiveInt();
+        long doctorId = getDoctorId();
 
-        LOGGER.info("Enter appointment date and time (dd.MM.yyyy HH:mm):");
-        LocalDateTime appointmentDateTime = scanner.scanLocalDateTime();
+        LocalDateTime appointmentDateTime = getLocalDateTime();
 
         try {
             appointmentService.create(patientId, doctorId, appointmentDateTime);
         } catch (EntityNotFoundException | InvalidArgumentException e) {
             LOGGER.error("Creation failed\n" + e);
         }
+    }
+
+    private LocalDateTime getLocalDateTime() {
+        LOGGER.info("Enter appointment date and time (dd.MM.yyyy HH:mm):");
+        return scanner.scanLocalDateTime();
+    }
+
+    private long getDoctorId() {
+        LOGGER.info(new DoctorService().findAll());
+        LOGGER.info("Enter doctor ID:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter patient ID:");
+        return scanner.scanPositiveInt();
     }
 
     private void createAppointmentFromXML() {
@@ -126,13 +138,9 @@ public class AppointmentMenuHandler implements Menu {
         LOGGER.info("Enter appointment ID you want to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info(new DoctorService().findAll());
-        LOGGER.info("Enter doctor ID:");
-        long doctorId = scanner.scanPositiveInt();
+        long doctorId = getDoctorId();
 
         LOGGER.info("Enter appointment date and time:");
         LocalDateTime appointmentDateTime = scanner.scanLocalDateTime();

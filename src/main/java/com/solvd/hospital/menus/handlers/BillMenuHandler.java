@@ -74,19 +74,31 @@ public class BillMenuHandler implements Menu {
     }
 
     private void createBillFromConsole() {
-        printPatients();
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info("Enter billing amount:");
-        double amount = scanner.scanPositiveDouble();
+        double amount = getAmount();
 
-        LOGGER.info("Enter billing date:");
-        LocalDate billingDate = scanner.scanLocalDate();
+        LocalDate billingDate = getLocalDate();
 
         PaymentStatus status = selectPaymentStatus();
 
         billService.create(patientId, amount, billingDate, status);
+    }
+
+    private LocalDate getLocalDate() {
+        LOGGER.info("Enter billing date:");
+        return scanner.scanLocalDate();
+    }
+
+    private double getAmount() {
+        LOGGER.info("Enter billing amount:");
+        return scanner.scanPositiveDouble();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter patient ID:");
+        return scanner.scanPositiveInt();
     }
 
     private void createBillFromXML() {
@@ -121,15 +133,11 @@ public class BillMenuHandler implements Menu {
         LOGGER.info("Enter bill ID you want to update:");
         long id = scanner.scanPositiveInt();
 
-        printPatients();
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info("Enter billing amount:");
-        double amount = scanner.scanPositiveDouble();
+        double amount = getAmount();
 
-        LOGGER.info("Enter billing date:");
-        LocalDate billingDate = scanner.scanLocalDate();
+        LocalDate billingDate = getLocalDate();
 
         PaymentStatus status = selectPaymentStatus();
 
@@ -164,9 +172,5 @@ public class BillMenuHandler implements Menu {
 
     private void printBills() {
         LOGGER.info(billService.findAll());
-    }
-
-    private static void printPatients() {
-        LOGGER.info(new PatientService().findAll());
     }
 }

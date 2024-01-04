@@ -81,23 +81,17 @@ public class InsuranceMenuHandler implements Menu {
     }
 
     private void createInsuranceFromConsole() {
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter patient ID:");
-        long id = scanner.scanPositiveInt();
+        long id = getId();
 
-        LOGGER.info("Enter policy number:");
-        String policyNumber = scanner.scanString();
+        String policyNumber = getPolicyNumber();
 
-        LOGGER.info("Enter insurance expiration date (dd.MM.yyyy):");
-        LocalDate expirationDate = scanner.scanLocalDate();
+        LocalDate expirationDate = getExpirationDate();
 
-        LOGGER.info("Enter coverage amount:");
-        double coverageAmount = scanner.scanPositiveDouble();
+        double coverageAmount = getCoverageAmount();
 
         InsuranceType type = selectInsuranceType();
 
-        LOGGER.info("Enter insurance provider:");
-        String insuranceProvider = scanner.scanString();
+        String insuranceProvider = getProvider();
 
         try {
             insuranceService.create(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
@@ -141,19 +135,15 @@ public class InsuranceMenuHandler implements Menu {
         LOGGER.info("Enter patient ID to update insurance:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter policy number:");
-        String policyNumber = scanner.scanString();
+        String policyNumber = getPolicyNumber();
 
-        LOGGER.info("Enter insurance expiration date (dd.MM.yyyy):");
-        LocalDate expirationDate = scanner.scanLocalDate();
+        LocalDate expirationDate = getExpirationDate();
 
-        LOGGER.info("Enter coverage amount:");
-        double coverageAmount = scanner.scanPositiveDouble();
+        double coverageAmount = getCoverageAmount();
 
         InsuranceType type = selectInsuranceType();
 
-        LOGGER.info("Enter insurance provider:");
-        String insuranceProvider = scanner.scanString();
+        String insuranceProvider = getProvider();
 
         try {
             insuranceService.update(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
@@ -187,5 +177,30 @@ public class InsuranceMenuHandler implements Menu {
         int choice = scanner.scanInt(0, values.length);
 
         return values[choice];
+    }
+    private String getProvider() {
+        LOGGER.info("Enter insurance provider:");
+        return scanner.scanString();
+    }
+
+    private double getCoverageAmount() {
+        LOGGER.info("Enter coverage amount:");
+        return scanner.scanPositiveDouble();
+    }
+
+    private LocalDate getExpirationDate() {
+        LOGGER.info("Enter insurance expiration date (dd.MM.yyyy):");
+        return scanner.scanLocalDate();
+    }
+
+    private String getPolicyNumber() {
+        LOGGER.info("Enter policy number:");
+        return scanner.scanString();
+    }
+
+    private long getId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter patient ID:");
+        return scanner.scanPositiveInt();
     }
 }

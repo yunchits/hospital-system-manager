@@ -76,15 +76,11 @@ public class HospitalizationMenuHandler implements Menu {
     }
 
     private void createHospitalizationFromConsole() {
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info("Enter admission date (dd.MM.yyyy):");
-        LocalDate admissionDate = scanner.scanLocalDate();
+        LocalDate admissionDate = getAdmissionDate();
 
-        LOGGER.info("Enter discharge date (dd.MM.yyyy):");
-        LocalDate dischargeDate = scanner.scanLocalDate();
+        LocalDate dischargeDate = getDischargeDate();
 
         try {
             hospitalizationService.create(patientId, admissionDate, dischargeDate);
@@ -124,14 +120,11 @@ public class HospitalizationMenuHandler implements Menu {
         LOGGER.info("Enter hospitalization ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info("Enter admission date (dd.MM.yyyy):");
-        LocalDate admissionDate = scanner.scanLocalDate();
+        LocalDate admissionDate = getAdmissionDate();
 
-        LOGGER.info("Enter discharge date (dd.MM.yyyy):");
-        LocalDate dischargeDate = scanner.scanLocalDate();
+        LocalDate dischargeDate = getDischargeDate();
 
         try {
             hospitalizationService.update(id, patientId, admissionDate, dischargeDate);
@@ -149,6 +142,22 @@ public class HospitalizationMenuHandler implements Menu {
         } catch (EntityNotFoundException e) {
             LOGGER.error("Delete failed \n" + e);
         }
+    }
+
+    private LocalDate getDischargeDate() {
+        LOGGER.info("Enter discharge date (dd.MM.yyyy):");
+        return scanner.scanLocalDate();
+    }
+
+    private LocalDate getAdmissionDate() {
+        LOGGER.info("Enter admission date (dd.MM.yyyy):");
+        return scanner.scanLocalDate();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter patient ID:");
+        return scanner.scanPositiveInt();
     }
 
     private void printHospitalization() {

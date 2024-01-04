@@ -75,22 +75,19 @@ public class PatientMenuHandler implements Menu {
     }
 
     public Patient createPatientFromConsole() {
-        LOGGER.info("Enter Patient's First Name:");
-        String firstName = scanner.scanName();
+        String firstName = getFirstName();
 
-        LOGGER.info("Enter Patient's Last Name:");
-        String lastName = scanner.scanName();
+        String lastName = getLastName();
 
-        LOGGER.info("Enter Patient's birth date: ");
-        LocalDate date = scanner.scanLocalDate();
+        LocalDate date = getLocalDate();
 
         Gender gender = selectGender();
 
         while (true) {
-            LOGGER.info("Enter Patient's username:");
+            LOGGER.info("Enter patient's username:");
             String username = scanner.scanString();
 
-            LOGGER.info("Enter Patient's password:");
+            LOGGER.info("Enter patient's password:");
             String password = scanner.scanString();
 
             try {
@@ -126,22 +123,18 @@ public class PatientMenuHandler implements Menu {
             }
         } catch (Exception e) {
             LOGGER.error("Error parsing XML file: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     private void updatePatient() {
-        LOGGER.info("Enter Patient ID to update:");
+        LOGGER.info("Enter patient ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter Patient's First Name:");
-        String firstName = scanner.scanName();
+        String firstName = getFirstName();
 
-        LOGGER.info("Enter Patient's Last Name:");
-        String lastName = scanner.scanName();
+        String lastName = getLastName();
 
-        LOGGER.info("Enter Patient's birth date: ");
-        LocalDate date = scanner.scanLocalDate();
+        LocalDate date = getLocalDate();
 
         Gender gender = selectGender();
 
@@ -177,5 +170,20 @@ public class PatientMenuHandler implements Menu {
 
     private void printPatients() {
         LOGGER.info(patientService.findAll());
+    }
+
+    private LocalDate getLocalDate() {
+        LOGGER.info("Enter Patient's birth date (dd.MM.yyyy):");
+        return scanner.scanLocalDate();
+    }
+
+    private String getLastName() {
+        LOGGER.info("Enter patient's last name:");
+        return scanner.scanName();
+    }
+
+    private String getFirstName() {
+        LOGGER.info("Enter patient's first name:");
+        return scanner.scanName();
     }
 }

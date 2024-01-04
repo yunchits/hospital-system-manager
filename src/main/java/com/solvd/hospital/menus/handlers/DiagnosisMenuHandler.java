@@ -75,7 +75,7 @@ public class DiagnosisMenuHandler implements Menu {
     }
 
     private void createDiagnosisFromConsole() {
-        LOGGER.info("Enter diagnosis name: ");
+        LOGGER.info("Enter diagnosis name:");
         String name = scanner.scanString();
 
         LOGGER.info("Enter diagnosis description:");
