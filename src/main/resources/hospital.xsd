@@ -9,7 +9,10 @@
                 <xs:element name="appointments" type="AppointmentsType"/>
                 <xs:element name="hospitalizations" type="HospitalizationsType"/>
                 <xs:element name="medications" type="MedicationsType"/>
+                <xs:element name="diagnoses" type="DiagnosesType"/>
                 <xs:element name="patientDiagnoses" type="PatientDiagnosesType"/>
+                <xs:element name="insurances" type="InsurancesType"/>
+                <xs:element name="prescriptions" type="PrescriptionsType"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -113,6 +116,19 @@
         </xs:sequence>
     </xs:complexType>
 
+    <xs:complexType name="DiagnosisType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DiagnosesType">
+        <xs:sequence>
+            <xs:element name="diagnosis" type="DiagnosisType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
     <xs:complexType name="PatientDiagnosisType">
         <xs:sequence>
             <xs:element name="patientId" type="xs:long"/>
@@ -123,6 +139,45 @@
     <xs:complexType name="PatientDiagnosesType">
         <xs:sequence>
             <xs:element name="patientDiagnosis" type="PatientDiagnosisType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InsuranceType">
+        <xs:sequence>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="policyNumber" type="xs:string"/>
+            <xs:element name="expirationDate" type="xs:date"/>
+            <xs:element name="coverageAmount" type="xs:decimal"/>
+            <xs:element name="type" type="InsuranceTypeType"/>
+            <xs:element name="insuranceProvider" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="InsuranceTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="HEALTH"/>
+            <xs:enumeration value="DENTAL"/>
+            <xs:enumeration value="VISION"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="InsurancesType">
+        <xs:sequence>
+            <xs:element name="insurance" type="InsuranceType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PrescriptionType">
+        <xs:sequence>
+            <xs:element name="doctorId" type="xs:long"/>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="medicationId" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PrescriptionsType">
+        <xs:sequence>
+            <xs:element name="prescription" type="PrescriptionType" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 </xs:schema>

@@ -1,6 +1,5 @@
 package com.solvd.hospital.entities;
 
-import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 import lombok.Getter;
 import lombok.Setter;

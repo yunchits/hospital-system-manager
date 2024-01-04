@@ -1,6 +1,6 @@
 package com.solvd.hospital.dao.mybatis.mappers;
 
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

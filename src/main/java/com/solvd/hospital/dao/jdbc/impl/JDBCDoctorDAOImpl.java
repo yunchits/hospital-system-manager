@@ -3,7 +3,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
 import com.solvd.hospital.dao.DoctorDAO;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

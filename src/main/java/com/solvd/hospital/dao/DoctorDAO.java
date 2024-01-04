@@ -1,6 +1,6 @@
 package com.solvd.hospital.dao;
 
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 
 import java.util.List;
 import java.util.Optional;

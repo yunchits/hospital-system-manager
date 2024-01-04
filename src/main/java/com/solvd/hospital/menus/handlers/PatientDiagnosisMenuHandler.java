@@ -110,7 +110,6 @@ public class PatientDiagnosisMenuHandler implements Menu {
             }
             LOGGER.info("Patient diagnoses created successfully from XML file.");
         } catch (JAXBException | FileNotFoundException | RelatedEntityNotFound | EntityAlreadyExistsException e) {
-            e.printStackTrace();
             LOGGER.info("Creation failed\n" + e);
         }
     }

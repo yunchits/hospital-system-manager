@@ -8,7 +8,7 @@ import com.solvd.hospital.dao.AppointmentDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCAppointmentDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisAppointmentDAOImpl;
 import com.solvd.hospital.entities.Appointment;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 
 import java.time.LocalDateTime;

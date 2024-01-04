@@ -43,6 +43,7 @@ public class InsuranceService {
         validatePatientExists(id);
 
         return dao.create(new Insurance()
+                .setPatientId(id)
                 .setPolicyNumber(policyNumber)
                 .setExpirationDate(expirationDate)
                 .setCoverageAmount(coverageAmount)

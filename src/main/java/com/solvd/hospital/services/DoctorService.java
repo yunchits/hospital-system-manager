@@ -6,7 +6,7 @@ import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.DoctorDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCDoctorDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisDoctorDAOImpl;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
 

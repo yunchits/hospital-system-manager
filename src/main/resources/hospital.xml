@@ -2,22 +2,22 @@
 <hospital xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="hospital.xsd">
     <patients>
         <patient>
-            <firstName>Gary</firstName>
-            <lastName>Payton</lastName>
+            <firstName>Max</firstName>
+            <lastName>Rose</lastName>
             <birthDate>1985-01-20</birthDate>
             <gender>MALE</gender>
         </patient>
 
         <patient>
-            <firstName>Samanta</firstName>
-            <lastName>Rohas</lastName>
+            <firstName>Daniel</firstName>
+            <lastName>James</lastName>
             <birthDate>1997-10-01</birthDate>
             <gender>FEMALE</gender>
         </patient>
 
         <patient>
-            <firstName>Gaby</firstName>
-            <lastName>Bush</lastName>
+            <firstName>Ellie</firstName>
+            <lastName>Johns</lastName>
             <birthDate>1998-08-01</birthDate>
             <gender>FEMALE</gender>
         </patient>
@@ -25,21 +25,21 @@
 
     <doctors>
         <doctor>
-            <firstName>Hippocrates</firstName>
-            <lastName>Kos</lastName>
+            <firstName>Florence</firstName>
+            <lastName>McKeown</lastName>
             <specialization>Cardiology</specialization>
         </doctor>
 
         <doctor>
-            <firstName>Pergamon</firstName>
-            <lastName>Galen</lastName>
-            <specialization>Neurologist</specialization>
+            <firstName>Jim</firstName>
+            <lastName>Dornan</lastName>
+            <specialization>Obstetrician</specialization>
         </doctor>
 
         <doctor>
-            <firstName>Andrea</firstName>
-            <lastName>Vesalio</lastName>
-            <specialization>Ophthalmologist</specialization>
+            <firstName>Ethel</firstName>
+            <lastName>Browning</lastName>
+            <specialization>Toxicologist</specialization>
         </doctor>
     </doctors>
 
@@ -123,6 +123,24 @@
         </medication>
     </medications>
 
+    <diagnoses>
+        <diagnosis>
+            <name>Migraine</name>
+            <description>Severe headache often accompanied by nausea, vomiting, and sensitivity to light</description>
+        </diagnosis>
+
+        <diagnosis>
+            <name>Diabetes Mellitus</name>
+            <description>Chronic metabolic disorder characterized by elevated blood sugar levels</description>
+        </diagnosis>
+
+        <diagnosis>
+            <name>Respiratory Infection</name>
+            <description>Common infection affecting the respiratory system, leading to cough and difficulty breathing
+            </description>
+        </diagnosis>
+    </diagnoses>
+
     <patientDiagnoses>
         <patientDiagnosis>
             <patientId>1</patientId>
@@ -134,4 +152,37 @@
             <diagnosisId>1</diagnosisId>
         </patientDiagnosis>
     </patientDiagnoses>
+
+    <insurances>
+        <insurance>
+            <patientId>7</patientId>
+            <policyNumber>ABC123</policyNumber>
+            <expirationDate>2025-12-31</expirationDate>
+            <coverageAmount>1000.00</coverageAmount>
+            <type>HEALTH</type>
+            <insuranceProvider>XYZ Insurance</insuranceProvider>
+        </insurance>
+
+        <insurance>
+            <patientId>8</patientId>
+            <policyNumber>CBA321</policyNumber>
+            <expirationDate>2026-12-31</expirationDate>
+            <coverageAmount>10000.00</coverageAmount>
+            <type>DENTAL</type>
+            <insuranceProvider>ABC Insurance</insuranceProvider>
+        </insurance>
+    </insurances>
+    <prescriptions>
+        <prescription>
+            <doctorId>1</doctorId>
+            <patientId>2</patientId>
+            <medicationId>3</medicationId>
+        </prescription>
+
+        <prescription>
+            <doctorId>3</doctorId>
+            <patientId>2</patientId>
+            <medicationId>1</medicationId>
+        </prescription>
+    </prescriptions>
 </hospital>

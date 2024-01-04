@@ -1,7 +1,7 @@
 package com.solvd.hospital.sax.parser.handlers;
 
 import com.solvd.hospital.entities.Appointment;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 import lombok.Getter;
 import org.xml.sax.Attributes;

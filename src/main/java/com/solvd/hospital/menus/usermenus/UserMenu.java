@@ -4,7 +4,7 @@ import com.solvd.hospital.common.exceptions.AuthenticationException;
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;

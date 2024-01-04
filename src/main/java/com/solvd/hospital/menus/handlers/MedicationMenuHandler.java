@@ -101,7 +101,7 @@ public class MedicationMenuHandler implements Menu {
             for (Medication medication : medications) {
                 medicationService.create(medication.getDescription(), medication.getName());
             }
-            LOGGER.info("Medications created successfully from XML file.");
+            LOGGER.info("Medications created successfully from XML file");
         } catch (JAXBException | FileNotFoundException e) {
             LOGGER.info("Creation failed\n" + e);
         }

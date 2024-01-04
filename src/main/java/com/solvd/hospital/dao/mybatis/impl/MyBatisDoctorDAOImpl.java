@@ -2,7 +2,7 @@ package com.solvd.hospital.dao.mybatis.impl;
 
 import com.solvd.hospital.common.MyBatisConfig;
 import com.solvd.hospital.dao.DoctorDAO;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.dao.mybatis.mappers.DoctorMapper;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;

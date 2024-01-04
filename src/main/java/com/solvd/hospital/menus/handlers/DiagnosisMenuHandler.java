@@ -2,11 +2,20 @@ package com.solvd.hospital.menus.handlers;
 
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.entities.Diagnosis;
+import com.solvd.hospital.entities.Hospital;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.DiagnosisService;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.List;
 
 public class DiagnosisMenuHandler implements Menu {
 
@@ -53,6 +62,19 @@ public class DiagnosisMenuHandler implements Menu {
     }
 
     private void createDiagnosis() {
+        LOGGER.info("Choose source for patient diagnosis creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (JAXB)");
+        int choice = scanner.scanInt(1, 2);
+
+        if (choice == 1) {
+            createDiagnosisFromConsole();
+        } else if (choice == 2) {
+            createDiagnosisFromXML();
+        }
+    }
+
+    private void createDiagnosisFromConsole() {
         LOGGER.info("Enter diagnosis name: ");
         String name = scanner.scanString();
 
@@ -60,6 +82,31 @@ public class DiagnosisMenuHandler implements Menu {
         String description = scanner.scanString();
 
         diagnosisService.create(name, description);
+    }
+
+    private void createDiagnosisFromXML() {
+        LOGGER.info("Enter XML file path for diagnoses:");
+        String xmlFilePath = scanner.scanString();
+
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Hospital.class);
+
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+            Hospital hospital = (Hospital) unmarshaller.unmarshal(new FileReader(xmlFilePath));
+
+            List<Diagnosis> diagnoses = hospital.getDiagnoses();
+
+            for (Diagnosis diagnosis : diagnoses) {
+                diagnosisService.create(
+                        diagnosis.getName(),
+                        diagnosis.getDescription()
+                );
+            }
+            LOGGER.info("Diagnoses created successfully from XML file.");
+        } catch (JAXBException | FileNotFoundException e) {
+            LOGGER.info("Creation failed\n" + e);
+        }
     }
 
     private void updateDiagnosis() {
