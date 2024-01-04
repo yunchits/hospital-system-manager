@@ -2,7 +2,7 @@ package com.solvd.hospital.dao.mybatis.impl;
 
 import com.solvd.hospital.common.MyBatisConfig;
 import com.solvd.hospital.dao.DoctorDAO;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.dao.mybatis.mappers.DoctorMapper;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -15,6 +15,16 @@ public class MyBatisDoctorDAOImpl implements DoctorDAO {
 
     public MyBatisDoctorDAOImpl() {
         this.sqlSessionFactory = MyBatisConfig.getSqlSessionFactory();
+    }
+
+    @Override
+    public Doctor createWithUser(Doctor doctor) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            DoctorMapper doctorMapper = session.getMapper(DoctorMapper.class);
+            doctorMapper.createWithUserId(doctor);
+            session.commit();
+        }
+        return doctor;
     }
 
     @Override
@@ -56,6 +66,16 @@ public class MyBatisDoctorDAOImpl implements DoctorDAO {
         try (SqlSession session = sqlSessionFactory.openSession()) {
             DoctorMapper doctorMapper = session.getMapper(DoctorMapper.class);
             doctorMapper.update(doctor);
+            session.commit();
+        }
+        return doctor;
+    }
+
+    @Override
+    public Doctor updateUserId(Doctor doctor) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            DoctorMapper doctorMapper = session.getMapper(DoctorMapper.class);
+            doctorMapper.updateUserId(doctor);
             session.commit();
         }
         return doctor;

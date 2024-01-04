@@ -7,7 +7,7 @@ import com.solvd.hospital.dao.jdbc.impl.JDBCPrescriptionDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisPrescriptionDAOImpl;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.entities.Prescription;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 
 import java.util.List;

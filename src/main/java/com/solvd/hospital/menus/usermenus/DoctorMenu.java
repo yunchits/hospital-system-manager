@@ -1,4 +1,4 @@
-package com.solvd.hospital.menus;
+package com.solvd.hospital.menus.usermenus;
 
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
@@ -10,8 +10,9 @@ import com.solvd.hospital.entities.Diagnosis;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
+import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -6,7 +6,7 @@ import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.DoctorDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCDoctorDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisDoctorDAOImpl;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
 
@@ -33,15 +33,24 @@ public class DoctorService {
 
     public Doctor create(String firstName,
                          String lastName,
-                         String specialization,
-                         String username,
-                         String password) throws EntityAlreadyExistsException {
-        User user = userService.register(username, password, Role.DOCTOR);
+                         String specialization) {
         return dao.create(new Doctor()
-                .setUserId(user.getId())
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setSpecialization(specialization));
+    }
+
+    public Doctor createWithUser(String firstName,
+                                 String lastName,
+                                 String specialization,
+                                 String username,
+                                 String password) throws EntityAlreadyExistsException {
+        User user = userService.register(username, password, Role.DOCTOR);
+        return dao.createWithUser(new Doctor()
+            .setUserId(user.getId())
+            .setFirstName(firstName)
+            .setLastName(lastName)
+            .setSpecialization(specialization));
     }
 
     public List<Doctor> findAll() {
@@ -71,6 +80,11 @@ public class DoctorService {
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setSpecialization(specialization));
+    }
+
+    public Doctor updateUserId(long id, long userId) throws EntityNotFoundException {
+        Doctor doctor = findById(id);
+        return dao.updateUserId(doctor.setUserId(userId));
     }
 
     public void delete(long id) throws EntityNotFoundException {

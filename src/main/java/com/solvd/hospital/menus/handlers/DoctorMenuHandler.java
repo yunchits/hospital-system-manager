@@ -3,12 +3,16 @@ package com.solvd.hospital.menus.handlers;
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.DoctorSAXHandler;
 import com.solvd.hospital.services.DoctorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
 
 public class DoctorMenuHandler implements Menu {
 
@@ -22,7 +26,6 @@ public class DoctorMenuHandler implements Menu {
         this.scanner = new InputScanner();
         this.doctorService = new DoctorService();
     }
-
 
     @Override
     public void display() {
@@ -55,49 +58,98 @@ public class DoctorMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    public Doctor createDoctor() {
-        LOGGER.info("Enter Doctor's First Name:");
-        String firstName = scanner.scanName();
+    private void createDoctor() {
+        LOGGER.info("Choose source for doctor creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (SAX)");
+        int choice = scanner.scanInt(1, 2);
 
-        LOGGER.info("Enter Doctor's Last Name:");
-        String lastName = scanner.scanName();
+        if (choice == 1) {
+            createDoctorFromConsole();
+        } else if (choice == 2) {
+            createDoctorFromXML();
+        }
+    }
 
-        LOGGER.info("Enter Doctor's Specialization:");
-        String specialization = scanner.scanString();
+    public Doctor createDoctorFromConsole() {
+        String firstName = getFirstName();
+
+        String lastName = getLastName();
+
+        String specialization = getSpecialization();
 
         while (true) {
-            LOGGER.info("Enter Doctor's username:");
+            LOGGER.info("Enter doctor's username:");
             String username = scanner.scanString();
 
-            LOGGER.info("Enter Doctor's password:");
+            LOGGER.info("Enter doctor's password:");
             String password = scanner.scanString();
 
             try {
-                return doctorService.create(firstName, lastName, specialization, username, password);
+                return doctorService.createWithUser(firstName, lastName, specialization, username, password);
             } catch (EntityAlreadyExistsException e) {
                 LOGGER.error(e);
             }
         }
     }
 
+    private void createDoctorFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        DoctorSAXHandler doctorSAXHandler = new DoctorSAXHandler();
+        HospitalSAXParser saxParser = new HospitalSAXParser(doctorSAXHandler);
+
+        try {
+            saxParser.parse(xmlFilePath);
+            List<Doctor> doctors = doctorSAXHandler.getDoctors();
+            if (doctors != null && !doctors.isEmpty()) {
+                for (Doctor doctor : doctors) {
+                    doctorService.create(
+                        doctor.getFirstName(),
+                        doctor.getLastName(),
+                        doctor.getSpecialization()
+                    );
+                }
+                LOGGER.info("Doctors created successfully from XML file.");
+            } else {
+                LOGGER.info("No doctors found in the XML file.");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error parsing XML file: " + e.getMessage());
+        }
+    }
+
     private void updateDoctor() {
-        LOGGER.info("Enter Doctor ID to update:");
+        LOGGER.info("Enter doctor ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter Doctor's First Name:");
-        String firstName = scanner.scanName();
+        String firstName = getFirstName();
 
-        LOGGER.info("Enter Doctor's Last Name:");
-        String lastName = scanner.scanName();
+        String lastName = getLastName();
 
-        LOGGER.info("Enter Doctor's Specialization:");
-        String specialization = scanner.scanString();
+        String specialization = getSpecialization();
 
         try {
             doctorService.update(id, firstName, lastName, specialization);
         } catch (EntityNotFoundException e) {
             LOGGER.info("Update failed\n" + e);
         }
+    }
+
+    private String getSpecialization() {
+        LOGGER.info("Enter doctor's specialization:");
+        return scanner.scanString();
+    }
+
+    private String getLastName() {
+        LOGGER.info("Enter doctor's last name:");
+        return scanner.scanName();
+    }
+
+    private String getFirstName() {
+        LOGGER.info("Enter doctor's first name:");
+        return scanner.scanName();
     }
 
     private void deleteDoctors() {

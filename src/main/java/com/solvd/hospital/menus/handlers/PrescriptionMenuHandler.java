@@ -2,9 +2,10 @@ package com.solvd.hospital.menus.handlers;
 
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.entities.Doctor;
+import com.solvd.hospital.entities.Hospital;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.entities.Prescription;
-import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
@@ -12,8 +13,15 @@ import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.MedicationService;
 import com.solvd.hospital.services.PatientService;
 import com.solvd.hospital.services.PrescriptionService;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.List;
 
 public class PrescriptionMenuHandler implements Menu {
 
@@ -47,7 +55,7 @@ public class PrescriptionMenuHandler implements Menu {
 
             switch (choice) {
                 case 1:
-                    LOGGER.info(createPrescription());
+                    createPrescription();
                     break;
                 case 2:
                     printPrescriptions();
@@ -65,10 +73,21 @@ public class PrescriptionMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    private Prescription createPrescription() {
-        LOGGER.info(doctorService.findAll());
-        LOGGER.info("Enter Doctor ID from list:");
-        long doctorId = scanner.scanPositiveInt();
+    private void createPrescription() {
+        LOGGER.info("Choose source for appointment creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (JAXB)");
+        int choice = scanner.scanInt(1, 2);
+
+        if (choice == 1) {
+            createPrescriptionFromConsole();
+        } else if (choice == 2) {
+            createPrescriptionFromXML();
+        }
+    }
+
+    private void createPrescriptionFromConsole() {
+        long doctorId = getDoctorId();
 
         Doctor doctor = null;
         try {
@@ -77,9 +96,7 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Wrong Doctor ID");
         }
 
-        LOGGER.info(patientService.findAll());
-        LOGGER.info("Enter Patient ID from list:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
         Patient patient = null;
         try {
@@ -99,16 +116,40 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Patient Medication ID");
         }
 
-        return prescriptionService.create(doctor, patient, medication);
+        prescriptionService.create(doctor, patient, medication);
+    }
+
+    private void createPrescriptionFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(Hospital.class);
+
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+
+            Hospital hospital = (Hospital) unmarshaller.unmarshal(new FileReader(xmlFilePath));
+
+            List<Prescription> prescriptions = hospital.getPrescriptions();
+
+            for (Prescription prescription : prescriptions) {
+                prescriptionService.create(
+                        prescription.getDoctor(),
+                        prescription.getPatient(),
+                        prescription.getMedication()
+                );
+            }
+            LOGGER.info("Prescription created successfully from XML file");
+        } catch (JAXBException | FileNotFoundException e) {
+            LOGGER.info("Creation failed\n" + e);
+        }
     }
 
     private void updatePrescription() {
         LOGGER.info("Enter Prescription ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info(doctorService.findAll());
-        LOGGER.info("Enter Doctor ID from list:");
-        long doctorId = scanner.scanPositiveInt();
+        long doctorId = getDoctorId();
 
         Doctor doctor = null;
         try {
@@ -117,9 +158,7 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Wrong Doctor ID");
         }
 
-        LOGGER.info(patientService.findAll());
-        LOGGER.info("Enter Patient ID from list:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
         Patient patient = null;
         try {
@@ -128,9 +167,7 @@ public class PrescriptionMenuHandler implements Menu {
             LOGGER.info("Patient Doctor ID");
         }
 
-        LOGGER.info(medicationService.findAll());
-        LOGGER.info("Enter Medication ID from list:");
-        long medicationId = scanner.scanPositiveInt();
+        long medicationId = getMedicationId();
 
         Medication medication = null;
         try {
@@ -159,5 +196,23 @@ public class PrescriptionMenuHandler implements Menu {
 
     private void printPrescriptions() {
         LOGGER.info(prescriptionService.findAll());
+    }
+
+    private long getDoctorId() {
+        LOGGER.info(doctorService.findAll());
+        LOGGER.info("Enter Doctor ID from list:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(patientService.findAll());
+        LOGGER.info("Enter Patient ID from list:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getMedicationId() {
+        LOGGER.info(medicationService.findAll());
+        LOGGER.info("Enter Medication ID from list:");
+        return scanner.scanPositiveInt();
     }
 }

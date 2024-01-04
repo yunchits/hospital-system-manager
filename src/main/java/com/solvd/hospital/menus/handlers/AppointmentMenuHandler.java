@@ -4,8 +4,11 @@ import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.AppointmentSAXHandler;
 import com.solvd.hospital.services.AppointmentService;
 import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.PatientService;
@@ -13,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class AppointmentMenuHandler implements Menu {
 
@@ -59,21 +63,74 @@ public class AppointmentMenuHandler implements Menu {
     }
 
     private void createAppointment() {
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        LOGGER.info("Choose source for appointment creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (SAX)");
+        int choice = scanner.scanInt(1, 2);
 
-        LOGGER.info(new DoctorService().findAll());
-        LOGGER.info("Enter doctor ID:");
-        long doctorId = scanner.scanPositiveInt();
+        if (choice == 1) {
+            createAppointmentFromConsole();
+        } else if (choice == 2) {
+            createAppointmentFromXML();
+        }
+    }
 
-        LOGGER.info("Enter appointment date and time (dd.MM.yyyy HH:mm):");
-        LocalDateTime appointmentDateTime = scanner.scanLocalDateTime();
+    private void createAppointmentFromConsole() {
+        long patientId = getPatientId();
+
+        long doctorId = getDoctorId();
+
+        LocalDateTime appointmentDateTime = getLocalDateTime();
 
         try {
             appointmentService.create(patientId, doctorId, appointmentDateTime);
         } catch (EntityNotFoundException | InvalidArgumentException e) {
-            LOGGER.error("Creation failed \n" + e);
+            LOGGER.error("Creation failed\n" + e);
+        }
+    }
+
+    private LocalDateTime getLocalDateTime() {
+        LOGGER.info("Enter appointment date and time (dd.MM.yyyy HH:mm):");
+        return scanner.scanLocalDateTime();
+    }
+
+    private long getDoctorId() {
+        LOGGER.info(new DoctorService().findAll());
+        LOGGER.info("Enter doctor ID:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter patient ID:");
+        return scanner.scanPositiveInt();
+    }
+
+    private void createAppointmentFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        AppointmentSAXHandler appointmentSAXHandler = new AppointmentSAXHandler();
+        HospitalSAXParser saxParser = new HospitalSAXParser(appointmentSAXHandler);
+
+        try {
+            saxParser.parse(xmlFilePath);
+            List<Appointment> appointments = appointmentSAXHandler.getAppointments();
+            LOGGER.debug(appointments);
+            if (appointments != null && !appointments.isEmpty()) {
+                for (Appointment appointment : appointments) {
+                    appointmentService.create(
+                        appointment.getPatient().getId(),
+                        appointment.getDoctor().getId(),
+                        appointment.getAppointmentDateTime()
+                    );
+                }
+                LOGGER.info("Appointments created successfully from XML file");
+            } else {
+                LOGGER.info("No appointments found in the XML file");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error parsing XML file: " + e.getMessage());
         }
     }
 
@@ -81,13 +138,9 @@ public class AppointmentMenuHandler implements Menu {
         LOGGER.info("Enter appointment ID you want to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info(new DoctorService().findAll());
-        LOGGER.info("Enter doctor ID:");
-        long doctorId = scanner.scanPositiveInt();
+        long doctorId = getDoctorId();
 
         LOGGER.info("Enter appointment date and time:");
         LocalDateTime appointmentDateTime = scanner.scanLocalDateTime();

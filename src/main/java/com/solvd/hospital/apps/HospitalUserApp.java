@@ -1,7 +1,7 @@
 package com.solvd.hospital.apps;
 
 import com.solvd.hospital.menus.Menu;
-import com.solvd.hospital.menus.UserMenu;
+import com.solvd.hospital.menus.usermenus.UserMenu;
 
 public class HospitalUserApp {
 

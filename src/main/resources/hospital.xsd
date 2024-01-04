@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="hospital">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="patients" type="PatientsType"/>
+                <xs:element name="doctors" type="DoctorsType"/>
+                <xs:element name="bills" type="BillsType"/>
+                <xs:element name="appointments" type="AppointmentsType"/>
+                <xs:element name="hospitalizations" type="HospitalizationsType"/>
+                <xs:element name="medications" type="MedicationsType"/>
+                <xs:element name="diagnoses" type="DiagnosesType"/>
+                <xs:element name="patientDiagnoses" type="PatientDiagnosesType"/>
+                <xs:element name="insurances" type="InsurancesType"/>
+                <xs:element name="prescriptions" type="PrescriptionsType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="PatientType">
+        <xs:sequence>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="birthDate" type="xs:date"/>
+            <xs:element name="gender" type="GenderType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="GenderType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MALE"/>
+            <xs:enumeration value="FEMALE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="PatientsType">
+        <xs:sequence>
+            <xs:element name="patient" type="PatientType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DoctorType">
+        <xs:sequence>
+            <xs:element name="firstName" type="xs:string"/>
+            <xs:element name="lastName" type="xs:string"/>
+            <xs:element name="specialization" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DoctorsType">
+        <xs:sequence>
+            <xs:element name="doctor" type="DoctorType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="BillType">
+        <xs:sequence>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="amount" type="xs:double"/>
+            <xs:element name="billingDate" type="xs:date"/>
+            <xs:element name="paymentStatus" type="PaymentStatusType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="PaymentStatusType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PAID"/>
+            <xs:enumeration value="UNPAID"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="BillsType">
+        <xs:sequence>
+            <xs:element name="bill" type="BillType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AppointmentType">
+        <xs:sequence>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="doctorId" type="xs:long"/>
+            <xs:element name="appointmentDateTime" type="xs:dateTime"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AppointmentsType">
+        <xs:sequence>
+            <xs:element name="appointment" type="AppointmentType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="HospitalizationType">
+        <xs:sequence>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="admissionDate" type="xs:date"/>
+            <xs:element name="dischargeDate" type="xs:date"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="HospitalizationsType">
+        <xs:sequence>
+            <xs:element name="hospitalization" type="HospitalizationType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MedicationType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MedicationsType">
+        <xs:sequence>
+            <xs:element name="medication" type="MedicationType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DiagnosisType">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DiagnosesType">
+        <xs:sequence>
+            <xs:element name="diagnosis" type="DiagnosisType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PatientDiagnosisType">
+        <xs:sequence>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="diagnosisId" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PatientDiagnosesType">
+        <xs:sequence>
+            <xs:element name="patientDiagnosis" type="PatientDiagnosisType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="InsuranceType">
+        <xs:sequence>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="policyNumber" type="xs:string"/>
+            <xs:element name="expirationDate" type="xs:date"/>
+            <xs:element name="coverageAmount" type="xs:decimal"/>
+            <xs:element name="type" type="InsuranceTypeType"/>
+            <xs:element name="insuranceProvider" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="InsuranceTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="HEALTH"/>
+            <xs:enumeration value="DENTAL"/>
+            <xs:enumeration value="VISION"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="InsurancesType">
+        <xs:sequence>
+            <xs:element name="insurance" type="InsuranceType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PrescriptionType">
+        <xs:sequence>
+            <xs:element name="doctorId" type="xs:long"/>
+            <xs:element name="patientId" type="xs:long"/>
+            <xs:element name="medicationId" type="xs:long"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PrescriptionsType">
+        <xs:sequence>
+            <xs:element name="prescription" type="PrescriptionType" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

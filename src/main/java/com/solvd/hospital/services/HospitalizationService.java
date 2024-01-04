@@ -92,7 +92,7 @@ public class HospitalizationService {
     }
 
     private static void validateDate(LocalDate admissionDate, LocalDate dischargeDate) throws InvalidArgumentException {
-        if (admissionDate.isAfter(LocalDate.now()) && admissionDate.isBefore(dischargeDate)) {
+        if (admissionDate.isAfter(LocalDate.now()) && dischargeDate.isBefore(admissionDate)) {
             throw new InvalidArgumentException("Admission date and time must be in the future " +
                 "and discharge date must be after admission date");
         }

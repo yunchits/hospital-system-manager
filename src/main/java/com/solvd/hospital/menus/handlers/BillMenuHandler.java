@@ -2,15 +2,19 @@ package com.solvd.hospital.menus.handlers;
 
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.BillSAXHandler;
 import com.solvd.hospital.services.BillService;
 import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class BillMenuHandler implements Menu {
 
@@ -57,34 +61,83 @@ public class BillMenuHandler implements Menu {
     }
 
     private void createBill() {
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        LOGGER.info("Choose source for bill creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (SAX)");
+        int choice = scanner.scanInt(1, 2);
 
-        LOGGER.info("Enter billing amount:");
-        double amount = scanner.scanPositiveDouble();
+        if (choice == 1) {
+            createBillFromConsole();
+        } else if (choice == 2) {
+            createBillFromXML();
+        }
+    }
 
-        LOGGER.info("Enter billing date:");
-        LocalDate billingDate = scanner.scanLocalDate();
+    private void createBillFromConsole() {
+        long patientId = getPatientId();
+
+        double amount = getAmount();
+
+        LocalDate billingDate = getLocalDate();
 
         PaymentStatus status = selectPaymentStatus();
 
         billService.create(patientId, amount, billingDate, status);
     }
 
+    private LocalDate getLocalDate() {
+        LOGGER.info("Enter billing date:");
+        return scanner.scanLocalDate();
+    }
+
+    private double getAmount() {
+        LOGGER.info("Enter billing amount:");
+        return scanner.scanPositiveDouble();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter patient ID:");
+        return scanner.scanPositiveInt();
+    }
+
+    private void createBillFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        BillSAXHandler billSAXHandler = new BillSAXHandler();
+        HospitalSAXParser saxParser = new HospitalSAXParser(billSAXHandler);
+
+        try {
+            saxParser.parse(xmlFilePath);
+            List<Bill> bills = billSAXHandler.getBills();
+            if (bills != null && !bills.isEmpty()) {
+                for (Bill bill : bills) {
+                    billService.create(
+                        bill.getPatientId(),
+                        bill.getAmount(),
+                        bill.getBillingDate(),
+                        bill.getPaymentStatus()
+                    );
+                }
+                LOGGER.info("Bills created successfully from XML file.");
+            } else {
+                LOGGER.info("No bills found in the XML file.");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error parsing XML file: " + e.getMessage());
+        }
+    }
+
     private void updateBill() {
         LOGGER.info("Enter bill ID you want to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info("Enter billing amount:");
-        double amount = scanner.scanPositiveDouble();
+        double amount = getAmount();
 
-        LOGGER.info("Enter billing date:");
-        LocalDate billingDate = scanner.scanLocalDate();
+        LocalDate billingDate = getLocalDate();
 
         PaymentStatus status = selectPaymentStatus();
 

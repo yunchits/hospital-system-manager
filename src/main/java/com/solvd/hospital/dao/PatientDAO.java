@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PatientDAO {
+    Patient createWithUser(Patient patient);
+
     Patient create(Patient patient);
 
     List<Patient> findAll();
@@ -15,6 +17,8 @@ public interface PatientDAO {
     Optional<Patient> findByUserId(long userId);
 
     Patient update(Patient patient);
+
+    Patient updateUserId(Patient patient);
 
     void delete(long id);
 }

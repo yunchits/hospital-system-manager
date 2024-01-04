@@ -4,13 +4,18 @@ import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
+import com.solvd.hospital.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.sax.parser.handlers.HospitalizationSAXHandler;
 import com.solvd.hospital.services.HospitalizationService;
+import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class HospitalizationMenuHandler implements Menu {
 
@@ -58,34 +63,68 @@ public class HospitalizationMenuHandler implements Menu {
     }
 
     private void createHospitalization() {
-        LOGGER.info("Enter Patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        LOGGER.info("Choose source for hospitalization creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (SAX)");
+        int choice = scanner.scanInt(1, 2);
 
-        LOGGER.info("Enter Admission Date:");
-        LocalDate admissionDate = scanner.scanLocalDate();
+        if (choice == 1) {
+            createHospitalizationFromConsole();
+        } else if (choice == 2) {
+            createHospitalizationFromXML();
+        }
+    }
 
-        LOGGER.info("Enter Discharge Date:");
-        LocalDate dischargeDate = scanner.scanLocalDate();
+    private void createHospitalizationFromConsole() {
+        long patientId = getPatientId();
+
+        LocalDate admissionDate = getAdmissionDate();
+
+        LocalDate dischargeDate = getDischargeDate();
 
         try {
-            LOGGER.info(hospitalizationService.create(patientId, admissionDate, dischargeDate));
+            hospitalizationService.create(patientId, admissionDate, dischargeDate);
         } catch (RelatedEntityNotFound | InvalidArgumentException e) {
-            LOGGER.error("Creation failed\n" + e);
+            LOGGER.error("Creation failed \n" + e);
+        }
+    }
+
+    private void createHospitalizationFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        HospitalizationSAXHandler hospitalizationSAXHandler = new HospitalizationSAXHandler();
+        HospitalSAXParser saxParser = new HospitalSAXParser(hospitalizationSAXHandler);
+
+        try {
+            saxParser.parse(xmlFilePath);
+            List<Hospitalization> hospitalizations = hospitalizationSAXHandler.getHospitalizations();
+            if (hospitalizations != null && !hospitalizations.isEmpty()) {
+                for (Hospitalization hospitalization : hospitalizations) {
+                    hospitalizationService.create(
+                        hospitalization.getPatient().getId(),
+                        hospitalization.getAdmissionDate(),
+                        hospitalization.getDischargeDate()
+                    );
+                }
+                LOGGER.info("Hospitalizations created successfully from XML file.");
+            } else {
+                LOGGER.info("No hospitalizations found in the XML file.");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error parsing XML file: " + e.getMessage());
         }
     }
 
     private void updateHospitalization() {
-        LOGGER.info("Enter Hospitalization ID to update:");
+        LOGGER.info("Enter hospitalization ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter Patient ID:");
-        long patientId = scanner.scanPositiveInt();
+        long patientId = getPatientId();
 
-        LOGGER.info("Enter Admission Date:");
-        LocalDate admissionDate = scanner.scanLocalDate();
+        LocalDate admissionDate = getAdmissionDate();
 
-        LOGGER.info("Enter Discharge Date:");
-        LocalDate dischargeDate = scanner.scanLocalDate();
+        LocalDate dischargeDate = getDischargeDate();
 
         try {
             hospitalizationService.update(id, patientId, admissionDate, dischargeDate);
@@ -95,7 +134,7 @@ public class HospitalizationMenuHandler implements Menu {
     }
 
     private void deleteHospitalization() {
-        LOGGER.info("Enter Hospitalization ID you want to delete:");
+        LOGGER.info("Enter hospitalization ID you want to delete:");
         long id = scanner.scanPositiveInt();
 
         try {
@@ -103,6 +142,22 @@ public class HospitalizationMenuHandler implements Menu {
         } catch (EntityNotFoundException e) {
             LOGGER.error("Delete failed \n" + e);
         }
+    }
+
+    private LocalDate getDischargeDate() {
+        LOGGER.info("Enter discharge date (dd.MM.yyyy):");
+        return scanner.scanLocalDate();
+    }
+
+    private LocalDate getAdmissionDate() {
+        LOGGER.info("Enter admission date (dd.MM.yyyy):");
+        return scanner.scanLocalDate();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter patient ID:");
+        return scanner.scanPositiveInt();
     }
 
     private void printHospitalization() {

@@ -34,16 +34,27 @@ public class PatientService {
         this.userService = new UserService();
     }
 
-    public Patient create(String firstName,
-                          String lastName,
-                          LocalDate birthDate,
-                          Gender gender,
-                          String username,
-                          String password) throws EntityAlreadyExistsException {
+    public Patient createWithUser(String firstName,
+                                  String lastName,
+                                  LocalDate birthDate,
+                                  Gender gender,
+                                  String username,
+                                  String password) throws EntityAlreadyExistsException {
         User user = userService.register(username, password, Role.PATIENT);
 
-        return dao.create(new Patient()
+        return dao.createWithUser(new Patient()
                 .setUserId(user.getId())
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setBirthDate(birthDate)
+                .setGender(gender));
+    }
+
+    public Patient create(String firstName,
+                                  String lastName,
+                                  LocalDate birthDate,
+                                  Gender gender) {
+        return dao.create(new Patient()
                 .setFirstName(firstName)
                 .setLastName(lastName)
                 .setBirthDate(birthDate)
@@ -78,6 +89,11 @@ public class PatientService {
         patient.setGender(gender);
 
         return dao.update(patient);
+    }
+
+    public Patient updateUserId(long id, long userId) throws EntityNotFoundException {
+        Patient patient = findById(id);
+        return dao.updateUserId(patient.setUserId(userId));
     }
 
     public void delete(long id) throws EntityNotFoundException {

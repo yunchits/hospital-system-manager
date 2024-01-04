@@ -1,6 +1,5 @@
-package com.solvd.hospital.menus;
+package com.solvd.hospital.menus.usermenus;
 
-import com.solvd.hospital.common.exceptions.AuthenticationException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
@@ -9,8 +8,7 @@ import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.Patient;
-import com.solvd.hospital.entities.user.User;
-import com.solvd.hospital.menus.handlers.PatientMenuHandler;
+import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.services.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
