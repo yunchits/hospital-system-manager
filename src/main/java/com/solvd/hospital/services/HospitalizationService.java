@@ -7,6 +7,7 @@ import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.dao.HospitalizationDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCHospitalizationDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisHospitalizationDAOImpl;
+import com.solvd.hospital.dto.HospitalizationDTO;
 import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.entities.patient.Patient;
 
@@ -47,6 +48,25 @@ public class HospitalizationService {
             .setAdmissionDate(admissionDate)
             .setDischargeDate(dischargeDate));
     }
+
+    public Hospitalization create(HospitalizationDTO hospitalizationDTO) throws RelatedEntityNotFound, InvalidArgumentException {
+        LocalDate admissionDate = hospitalizationDTO.getAdmissionDate();
+        LocalDate dischargeDate = hospitalizationDTO.getDischargeDate();
+        validateDate(admissionDate, dischargeDate);
+
+        Patient patient;
+        try {
+            patient = patientService.findById(hospitalizationDTO.getPatientId());
+        } catch (EntityNotFoundException e) {
+            throw new RelatedEntityNotFound(e.getMessage());
+        }
+
+        return dao.create(new Hospitalization()
+                .setPatient(patient)
+                .setAdmissionDate(admissionDate)
+                .setDischargeDate(dischargeDate));
+    }
+
 
     public List<Hospitalization> findAll() {
         return dao.findAll();

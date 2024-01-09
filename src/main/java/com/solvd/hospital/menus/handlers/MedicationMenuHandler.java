@@ -1,5 +1,6 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Hospital;
@@ -13,8 +14,10 @@ import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 public class MedicationMenuHandler implements Menu {
@@ -66,12 +69,34 @@ public class MedicationMenuHandler implements Menu {
         LOGGER.info("Choose source for appointment creation:");
         LOGGER.info("1 - Console input");
         LOGGER.info("2 - Read from XML file (JAXB)");
-        int choice = scanner.scanInt(1, 2);
+        LOGGER.info("3 - Read from JSON file (jackson)");
+        int choice = scanner.scanInt(1, 3);
 
-        if (choice == 1) {
-            createMedicationFromConsole();
-        } else if (choice == 2) {
-            createMedicationFromXML();
+        switch (choice) {
+            case 1:
+                createMedicationFromConsole();
+                break;
+            case 2:
+                createMedicationFromXML();
+                break;
+            case 3:
+                createMedicationFromJSON();
+                break;
+        }
+    }
+
+    private void createMedicationFromJSON() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            File file = new File("src/main/resources/json/medication.json");
+
+            Medication medication = objectMapper.readValue(file, Medication.class);
+
+            medicationService.create(medication.getName(), medication.getDescription());
+
+        } catch (IOException e) {
+            LOGGER.error("Creation failed\n" + e);
         }
     }
 

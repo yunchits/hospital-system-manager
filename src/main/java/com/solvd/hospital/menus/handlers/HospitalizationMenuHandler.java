@@ -1,9 +1,11 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.dto.HospitalizationDTO;
 import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
@@ -14,6 +16,8 @@ import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -66,12 +70,34 @@ public class HospitalizationMenuHandler implements Menu {
         LOGGER.info("Choose source for hospitalization creation:");
         LOGGER.info("1 - Console input");
         LOGGER.info("2 - Read from XML file (SAX)");
-        int choice = scanner.scanInt(1, 2);
+        LOGGER.info("3 - Read from JSON file (jackson)");
+        int choice = scanner.scanInt(1, 3);
 
-        if (choice == 1) {
-            createHospitalizationFromConsole();
-        } else if (choice == 2) {
-            createHospitalizationFromXML();
+        switch (choice) {
+            case 1:
+                createHospitalizationFromConsole();
+                break;
+            case 2:
+                createHospitalizationFromXML();
+                break;
+            case 3:
+                createHospitalizationFromJSON();
+                break;
+        }
+    }
+
+    private void createHospitalizationFromJSON() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            File file = new File("src/main/resources/json/hospitalization.json");
+
+            HospitalizationDTO hospitalizationDTO = objectMapper.readValue(file, HospitalizationDTO.class);
+
+            hospitalizationService.create(hospitalizationDTO);
+
+        } catch (IOException | InvalidArgumentException | RelatedEntityNotFound e) {
+            LOGGER.error("Creation failed\n" + e);
         }
     }
 
@@ -102,9 +128,9 @@ public class HospitalizationMenuHandler implements Menu {
             if (hospitalizations != null && !hospitalizations.isEmpty()) {
                 for (Hospitalization hospitalization : hospitalizations) {
                     hospitalizationService.create(
-                        hospitalization.getPatient().getId(),
-                        hospitalization.getAdmissionDate(),
-                        hospitalization.getDischargeDate()
+                            hospitalization.getPatient().getId(),
+                            hospitalization.getAdmissionDate(),
+                            hospitalization.getDischargeDate()
                     );
                 }
                 LOGGER.info("Hospitalizations created successfully from XML file.");

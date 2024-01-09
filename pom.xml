@@ -19,6 +19,7 @@
         <junit-version>5.10.1</junit-version>
         <mybatis-version>3.5.15</mybatis-version>
         <jaxb-version>4.0.4</jaxb-version>
+        <jackson-version>2.16.1</jackson-version>
     </properties>
 
     <dependencies>
@@ -64,6 +65,24 @@
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
             <version>${jaxb-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>${jackson-version}</version>
         </dependency>
 
     </dependencies>

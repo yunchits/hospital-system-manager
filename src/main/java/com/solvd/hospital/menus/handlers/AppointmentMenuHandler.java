@@ -1,9 +1,12 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.dto.AppointmentDTO;
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
@@ -15,6 +18,8 @@ import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -66,12 +71,35 @@ public class AppointmentMenuHandler implements Menu {
         LOGGER.info("Choose source for appointment creation:");
         LOGGER.info("1 - Console input");
         LOGGER.info("2 - Read from XML file (SAX)");
-        int choice = scanner.scanInt(1, 2);
+        LOGGER.info("3 - Read from JSON file (jackson)");
+        int choice = scanner.scanInt(1, 3);
 
-        if (choice == 1) {
-            createAppointmentFromConsole();
-        } else if (choice == 2) {
-            createAppointmentFromXML();
+        switch (choice) {
+            case 1:
+                createAppointmentFromConsole();
+                break;
+            case 2:
+                createAppointmentFromXML();
+                break;
+            case 3:
+                createAppointmentFromJSON();
+                break;
+        }
+    }
+
+    private void createAppointmentFromJSON() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        try {
+            File file = new File("src/main/resources/json/appointment.json");
+
+            AppointmentDTO appointmentDTO = objectMapper.readValue(file, AppointmentDTO.class);
+
+            appointmentService.create(appointmentDTO);
+
+        } catch (IOException | InvalidArgumentException | EntityNotFoundException e) {
+            LOGGER.error("Creation failed\n" + e);
         }
     }
 
@@ -120,9 +148,9 @@ public class AppointmentMenuHandler implements Menu {
             if (appointments != null && !appointments.isEmpty()) {
                 for (Appointment appointment : appointments) {
                     appointmentService.create(
-                        appointment.getPatient().getId(),
-                        appointment.getDoctor().getId(),
-                        appointment.getAppointmentDateTime()
+                            appointment.getPatient().getId(),
+                            appointment.getDoctor().getId(),
+                            appointment.getAppointmentDateTime()
                     );
                 }
                 LOGGER.info("Appointments created successfully from XML file");

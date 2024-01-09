@@ -53,6 +53,18 @@ public class DoctorService {
             .setSpecialization(specialization));
     }
 
+    public Doctor createWithUser(String firstName,
+                                 String lastName,
+                                 String specialization,
+                                 long userId) throws EntityNotFoundException {
+        User user = userService.getById(userId);
+        return dao.createWithUser(new Doctor()
+                .setUserId(user.getId())
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setSpecialization(specialization));
+    }
+
     public List<Doctor> findAll() {
         return dao.findAll();
     }

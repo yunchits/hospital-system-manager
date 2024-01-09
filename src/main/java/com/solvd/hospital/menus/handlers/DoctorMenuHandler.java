@@ -1,17 +1,24 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.dto.DoctorDTO;
 import com.solvd.hospital.entities.Doctor;
+import com.solvd.hospital.entities.user.User;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.sax.parser.HospitalSAXParser;
 import com.solvd.hospital.sax.parser.handlers.DoctorSAXHandler;
 import com.solvd.hospital.services.DoctorService;
+import com.solvd.hospital.services.UserService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class DoctorMenuHandler implements Menu {
@@ -62,12 +69,48 @@ public class DoctorMenuHandler implements Menu {
         LOGGER.info("Choose source for doctor creation:");
         LOGGER.info("1 - Console input");
         LOGGER.info("2 - Read from XML file (SAX)");
-        int choice = scanner.scanInt(1, 2);
+        LOGGER.info("3 - Read from JSON file (jackson)");
+        int choice = scanner.scanInt(1, 3);
 
-        if (choice == 1) {
-            createDoctorFromConsole();
-        } else if (choice == 2) {
-            createDoctorFromXML();
+        switch (choice) {
+            case 1:
+                createDoctorFromConsole();
+                break;
+            case 2:
+                createDoctorFromXML();
+                break;
+            case 3:
+                createDoctorFromJSON();
+                break;
+        }
+    }
+
+    private void createDoctorFromJSON() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        try {
+            File file = new File("src/main/resources/json/doctor.json");
+
+            DoctorDTO doctorDTO = objectMapper.readValue(file, DoctorDTO.class);
+
+            User user = doctorDTO.getUser();
+
+            User registered = new UserService().register(
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.getRole()
+            );
+
+            doctorService.createWithUser(
+                    doctorDTO.getFirstName(),
+                    doctorDTO.getLastName(),
+                    doctorDTO.getSpecialization(),
+                    registered.getId()
+            );
+
+        } catch (IOException | EntityNotFoundException | EntityAlreadyExistsException e) {
+            LOGGER.error("Creation failed\n" + e);
         }
     }
 
@@ -106,9 +149,9 @@ public class DoctorMenuHandler implements Menu {
             if (doctors != null && !doctors.isEmpty()) {
                 for (Doctor doctor : doctors) {
                     doctorService.create(
-                        doctor.getFirstName(),
-                        doctor.getLastName(),
-                        doctor.getSpecialization()
+                            doctor.getFirstName(),
+                            doctor.getLastName(),
+                            doctor.getSpecialization()
                     );
                 }
                 LOGGER.info("Doctors created successfully from XML file.");

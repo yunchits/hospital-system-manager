@@ -7,6 +7,7 @@ import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.dao.AppointmentDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCAppointmentDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisAppointmentDAOImpl;
+import com.solvd.hospital.dto.AppointmentDTO;
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
@@ -44,6 +45,22 @@ public class AppointmentService {
 
         Patient patient = patientService.findById(patientId);
         Doctor doctor = doctorService.findById(doctorId);
+        appointment.setPatient(patient);
+        appointment.setDoctor(doctor);
+
+        appointment.setAppointmentDateTime(appointmentDateTime);
+
+        return dao.create(appointment);
+    }
+
+    public Appointment create(AppointmentDTO appointmentDTO) throws EntityNotFoundException, InvalidArgumentException {
+        LocalDateTime appointmentDateTime = appointmentDTO.getAppointmentDateTime();
+        validateDateTime(appointmentDateTime);
+
+        Appointment appointment = new Appointment();
+
+        Patient patient = patientService.findById(appointmentDTO.getPatientId());
+        Doctor doctor = doctorService.findById(appointmentDTO.getDoctorId());
         appointment.setPatient(patient);
         appointment.setDoctor(doctor);
 

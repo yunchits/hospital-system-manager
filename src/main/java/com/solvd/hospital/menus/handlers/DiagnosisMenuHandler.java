@@ -1,5 +1,6 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Diagnosis;
@@ -13,8 +14,10 @@ import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 public class DiagnosisMenuHandler implements Menu {
@@ -65,12 +68,34 @@ public class DiagnosisMenuHandler implements Menu {
         LOGGER.info("Choose source for patient diagnosis creation:");
         LOGGER.info("1 - Console input");
         LOGGER.info("2 - Read from XML file (JAXB)");
-        int choice = scanner.scanInt(1, 2);
+        LOGGER.info("3 - Read from JSON file (jackson)");
+        int choice = scanner.scanInt(1, 3);
 
-        if (choice == 1) {
-            createDiagnosisFromConsole();
-        } else if (choice == 2) {
-            createDiagnosisFromXML();
+        switch (choice) {
+            case 1:
+                createDiagnosisFromConsole();
+                break;
+            case 2:
+                createDiagnosisFromXML();
+                break;
+            case 3:
+                createDiagnosisFromJSON();
+                break;
+        }
+    }
+
+    private void createDiagnosisFromJSON() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            File file = new File("src/main/resources/json/diagnosis.json");
+
+            Diagnosis diagnosis = objectMapper.readValue(file, Diagnosis.class);
+
+            diagnosisService.create(diagnosis.getName(), diagnosis.getDescription());
+
+        } catch (IOException e) {
+            LOGGER.error("Creation failed\n" + e);
         }
     }
 
