@@ -1,5 +1,6 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Doctor;
@@ -112,11 +113,10 @@ public class PrescriptionMenuHandler implements Menu {
         Medication medication = null;
         try {
             medication = medicationService.findById(medicationId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Patient Medication ID");
+            prescriptionService.create(doctor, patient, medication);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
-
-        prescriptionService.create(doctor, patient, medication);
     }
 
     private void createPrescriptionFromXML() {
@@ -140,8 +140,8 @@ public class PrescriptionMenuHandler implements Menu {
                 );
             }
             LOGGER.info("Prescription created successfully from XML file");
-        } catch (JAXBException | FileNotFoundException e) {
-            LOGGER.info("Creation failed\n" + e);
+        } catch (JAXBException | FileNotFoundException | EntityAlreadyExistsException e) {
+            LOGGER.info("Creation failed: " + e.getMessage());
         }
     }
 
@@ -164,7 +164,7 @@ public class PrescriptionMenuHandler implements Menu {
         try {
             patient = patientService.findById(patientId);
         } catch (EntityNotFoundException e) {
-            LOGGER.info("Patient Doctor ID");
+            LOGGER.info("Update failed: " + e.getMessage());
         }
 
         long medicationId = getMedicationId();
@@ -173,13 +173,13 @@ public class PrescriptionMenuHandler implements Menu {
         try {
             medication = medicationService.findById(medicationId);
         } catch (EntityNotFoundException e) {
-            LOGGER.info("Patient Medication ID");
+            LOGGER.error("Update failed: " + e.getMessage());
         }
 
         try {
             prescriptionService.update(id, doctor, patient, medication);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed\n" + e);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -190,7 +190,7 @@ public class PrescriptionMenuHandler implements Menu {
         try {
             prescriptionService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 

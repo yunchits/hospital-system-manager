@@ -6,9 +6,9 @@ import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.PatientDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCPatientDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisPatientDAOImpl;
-import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
+import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
 
 import java.time.LocalDate;
@@ -51,9 +51,9 @@ public class PatientService {
     }
 
     public Patient create(String firstName,
-                                  String lastName,
-                                  LocalDate birthDate,
-                                  Gender gender) {
+                          String lastName,
+                          LocalDate birthDate,
+                          Gender gender) {
         return dao.create(new Patient()
                 .setFirstName(firstName)
                 .setLastName(lastName)
@@ -77,7 +77,8 @@ public class PatientService {
         );
     }
 
-    public Patient update(long id, String firstName, String lastName, LocalDate birthDate, Gender gender) throws EntityNotFoundException {
+    public Patient update(long id, String firstName, String lastName, LocalDate birthDate, Gender gender)
+            throws EntityNotFoundException {
         Patient patient = new Patient();
 
         findById(id);

@@ -113,7 +113,7 @@ public class DoctorMenuHandler implements Menu {
                 createDoctor(doctorDTO);
             }
         } catch (IOException | EntityNotFoundException | EntityAlreadyExistsException e) {
-            LOGGER.error("Creation failed\n" + e);
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
@@ -151,7 +151,7 @@ public class DoctorMenuHandler implements Menu {
             try {
                 return doctorService.createWithUser(firstName, lastName, specialization, username, password);
             } catch (EntityAlreadyExistsException e) {
-                LOGGER.error(e);
+                LOGGER.error(e.getMessage());
             }
         }
     }
@@ -196,7 +196,7 @@ public class DoctorMenuHandler implements Menu {
         try {
             doctorService.update(id, firstName, lastName, specialization);
         } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed\n" + e);
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -222,7 +222,7 @@ public class DoctorMenuHandler implements Menu {
         try {
             doctorService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 

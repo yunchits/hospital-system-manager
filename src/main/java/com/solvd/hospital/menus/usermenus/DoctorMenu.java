@@ -172,12 +172,11 @@ public class DoctorMenu implements Menu {
         Medication medication = null;
         try {
             medication = medicationService.findById(medicationId);
-        } catch (EntityNotFoundException e) {
+            prescriptionService.create(doctor, patient, medication);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
             LOGGER.info("Wrong medication ID");
             createPrescription(patient);
         }
-
-        prescriptionService.create(doctor, patient, medication);
     }
 
     private void hospitalizePatient(Patient patient) {
@@ -199,11 +198,11 @@ public class DoctorMenu implements Menu {
             Appointment appointment = appointmentService.findById(id);
 
             if (appointment.getDoctor().getId() != doctor.getId()) {
-                throw new EntityNotFoundException();
+                throw new RelatedEntityNotFound("Error");
             }
 
             return appointment;
-        } catch (EntityNotFoundException e) {
+        } catch (RelatedEntityNotFound | EntityNotFoundException e) {
             LOGGER.info("You don't have appointment with this ID");
         }
         return null;

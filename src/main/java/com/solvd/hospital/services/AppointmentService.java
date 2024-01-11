@@ -113,7 +113,7 @@ public class AppointmentService {
             patient = patientService.findById(patientId);
             doctor = doctorService.findById(doctorId);
         } catch (EntityNotFoundException e) {
-            throw new RelatedEntityNotFound();
+            throw new RelatedEntityNotFound("Related entity for Appointment not found");
         }
 
         appointment.setId(id);

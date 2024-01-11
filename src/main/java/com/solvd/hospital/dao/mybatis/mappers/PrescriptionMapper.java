@@ -46,4 +46,7 @@ public interface PrescriptionMapper {
 
     @Delete("DELETE FROM prescriptions WHERE id = #{id}")
     void delete(long id);
+
+    @Select("SELECT COUNT(*) = 0 FROM prescriptions WHERE patient_id = #{patientId} AND medication_id = #{medicationId}")
+    boolean isPrescriptionUnique(@Param("patientId") long patientId,@Param("medicationId") long medicationId);
 }

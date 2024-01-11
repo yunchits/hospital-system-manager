@@ -11,7 +11,6 @@ import com.solvd.hospital.dao.mybatis.impl.MyBatisUserDAOImpl;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
 
-import java.nio.file.LinkOption;
 import java.util.Optional;
 
 public class UserService {
@@ -31,9 +30,7 @@ public class UserService {
     }
 
     public User register(String username, String password, Role role) throws EntityAlreadyExistsException {
-        if (dao.getByUsername(username).isPresent()) {
-            throw new EntityAlreadyExistsException();
-        }
+        checkUsernameUniqueness(username);
 
         String hashedPassword = PasswordHashing.hashPassword(password);
         User user = new User()
@@ -66,5 +63,11 @@ public class UserService {
     public void delete(long id) {
         dao.getById(id);
         dao.delete(id);
+    }
+
+    private void checkUsernameUniqueness(String username) throws EntityAlreadyExistsException {
+        if (!dao.isUsernameUnique(username)) {
+            throw new EntityAlreadyExistsException("Username is not unique");
+        }
     }
 }

@@ -14,4 +14,6 @@ public interface UsersDAO {
     User update(User user);
 
     void delete(long id);
+
+    boolean isUsernameUnique(String username);
 }

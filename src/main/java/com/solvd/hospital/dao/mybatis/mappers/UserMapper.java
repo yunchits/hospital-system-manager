@@ -35,4 +35,7 @@ public interface UserMapper {
 
     @Delete("DELETE FROM users WHERE id = #{id}")
     void delete(long id);
+
+    @Select("SELECT COUNT(*) = 0 FROM users WHERE username = #{username}")
+    boolean isUsernameUnique(String username);
 }

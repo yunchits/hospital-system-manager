@@ -60,4 +60,12 @@ public class MyBatisUserDAOImpl implements UsersDAO {
             session.commit();
         }
     }
+
+    @Override
+    public boolean isUsernameUnique(String username) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            return userMapper.isUsernameUnique(username);
+        }
+    }
 }
