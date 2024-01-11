@@ -61,4 +61,12 @@ public class MyBatisMedicationDAOImpl implements MedicationDAO {
             session.commit();
         }
     }
+
+    @Override
+    public boolean isMedicationUnique(String name) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            MedicationMapper medicationMapper = session.getMapper(MedicationMapper.class);
+            return medicationMapper.isMedicationUnique(name);
+        }
+    }
 }

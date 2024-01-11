@@ -113,7 +113,7 @@ public class AppointmentMenuHandler implements Menu {
             }
 
         } catch (IOException | InvalidArgumentException | EntityNotFoundException e) {
-            LOGGER.error("Creation failed\n" + e);
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
@@ -127,7 +127,7 @@ public class AppointmentMenuHandler implements Menu {
         try {
             appointmentService.create(patientId, doctorId, appointmentDateTime);
         } catch (EntityNotFoundException | InvalidArgumentException e) {
-            LOGGER.error("Creation failed\n" + e);
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
@@ -160,19 +160,23 @@ public class AppointmentMenuHandler implements Menu {
             List<Appointment> appointments = appointmentSAXHandler.getAppointments();
             LOGGER.debug(appointments);
             if (appointments != null && !appointments.isEmpty()) {
-                for (Appointment appointment : appointments) {
-                    appointmentService.create(
-                            appointment.getPatient().getId(),
-                            appointment.getDoctor().getId(),
-                            appointment.getAppointmentDateTime()
-                    );
-                }
+                createAppointmentsFromList(appointments);
                 LOGGER.info("Appointments created successfully from XML file");
             } else {
                 LOGGER.info("No appointments found in the XML file");
             }
         } catch (Exception e) {
             LOGGER.error("Error parsing XML file: " + e.getMessage());
+        }
+    }
+
+    private void createAppointmentsFromList(List<Appointment> appointments) throws InvalidArgumentException, EntityNotFoundException {
+        for (Appointment appointment : appointments) {
+            appointmentService.create(
+                    appointment.getPatient().getId(),
+                    appointment.getDoctor().getId(),
+                    appointment.getAppointmentDateTime()
+            );
         }
     }
 
@@ -190,7 +194,7 @@ public class AppointmentMenuHandler implements Menu {
         try {
             appointmentService.update(id, patientId, doctorId, appointmentDateTime);
         } catch (RelatedEntityNotFound | EntityNotFoundException | InvalidArgumentException e) {
-            LOGGER.error("Update failed \n" + e);
+            LOGGER.error("Update failed: " + e.getMessage());
         }
     }
 
@@ -201,7 +205,7 @@ public class AppointmentMenuHandler implements Menu {
         try {
             appointmentService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Update failed \n" + e);
+            LOGGER.error("Update failed: " + e);
         }
     }
 

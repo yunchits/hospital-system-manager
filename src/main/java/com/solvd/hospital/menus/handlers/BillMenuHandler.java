@@ -112,20 +112,24 @@ public class BillMenuHandler implements Menu {
             saxParser.parse(xmlFilePath);
             List<Bill> bills = billSAXHandler.getBills();
             if (bills != null && !bills.isEmpty()) {
-                for (Bill bill : bills) {
-                    billService.create(
-                        bill.getPatientId(),
-                        bill.getAmount(),
-                        bill.getBillingDate(),
-                        bill.getPaymentStatus()
-                    );
-                }
+                createBillsFromList(bills);
                 LOGGER.info("Bills created successfully from XML file.");
             } else {
                 LOGGER.info("No bills found in the XML file.");
             }
         } catch (Exception e) {
             LOGGER.error("Error parsing XML file: " + e.getMessage());
+        }
+    }
+
+    private void createBillsFromList(List<Bill> bills) {
+        for (Bill bill : bills) {
+            billService.create(
+                    bill.getPatientId(),
+                    bill.getAmount(),
+                    bill.getBillingDate(),
+                    bill.getPaymentStatus()
+            );
         }
     }
 
@@ -144,7 +148,7 @@ public class BillMenuHandler implements Menu {
         try {
             billService.update(id, patientId, amount, billingDate, status);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Update failed \n" + e);
+            LOGGER.error("Update failed: " + e.getMessage());
         }
     }
 
@@ -155,7 +159,7 @@ public class BillMenuHandler implements Menu {
         try {
             billService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 

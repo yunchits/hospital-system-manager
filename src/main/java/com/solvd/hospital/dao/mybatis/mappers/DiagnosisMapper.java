@@ -40,4 +40,7 @@ public interface DiagnosisMapper {
 
     @Delete("DELETE FROM diagnoses WHERE id = #{id}")
     void delete(long id);
+
+    @Select("SELECT COUNT(*) = 0 FROM diagnoses WHERE diagnosis_name = #{name}")
+    boolean isDiagnosisUnique(String name);
 }

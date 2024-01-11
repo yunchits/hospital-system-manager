@@ -22,6 +22,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
     private static final String GET_MEDICATION_BY_ID_QUERY = "SELECT * FROM medications WHERE id = ?";
     private static final String UPDATE_MEDICATION_QUERY = "UPDATE medications SET medication_name = ?, medication_description = ? WHERE id = ?";
     private static final String DELETE_MEDICATION_QUERY = "DELETE FROM medications WHERE id = ?";
+    private static final String COUNT_MEDICATIONS = "SELECT COUNT(*) FROM medications WHERE medication_name = ?";
 
     @Override
     public Medication create(Medication medication) {
@@ -118,6 +119,25 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting medication", e);
         }
+    }
+
+    @Override
+    public boolean isMedicationUnique(String name) {
+        try (ReusableConnection connection = POOL.getConnection();
+             PreparedStatement statement = connection.prepareStatement(COUNT_MEDICATIONS)) {
+
+            statement.setString(1, name);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count == 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error checking medication name uniqueness", e);
+        }
+        return false;
     }
 
     private Medication resultSetToMedication(ResultSet resultSet) throws SQLException {

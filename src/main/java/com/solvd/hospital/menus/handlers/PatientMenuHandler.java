@@ -141,7 +141,7 @@ public class PatientMenuHandler implements Menu {
         try {
             patientService.update(id, firstName, lastName, date, gender);
         } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed\n" + e);
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -164,7 +164,7 @@ public class PatientMenuHandler implements Menu {
         try {
             patientService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 

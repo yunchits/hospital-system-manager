@@ -89,32 +89,17 @@ public class PrescriptionMenuHandler implements Menu {
 
     private void createPrescriptionFromConsole() {
         long doctorId = getDoctorId();
-
-        Doctor doctor = null;
-        try {
-            doctor = doctorService.findById(doctorId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Wrong Doctor ID");
-        }
+        Doctor doctor = getDoctorById(doctorId);
 
         long patientId = getPatientId();
+        Patient patient = getPatientById(patientId);
 
-        Patient patient = null;
+        long medicationId = getMedicationId();
+        Medication medication = getMedicationById(medicationId);
+        
         try {
-            patient = patientService.findById(patientId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Patient Doctor ID");
-        }
-
-        LOGGER.info("Enter Medication ID from list:");
-        LOGGER.info(medicationService.findAll());
-        long medicationId = scanner.scanPositiveInt();
-
-        Medication medication = null;
-        try {
-            medication = medicationService.findById(medicationId);
             prescriptionService.create(doctor, patient, medication);
-        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+        } catch (EntityAlreadyExistsException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
@@ -150,31 +135,13 @@ public class PrescriptionMenuHandler implements Menu {
         long id = scanner.scanPositiveInt();
 
         long doctorId = getDoctorId();
-
-        Doctor doctor = null;
-        try {
-            doctor = doctorService.findById(doctorId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Wrong Doctor ID");
-        }
+        Doctor doctor = getDoctorById(doctorId);
 
         long patientId = getPatientId();
-
-        Patient patient = null;
-        try {
-            patient = patientService.findById(patientId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed: " + e.getMessage());
-        }
+        Patient patient = getPatientById(patientId);
 
         long medicationId = getMedicationId();
-
-        Medication medication = null;
-        try {
-            medication = medicationService.findById(medicationId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.error("Update failed: " + e.getMessage());
-        }
+        Medication medication = getMedicationById(medicationId);
 
         try {
             prescriptionService.update(id, doctor, patient, medication);
@@ -214,5 +181,32 @@ public class PrescriptionMenuHandler implements Menu {
         LOGGER.info(medicationService.findAll());
         LOGGER.info("Enter Medication ID from list:");
         return scanner.scanPositiveInt();
+    }
+
+    private Medication getMedicationById(long medicationId) {
+        try {
+            return medicationService.findById(medicationId);
+        } catch (EntityNotFoundException e) {
+            LOGGER.error("Medication not found with ID: " + medicationId);
+            return null;
+        }
+    }
+
+    private Doctor getDoctorById(long doctorId) {
+        try {
+            return doctorService.findById(doctorId);
+        } catch (EntityNotFoundException e) {
+            LOGGER.error("Doctor not found with ID: " + doctorId);
+            return null;
+        }
+    }
+
+    private Patient getPatientById(long patientId) {
+        try {
+            return patientService.findById(patientId);
+        } catch (EntityNotFoundException e) {
+            LOGGER.error("Patient not found with ID: " + patientId);
+            return null;
+        }
     }
 }

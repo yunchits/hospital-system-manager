@@ -151,7 +151,7 @@ public class DoctorMenuHandler implements Menu {
             try {
                 return doctorService.createWithUser(firstName, lastName, specialization, username, password);
             } catch (EntityAlreadyExistsException e) {
-                LOGGER.error(e.getMessage());
+                LOGGER.error("Creation failed: " + e.getMessage());
             }
         }
     }

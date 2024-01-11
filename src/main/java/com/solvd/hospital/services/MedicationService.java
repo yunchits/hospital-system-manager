@@ -1,6 +1,7 @@
 package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.MedicationDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCMedicationDAOImpl;
@@ -26,7 +27,8 @@ public class MedicationService {
         }
     }
 
-    public Medication create(String name, String description) {
+    public Medication create(String name, String description) throws EntityAlreadyExistsException {
+        checkUniqueness(name);
         return dao.create(new Medication()
                 .setName(name)
                 .setDescription(description));
@@ -42,7 +44,8 @@ public class MedicationService {
         );
     }
 
-    public Medication update(long id, String name, String description) throws EntityNotFoundException {
+    public Medication update(long id, String name, String description) throws EntityNotFoundException, EntityAlreadyExistsException {
+        checkUniqueness(name);
         findById(id);
         return dao.update(new Medication()
                 .setId(id)
@@ -53,5 +56,11 @@ public class MedicationService {
     public void delete(long id) throws EntityNotFoundException {
         findById(id);
         dao.delete(id);
+    }
+
+    private void checkUniqueness(String name) throws EntityAlreadyExistsException {
+        if (!dao.isMedicationUnique(name)) {
+            throw new EntityAlreadyExistsException("Medication is not unique");
+        }
     }
 }

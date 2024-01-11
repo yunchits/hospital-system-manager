@@ -69,4 +69,12 @@ public class MyBatisDiagnosisDAOImpl implements DiagnosisDAO {
             session.commit();
         }
     }
+
+    @Override
+    public boolean isDiagnosisUnique(String name) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            DiagnosisMapper diagnosisMapper = session.getMapper(DiagnosisMapper.class);
+            return diagnosisMapper.isDiagnosisUnique(name);
+        }
+    }
 }

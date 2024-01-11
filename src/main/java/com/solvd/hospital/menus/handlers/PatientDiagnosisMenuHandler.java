@@ -85,7 +85,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
         try {
             patientDiagnosisService.create(patientId, diagnosisId);
         } catch (RelatedEntityNotFound | EntityAlreadyExistsException e) {
-            LOGGER.error("Creation failed \n" + e);
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
@@ -107,7 +107,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
             }
             LOGGER.info("Patient diagnoses created successfully from XML file.");
         } catch (JAXBException | FileNotFoundException | RelatedEntityNotFound | EntityAlreadyExistsException e) {
-            LOGGER.info("Creation failed\n" + e);
+            LOGGER.info("Creation failed: " + e.getMessage());
         }
     }
 
@@ -121,7 +121,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
         try {
             patientDiagnosisService.update(patientId, diagnosisId, newDiagnosisId);
         } catch (RelatedEntityNotFound | EntityAlreadyExistsException e) {
-            LOGGER.error("Update failed \n" + e);
+            LOGGER.error("Update failed: " + e.getMessage());
         }
     }
 
@@ -152,7 +152,7 @@ public class PatientDiagnosisMenuHandler implements Menu {
             patientDiagnosisService.delete(patientId, diagnosisId);
             LOGGER.info("The delete operation completed successfully");
         } catch (EntityNotFoundException | RelatedEntityNotFound e) {
-            LOGGER.error("Update failed \n" + e);
+            LOGGER.error("Update failed: " + e.getMessage());
         }
     }
 

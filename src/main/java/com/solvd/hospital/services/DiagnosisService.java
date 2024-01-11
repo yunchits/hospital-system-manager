@@ -1,6 +1,7 @@
 package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.DiagnosisDAO;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisDiagnosisDAOImpl;
@@ -26,7 +27,8 @@ public class DiagnosisService {
         }
     }
 
-    public Diagnosis create(String name, String description) {
+    public Diagnosis create(String name, String description) throws EntityAlreadyExistsException {
+        checkUniqueness(name);
         return dao.create(new Diagnosis()
             .setName(name)
             .setDescription(description));
@@ -48,9 +50,9 @@ public class DiagnosisService {
         );
     }
 
-    public Diagnosis update(long id, String name, String description) throws EntityNotFoundException {
+    public Diagnosis update(long id, String name, String description) throws EntityNotFoundException, EntityAlreadyExistsException {
+        checkUniqueness(name);
         findById(id);
-
         return dao.update(new Diagnosis()
             .setId(id)
             .setName(name)
@@ -60,5 +62,11 @@ public class DiagnosisService {
     public void delete(long id) throws EntityNotFoundException {
         findById(id);
         dao.delete(id);
+    }
+
+    private void checkUniqueness(String name) throws EntityAlreadyExistsException {
+        if (!dao.isDiagnosisUnique(name)) {
+            throw new EntityAlreadyExistsException("Diagnosis is not unique");
+        }
     }
 }

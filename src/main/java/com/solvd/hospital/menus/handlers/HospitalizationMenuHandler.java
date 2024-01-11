@@ -113,7 +113,7 @@ public class HospitalizationMenuHandler implements Menu {
                 hospitalizationService.create(hospitalizationDTO);
             }
         } catch (IOException | InvalidArgumentException | RelatedEntityNotFound e) {
-            LOGGER.error("Creation failed\n" + e);
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
@@ -127,7 +127,7 @@ public class HospitalizationMenuHandler implements Menu {
         try {
             hospitalizationService.create(patientId, admissionDate, dischargeDate);
         } catch (RelatedEntityNotFound | InvalidArgumentException e) {
-            LOGGER.error("Creation failed \n" + e);
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
@@ -171,7 +171,7 @@ public class HospitalizationMenuHandler implements Menu {
         try {
             hospitalizationService.update(id, patientId, admissionDate, dischargeDate);
         } catch (EntityNotFoundException | RelatedEntityNotFound | InvalidArgumentException e) {
-            LOGGER.info("Update failed\n" + e);
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -182,7 +182,7 @@ public class HospitalizationMenuHandler implements Menu {
         try {
             hospitalizationService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 

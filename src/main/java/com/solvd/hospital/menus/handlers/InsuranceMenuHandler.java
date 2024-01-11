@@ -96,7 +96,7 @@ public class InsuranceMenuHandler implements Menu {
         try {
             insuranceService.create(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
         } catch (DuplicateKeyException | RelatedEntityNotFound e) {
-            LOGGER.info("Creation failed\n" + e);
+            LOGGER.info("Creation failed: " + e.getMessage());
         }
     }
 
@@ -127,7 +127,7 @@ public class InsuranceMenuHandler implements Menu {
             LOGGER.info("Insurances created successfully from XML file.");
         } catch (JAXBException | RelatedEntityNotFound | FileNotFoundException | DuplicateKeyException e) {
             e.printStackTrace();
-            LOGGER.info("Creation failed\n" + e);
+            LOGGER.info("Creation failed: " + e.getMessage());
         }
     }
 
@@ -148,7 +148,7 @@ public class InsuranceMenuHandler implements Menu {
         try {
             insuranceService.update(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
         } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed\n" + e);
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -159,7 +159,7 @@ public class InsuranceMenuHandler implements Menu {
         try {
             insuranceService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 

@@ -3,6 +3,7 @@ package com.solvd.hospital.menus.handlers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Diagnosis;
@@ -108,8 +109,8 @@ public class DiagnosisMenuHandler implements Menu {
                 diagnosisService.create(diagnosis.getName(), diagnosis.getDescription());
             }
 
-        } catch (IOException e) {
-            LOGGER.error("Creation failed\n" + e);
+        } catch (IOException | EntityAlreadyExistsException e) {
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
@@ -120,7 +121,11 @@ public class DiagnosisMenuHandler implements Menu {
         LOGGER.info("Enter diagnosis description:");
         String description = scanner.scanString();
 
-        diagnosisService.create(name, description);
+        try {
+            diagnosisService.create(name, description);
+        } catch (EntityAlreadyExistsException e) {
+            LOGGER.error("Creation failed: " + e.getMessage());
+        }
     }
 
     private void createDiagnosisFromXML() {
@@ -143,8 +148,8 @@ public class DiagnosisMenuHandler implements Menu {
                 );
             }
             LOGGER.info("Diagnoses created successfully from XML file.");
-        } catch (JAXBException | FileNotFoundException e) {
-            LOGGER.info("Creation failed\n" + e);
+        } catch (JAXBException | FileNotFoundException | EntityAlreadyExistsException e) {
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
@@ -160,8 +165,8 @@ public class DiagnosisMenuHandler implements Menu {
 
         try {
             diagnosisService.update(id, name, description);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed\n" + e);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -172,7 +177,7 @@ public class DiagnosisMenuHandler implements Menu {
         try {
             diagnosisService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 

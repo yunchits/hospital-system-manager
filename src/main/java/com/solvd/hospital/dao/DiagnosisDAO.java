@@ -17,4 +17,6 @@ public interface DiagnosisDAO {
     Diagnosis update(Diagnosis diagnosis);
 
     void delete(long id);
+
+    boolean isDiagnosisUnique(String name);
 }

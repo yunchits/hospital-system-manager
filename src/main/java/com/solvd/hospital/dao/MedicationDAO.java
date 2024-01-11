@@ -15,4 +15,6 @@ public interface MedicationDAO {
     Medication update(Medication medication);
 
     void delete(long id);
+
+    boolean isMedicationUnique(String name);
 }

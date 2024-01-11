@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
-
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
     private static final String CREATE_DIAGNOSIS_QUERY = "INSERT INTO diagnoses (diagnosis_name, diagnosis_description) " +
@@ -22,6 +21,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
     private static final String UPDATE_DIAGNOSIS_QUERY = "UPDATE diagnoses " +
         "SET diagnosis_name = ?, diagnosis_description = ? WHERE id = ?";
     private static final String DELETE_DIAGNOSIS_QUERY = "DELETE FROM diagnoses WHERE id = ?";
+    private static final String COUNT_DIAGNOSIS = "SELECT COUNT(*) FROM diagnoses WHERE diagnoses_name = ?";
 
     @Override
     public Diagnosis create(Diagnosis diagnosis) {
@@ -138,6 +138,25 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
         } catch (SQLException e) {
             throw new RuntimeException("Error deleting diagnosis", e);
         }
+    }
+
+    @Override
+    public boolean isDiagnosisUnique(String name) {
+        try (ReusableConnection connection = POOL.getConnection();
+             PreparedStatement statement = connection.prepareStatement(COUNT_DIAGNOSIS)) {
+
+            statement.setString(1, name);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count == 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error checking diagnosis name uniqueness", e);
+        }
+        return false;
     }
 
     private Diagnosis resultSetToDiagnosis(ResultSet resultSet) throws SQLException {
