@@ -1,6 +1,6 @@
 package com.solvd.hospital.entities.patient;
 
-import com.solvd.hospital.jaxb.adapters.LocalDateAdapter;
+import com.solvd.hospital.xml.jaxb.adapters.LocalDateAdapter;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

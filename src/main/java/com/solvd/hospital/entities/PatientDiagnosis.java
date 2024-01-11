@@ -1,6 +1,6 @@
 package com.solvd.hospital.entities;
 
-import com.solvd.hospital.jaxb.adapters.DiagnosisAdapter;
+import com.solvd.hospital.xml.jaxb.adapters.DiagnosisAdapter;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;

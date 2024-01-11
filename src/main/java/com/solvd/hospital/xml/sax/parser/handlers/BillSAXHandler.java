@@ -1,4 +1,4 @@
-package com.solvd.hospital.sax.parser.handlers;
+package com.solvd.hospital.xml.sax.parser.handlers;
 
 import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;

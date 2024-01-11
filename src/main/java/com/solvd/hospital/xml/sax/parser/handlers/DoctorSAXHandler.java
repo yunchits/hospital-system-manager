@@ -1,4 +1,4 @@
-package com.solvd.hospital.sax.parser.handlers;
+package com.solvd.hospital.xml.sax.parser.handlers;
 
 import com.solvd.hospital.entities.Doctor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.solvd.hospital.sax.parser;
+package com.solvd.hospital.xml.sax.parser;
 
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;

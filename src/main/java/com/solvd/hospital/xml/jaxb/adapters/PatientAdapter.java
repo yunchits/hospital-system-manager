@@ -1,4 +1,4 @@
-package com.solvd.hospital.jaxb.adapters;
+package com.solvd.hospital.xml.jaxb.adapters;
 
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.services.PatientService;
