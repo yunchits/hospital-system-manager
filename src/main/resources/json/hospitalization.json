@@ -1,5 +1,12 @@
-{
-  "patientId": 1,
-  "admissionDate": "2024-02-01",
-  "dischargeDate": "2024-02-10"
-}
+[
+  {
+    "patientId": 1,
+    "admissionDate": "2024-02-01",
+    "dischargeDate": "2024-02-10"
+  },
+  {
+    "patientId": 2,
+    "admissionDate": "2024-02-02",
+    "dischargeDate": "2024-02-12"
+  }
+]

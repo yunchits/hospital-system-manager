@@ -1,5 +1,7 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
@@ -10,10 +12,10 @@ import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.user.User;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
-import com.solvd.hospital.xml.sax.parser.handlers.DoctorSAXHandler;
 import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.UserService;
+import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.xml.sax.parser.handlers.DoctorSAXHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -86,32 +88,50 @@ public class DoctorMenuHandler implements Menu {
     }
 
     private void createDoctorFromJSON() {
+        LOGGER.info("Enter JSON file path:");
+        String path = scanner.scanString();
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
         try {
-            File file = new File("src/main/resources/json/doctor.json");
 
-            DoctorDTO doctorDTO = objectMapper.readValue(file, DoctorDTO.class);
+            File file = new File(path);
 
-            User user = doctorDTO.getUser();
+            JsonNode jsonNode = objectMapper.readTree(file);
 
-            User registered = new UserService().register(
-                    user.getUsername(),
-                    user.getPassword(),
-                    user.getRole()
-            );
+            if (jsonNode.isArray()) {
+                List<DoctorDTO> doctorDTOs = objectMapper.readValue(file, new TypeReference<>() {
+                });
 
-            doctorService.createWithUser(
-                    doctorDTO.getFirstName(),
-                    doctorDTO.getLastName(),
-                    doctorDTO.getSpecialization(),
-                    registered.getId()
-            );
+                for (DoctorDTO doctorDTO : doctorDTOs) {
+                    createDoctor(doctorDTO);
+                }
+            } else {
+                DoctorDTO doctorDTO = objectMapper.readValue(file, DoctorDTO.class);
 
+                createDoctor(doctorDTO);
+            }
         } catch (IOException | EntityNotFoundException | EntityAlreadyExistsException e) {
             LOGGER.error("Creation failed\n" + e);
         }
+    }
+
+    private void createDoctor(DoctorDTO doctorDTO) throws EntityAlreadyExistsException, EntityNotFoundException {
+        User user = doctorDTO.getUser();
+
+        User registered = new UserService().register(
+                user.getUsername(),
+                user.getPassword(),
+                user.getRole()
+        );
+
+        doctorService.createWithUser(
+                doctorDTO.getFirstName(),
+                doctorDTO.getLastName(),
+                doctorDTO.getSpecialization(),
+                registered.getId()
+        );
     }
 
     public Doctor createDoctorFromConsole() {

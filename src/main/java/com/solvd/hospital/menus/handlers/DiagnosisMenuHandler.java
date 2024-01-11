@@ -1,5 +1,7 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
@@ -85,14 +87,26 @@ public class DiagnosisMenuHandler implements Menu {
     }
 
     private void createDiagnosisFromJSON() {
+        LOGGER.info("Enter JSON file path:");
+        String path = scanner.scanString();
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            File file = new File("src/main/resources/json/diagnosis.json");
+            File file = new File(path);
 
-            Diagnosis diagnosis = objectMapper.readValue(file, Diagnosis.class);
+            JsonNode jsonNode = objectMapper.readTree(file);
 
-            diagnosisService.create(diagnosis.getName(), diagnosis.getDescription());
+            if (jsonNode.isArray()) {
+                List<Diagnosis> diagnoses = objectMapper.readValue(file, new TypeReference<>() {
+                });
+
+                for (Diagnosis diagnosis : diagnoses) {
+                    diagnosisService.create(diagnosis.getName(), diagnosis.getDescription());
+                }
+            } else {
+                Diagnosis diagnosis = objectMapper.readValue(file, Diagnosis.class);
+                diagnosisService.create(diagnosis.getName(), diagnosis.getDescription());
+            }
 
         } catch (IOException e) {
             LOGGER.error("Creation failed\n" + e);

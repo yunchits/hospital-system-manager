@@ -1,5 +1,7 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
@@ -88,15 +90,27 @@ public class AppointmentMenuHandler implements Menu {
     }
 
     private void createAppointmentFromJSON() {
+        LOGGER.info("Enter JSON file path:");
+        String path = scanner.scanString();
+
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
 
         try {
-            File file = new File("src/main/resources/json/appointment.json");
+            File file = new File(path);
 
-            AppointmentDTO appointmentDTO = objectMapper.readValue(file, AppointmentDTO.class);
+            JsonNode jsonNode = objectMapper.readTree(file);
 
-            appointmentService.create(appointmentDTO);
+            if (jsonNode.isArray()) {
+                List<AppointmentDTO> appointmentDTOs = objectMapper.readValue(file, new TypeReference<>() {});
+
+                for (AppointmentDTO appointmentDTO : appointmentDTOs) {
+                    appointmentService.create(appointmentDTO);
+                }
+            } else {
+                AppointmentDTO appointmentDTO = objectMapper.readValue(file, AppointmentDTO.class);
+                appointmentService.create(appointmentDTO);
+            }
 
         } catch (IOException | InvalidArgumentException | EntityNotFoundException e) {
             LOGGER.error("Creation failed\n" + e);

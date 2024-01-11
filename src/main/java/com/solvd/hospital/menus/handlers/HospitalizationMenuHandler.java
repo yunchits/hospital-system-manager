@@ -1,6 +1,9 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
@@ -9,10 +12,10 @@ import com.solvd.hospital.dto.HospitalizationDTO;
 import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
-import com.solvd.hospital.xml.sax.parser.handlers.HospitalizationSAXHandler;
 import com.solvd.hospital.services.HospitalizationService;
 import com.solvd.hospital.services.PatientService;
+import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.xml.sax.parser.handlers.HospitalizationSAXHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -87,15 +90,28 @@ public class HospitalizationMenuHandler implements Menu {
     }
 
     private void createHospitalizationFromJSON() {
+        LOGGER.info("Enter JSON file path:");
+        String path = scanner.scanString();
+
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         try {
-            File file = new File("src/main/resources/json/hospitalization.json");
+            File file = new File(path);
 
-            HospitalizationDTO hospitalizationDTO = objectMapper.readValue(file, HospitalizationDTO.class);
+            JsonNode jsonNode = objectMapper.readTree(file);
 
-            hospitalizationService.create(hospitalizationDTO);
+            if (jsonNode.isArray()) {
+                List<HospitalizationDTO> hospitalizationDTOs = objectMapper.readValue(file, new TypeReference<>() {
+                });
 
+                for (HospitalizationDTO hospitalizationDTO : hospitalizationDTOs) {
+                    hospitalizationService.create(hospitalizationDTO);
+                }
+            } else {
+                HospitalizationDTO hospitalizationDTO = objectMapper.readValue(file, HospitalizationDTO.class);
+                hospitalizationService.create(hospitalizationDTO);
+            }
         } catch (IOException | InvalidArgumentException | RelatedEntityNotFound e) {
             LOGGER.error("Creation failed\n" + e);
         }

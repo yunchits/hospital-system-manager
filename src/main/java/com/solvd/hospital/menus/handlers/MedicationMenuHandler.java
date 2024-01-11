@@ -1,5 +1,7 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
@@ -86,15 +88,27 @@ public class MedicationMenuHandler implements Menu {
     }
 
     private void createMedicationFromJSON() {
+        LOGGER.info("Enter JSON file path:");
+        String path = scanner.scanString();
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            File file = new File("src/main/resources/json/medication.json");
+            File file = new File(path);
 
-            Medication medication = objectMapper.readValue(file, Medication.class);
+            JsonNode jsonNode = objectMapper.readTree(file);
 
-            medicationService.create(medication.getName(), medication.getDescription());
+            if (jsonNode.isArray()) {
+                List<Medication> medications = objectMapper.readValue(file, new TypeReference<>() {
+                });
 
+                for (Medication medication : medications) {
+                    medicationService.create(getName(), medication.getDescription());
+                }
+            } else {
+                Medication medication = objectMapper.readValue(file, Medication.class);
+                medicationService.create(medication.getName(), medication.getDescription());
+            }
         } catch (IOException e) {
             LOGGER.error("Creation failed\n" + e);
         }
