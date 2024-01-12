@@ -3,8 +3,8 @@ package com.solvd.hospital.menus.handlers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Diagnosis;
 import com.solvd.hospital.entities.Hospital;
@@ -109,7 +109,7 @@ public class DiagnosisMenuHandler implements Menu {
                 diagnosisService.create(diagnosis.getName(), diagnosis.getDescription());
             }
 
-        } catch (IOException | EntityAlreadyExistsException e) {
+        } catch (IOException | HospitalException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
@@ -123,7 +123,7 @@ public class DiagnosisMenuHandler implements Menu {
 
         try {
             diagnosisService.create(name, description);
-        } catch (EntityAlreadyExistsException e) {
+        } catch (HospitalException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
@@ -148,7 +148,7 @@ public class DiagnosisMenuHandler implements Menu {
                 );
             }
             LOGGER.info("Diagnoses created successfully from XML file.");
-        } catch (JAXBException | FileNotFoundException | EntityAlreadyExistsException e) {
+        } catch (JAXBException | FileNotFoundException | HospitalException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
@@ -165,7 +165,7 @@ public class DiagnosisMenuHandler implements Menu {
 
         try {
             diagnosisService.update(id, name, description);
-        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+        } catch (HospitalException e) {
             LOGGER.info("Update failed: " + e.getMessage());
         }
     }

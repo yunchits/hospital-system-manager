@@ -1,8 +1,10 @@
 package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.common.ValidationUtils;
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.dao.MedicationDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCMedicationDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisMedicationDAOImpl;
@@ -27,7 +29,8 @@ public class MedicationService {
         }
     }
 
-    public Medication create(String name, String description) throws EntityAlreadyExistsException {
+    public Medication create(String name, String description) throws HospitalException {
+        ValidationUtils.validateStringLength(name, "name", 225);
         checkUniqueness(name);
         return dao.create(new Medication()
                 .setName(name)
@@ -44,7 +47,8 @@ public class MedicationService {
         );
     }
 
-    public Medication update(long id, String name, String description) throws EntityNotFoundException, EntityAlreadyExistsException {
+    public Medication update(long id, String name, String description) throws HospitalException {
+        ValidationUtils.validateStringLength(name, "name", 225);
         checkUniqueness(name);
         findById(id);
         return dao.update(new Medication()

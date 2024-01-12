@@ -1,9 +1,8 @@
 package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
-import com.solvd.hospital.common.exceptions.DuplicateKeyException;
-import com.solvd.hospital.common.exceptions.EntityNotFoundException;
-import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
+import com.solvd.hospital.common.ValidationUtils;
+import com.solvd.hospital.common.exceptions.*;
 import com.solvd.hospital.dao.InsuranceDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCInsuranceDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisInsuranceDAOImpl;
@@ -38,7 +37,8 @@ public class InsuranceService {
                             LocalDate expirationDate,
                             double coverageAmount,
                             InsuranceType type,
-                            String insuranceProvider) throws DuplicateKeyException, RelatedEntityNotFound {
+                            String insuranceProvider) throws HospitalException {
+        validateArgs(policyNumber, insuranceProvider);
         validateInsuranceDoesNotExist(id);
         validatePatientExists(id);
 
@@ -66,9 +66,9 @@ public class InsuranceService {
                             LocalDate expirationDate,
                             double coverageAmount,
                             InsuranceType type,
-                            String insuranceProvider) throws EntityNotFoundException {
+                            String insuranceProvider) throws HospitalException {
+        validateArgs(policyNumber, insuranceProvider);
         findById(id);
-
         return dao.update(new Insurance()
                 .setPatientId(id)
                 .setPolicyNumber(policyNumber)
@@ -95,5 +95,10 @@ public class InsuranceService {
     public void delete(long id) throws EntityNotFoundException {
         findById(id);
         dao.delete(id);
+    }
+
+    private static void validateArgs(String policyNumber, String insuranceProvider) throws InvalidArgumentException {
+        ValidationUtils.validateStringLength(policyNumber, "policy number", 45);
+        ValidationUtils.validateStringLength(insuranceProvider, "insurance provider name", 45);
     }
 }

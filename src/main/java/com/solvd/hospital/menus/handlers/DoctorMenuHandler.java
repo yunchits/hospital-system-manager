@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.dto.DoctorDTO;
 import com.solvd.hospital.entities.Doctor;
@@ -112,12 +112,12 @@ public class DoctorMenuHandler implements Menu {
 
                 createDoctor(doctorDTO);
             }
-        } catch (IOException | EntityNotFoundException | EntityAlreadyExistsException e) {
+        } catch (IOException | HospitalException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
 
-    private void createDoctor(DoctorDTO doctorDTO) throws EntityAlreadyExistsException, EntityNotFoundException {
+    private void createDoctor(DoctorDTO doctorDTO) throws HospitalException {
         User user = doctorDTO.getUser();
 
         User registered = new UserService().register(
@@ -141,19 +141,18 @@ public class DoctorMenuHandler implements Menu {
 
         String specialization = getSpecialization();
 
-        while (true) {
-            LOGGER.info("Enter doctor's username:");
-            String username = scanner.scanString();
+        LOGGER.info("Enter doctor's username:");
+        String username = scanner.scanString();
 
-            LOGGER.info("Enter doctor's password:");
-            String password = scanner.scanString();
+        LOGGER.info("Enter doctor's password:");
+        String password = scanner.scanString();
 
-            try {
-                return doctorService.createWithUser(firstName, lastName, specialization, username, password);
-            } catch (EntityAlreadyExistsException e) {
-                LOGGER.error("Creation failed: " + e.getMessage());
-            }
+        try {
+            return doctorService.createWithUser(firstName, lastName, specialization, username, password);
+        } catch (HospitalException e) {
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
+        return null;
     }
 
     private void createDoctorFromXML() {
@@ -195,7 +194,7 @@ public class DoctorMenuHandler implements Menu {
 
         try {
             doctorService.update(id, firstName, lastName, specialization);
-        } catch (EntityNotFoundException e) {
+        } catch (HospitalException e) {
             LOGGER.info("Update failed: " + e.getMessage());
         }
     }

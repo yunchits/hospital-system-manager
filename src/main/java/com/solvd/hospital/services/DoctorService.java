@@ -1,8 +1,10 @@
 package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
+import com.solvd.hospital.common.ValidationUtils;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
+import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.dao.DoctorDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCDoctorDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisDoctorDAOImpl;
@@ -44,19 +46,21 @@ public class DoctorService {
                                  String lastName,
                                  String specialization,
                                  String username,
-                                 String password) throws EntityAlreadyExistsException {
+                                 String password) throws HospitalException {
+        validateArgs(firstName, lastName, specialization);
         User user = userService.register(username, password, Role.DOCTOR);
         return dao.createWithUser(new Doctor()
-            .setUserId(user.getId())
-            .setFirstName(firstName)
-            .setLastName(lastName)
-            .setSpecialization(specialization));
+                .setUserId(user.getId())
+                .setFirstName(firstName)
+                .setLastName(lastName)
+                .setSpecialization(specialization));
     }
 
     public Doctor createWithUser(String firstName,
                                  String lastName,
                                  String specialization,
-                                 long userId) throws EntityNotFoundException {
+                                 long userId) throws HospitalException {
+        validateArgs(firstName, lastName, specialization);
         User user = userService.getById(userId);
         return dao.createWithUser(new Doctor()
                 .setUserId(user.getId())
@@ -84,9 +88,9 @@ public class DoctorService {
     public Doctor update(long id,
                          String firstName,
                          String lastName,
-                         String specialization) throws EntityNotFoundException {
+                         String specialization) throws HospitalException {
+        validateArgs(firstName, lastName, specialization);
         findById(id);
-
         return dao.update(new Doctor()
                 .setId(id)
                 .setFirstName(firstName)
@@ -103,5 +107,11 @@ public class DoctorService {
         Doctor doctor = findById(id);
         dao.delete(id);
         userService.delete(doctor.getUserId());
+    }
+
+    private static void validateArgs(String firstName, String lastName, String specialization) throws InvalidArgumentException {
+        ValidationUtils.validateStringLength(firstName, "first name", 45);
+        ValidationUtils.validateStringLength(lastName, "last name", 45);
+        ValidationUtils.validateStringLength(specialization, "specialization", 45);
     }
 }

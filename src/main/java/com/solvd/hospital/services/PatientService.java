@@ -1,8 +1,10 @@
 package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
+import com.solvd.hospital.common.ValidationUtils;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
+import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.dao.PatientDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCPatientDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisPatientDAOImpl;
@@ -39,7 +41,8 @@ public class PatientService {
                                   LocalDate birthDate,
                                   Gender gender,
                                   String username,
-                                  String password) throws EntityAlreadyExistsException {
+                                  String password) throws HospitalException {
+        validateArgs(firstName, lastName);
         User user = userService.register(username, password, Role.PATIENT);
 
         return dao.createWithUser(new Patient()
@@ -53,7 +56,8 @@ public class PatientService {
     public Patient create(String firstName,
                           String lastName,
                           LocalDate birthDate,
-                          Gender gender) {
+                          Gender gender) throws InvalidArgumentException {
+        validateArgs(firstName, lastName);
         return dao.create(new Patient()
                 .setFirstName(firstName)
                 .setLastName(lastName)
@@ -78,11 +82,11 @@ public class PatientService {
     }
 
     public Patient update(long id, String firstName, String lastName, LocalDate birthDate, Gender gender)
-            throws EntityNotFoundException {
-        Patient patient = new Patient();
-
+            throws HospitalException {
+        validateArgs(firstName, lastName);
         findById(id);
 
+        Patient patient = new Patient();
         patient.setId(id);
         patient.setFirstName(firstName);
         patient.setLastName(lastName);
@@ -101,5 +105,10 @@ public class PatientService {
         Patient patient = findById(id);
         dao.delete(id);
         userService.delete(patient.getUserId());
+    }
+
+    private static void validateArgs(String firstName, String lastName) throws InvalidArgumentException {
+        ValidationUtils.validateStringLength(firstName, "first name", 45);
+        ValidationUtils.validateStringLength(lastName, "last name", 45);
     }
 }

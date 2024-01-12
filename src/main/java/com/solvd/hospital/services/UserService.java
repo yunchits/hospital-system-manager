@@ -2,9 +2,8 @@ package com.solvd.hospital.services;
 
 import com.solvd.hospital.common.AppProperties;
 import com.solvd.hospital.common.PasswordHashing;
-import com.solvd.hospital.common.exceptions.AuthenticationException;
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
-import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.ValidationUtils;
+import com.solvd.hospital.common.exceptions.*;
 import com.solvd.hospital.dao.UsersDAO;
 import com.solvd.hospital.dao.jdbc.impl.JDBCUserDAOImpl;
 import com.solvd.hospital.dao.mybatis.impl.MyBatisUserDAOImpl;
@@ -29,7 +28,8 @@ public class UserService {
         }
     }
 
-    public User register(String username, String password, Role role) throws EntityAlreadyExistsException {
+    public User register(String username, String password, Role role) throws HospitalException {
+        validateArgs(username, password);
         checkUsernameUniqueness(username);
 
         String hashedPassword = PasswordHashing.hashPassword(password);
@@ -41,7 +41,8 @@ public class UserService {
         return dao.create(user);
     }
 
-    public User login(String username, String password) throws AuthenticationException {
+    public User login(String username, String password) throws HospitalException {
+        validateArgs(username, password);
         Optional<User> userOptional = dao.getByUsername(username);
 
         if (userOptional.isPresent()) {
@@ -69,5 +70,10 @@ public class UserService {
         if (!dao.isUsernameUnique(username)) {
             throw new EntityAlreadyExistsException("Username is not unique");
         }
+    }
+
+    private static void validateArgs(String username, String password) throws InvalidArgumentException {
+        ValidationUtils.validateStringLength(username, "username", 45);
+        ValidationUtils.validateStringLength(password, "password", 225);
     }
 }

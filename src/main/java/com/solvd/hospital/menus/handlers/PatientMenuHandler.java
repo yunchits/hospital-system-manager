@@ -1,15 +1,15 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
+import com.solvd.hospital.services.PatientService;
 import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
 import com.solvd.hospital.xml.sax.parser.handlers.PatientSAXHandler;
-import com.solvd.hospital.services.PatientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -83,19 +83,18 @@ public class PatientMenuHandler implements Menu {
 
         Gender gender = selectGender();
 
-        while (true) {
-            LOGGER.info("Enter patient's username:");
-            String username = scanner.scanString();
+        LOGGER.info("Enter patient's username:");
+        String username = scanner.scanString();
 
-            LOGGER.info("Enter patient's password:");
-            String password = scanner.scanString();
+        LOGGER.info("Enter patient's password:");
+        String password = scanner.scanString();
 
-            try {
-                return patientService.createWithUser(firstName, lastName, date, gender, username, password);
-            } catch (EntityAlreadyExistsException e) {
-                LOGGER.info("Please try again with a different username");
-            }
+        try {
+            return patientService.createWithUser(firstName, lastName, date, gender, username, password);
+        } catch (HospitalException e) {
+            LOGGER.info("Creation failed: " + e);
         }
+        return null;
     }
 
     private void createPatientFromXML() {
@@ -111,10 +110,10 @@ public class PatientMenuHandler implements Menu {
             if (patients != null && !patients.isEmpty()) {
                 for (Patient patient : patients) {
                     patientService.create(
-                        patient.getFirstName(),
-                        patient.getLastName(),
-                        patient.getBirthDate(),
-                        patient.getGender()
+                            patient.getFirstName(),
+                            patient.getLastName(),
+                            patient.getBirthDate(),
+                            patient.getGender()
                     );
                 }
                 LOGGER.info("Patients created successfully from XML file.");
@@ -140,7 +139,7 @@ public class PatientMenuHandler implements Menu {
 
         try {
             patientService.update(id, firstName, lastName, date, gender);
-        } catch (EntityNotFoundException e) {
+        } catch (HospitalException e) {
             LOGGER.info("Update failed: " + e.getMessage());
         }
     }

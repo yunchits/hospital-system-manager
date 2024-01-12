@@ -1,8 +1,7 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.solvd.hospital.common.exceptions.DuplicateKeyException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
-import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Hospital;
 import com.solvd.hospital.entities.patient.Insurance;
@@ -95,7 +94,7 @@ public class InsuranceMenuHandler implements Menu {
 
         try {
             insuranceService.create(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
-        } catch (DuplicateKeyException | RelatedEntityNotFound e) {
+        } catch (HospitalException e) {
             LOGGER.info("Creation failed: " + e.getMessage());
         }
     }
@@ -125,7 +124,7 @@ public class InsuranceMenuHandler implements Menu {
                 );
             }
             LOGGER.info("Insurances created successfully from XML file.");
-        } catch (JAXBException | RelatedEntityNotFound | FileNotFoundException | DuplicateKeyException e) {
+        } catch (JAXBException | HospitalException | FileNotFoundException e) {
             e.printStackTrace();
             LOGGER.info("Creation failed: " + e.getMessage());
         }
@@ -147,7 +146,7 @@ public class InsuranceMenuHandler implements Menu {
 
         try {
             insuranceService.update(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
-        } catch (EntityNotFoundException e) {
+        } catch (HospitalException e) {
             LOGGER.info("Update failed: " + e.getMessage());
         }
     }
@@ -178,6 +177,7 @@ public class InsuranceMenuHandler implements Menu {
 
         return values[choice];
     }
+
     private String getProvider() {
         LOGGER.info("Enter insurance provider:");
         return scanner.scanString();
