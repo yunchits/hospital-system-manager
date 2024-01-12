@@ -20,7 +20,6 @@
         <mybatis-version>3.5.15</mybatis-version>
         <jaxb-version>4.0.4</jaxb-version>
         <jackson-version>2.16.1</jackson-version>
-        <javax-validation-version>2.0.1.Final</javax-validation-version>
     </properties>
 
     <dependencies>
@@ -84,12 +83,6 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson-version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>${javax-validation-version}</version>
         </dependency>
     </dependencies>
 </project>
