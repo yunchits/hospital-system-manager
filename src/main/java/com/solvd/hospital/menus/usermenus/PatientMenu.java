@@ -1,6 +1,7 @@
 package com.solvd.hospital.menus.usermenus;
 
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
@@ -259,7 +260,7 @@ public class PatientMenu implements Menu {
                 insurance.getCoverageAmount(),
                 insurance.getType(),
                 insurance.getInsuranceProvider());
-        } catch (EntityNotFoundException e) {
+        } catch (HospitalException e) {
             LOGGER.error("Error updating insurance.");
         }
 

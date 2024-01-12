@@ -3,6 +3,7 @@ package com.solvd.hospital.menus.usermenus;
 import com.solvd.hospital.common.exceptions.AuthenticationException;
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
@@ -18,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class UserMenu implements Menu {
-
     private static final Logger LOGGER = LogManager.getLogger(UserMenu.class);
 
     private final InputScanner scanner;
@@ -65,7 +65,7 @@ public class UserMenu implements Menu {
         User user;
         try {
             user = userService.login(username, password);
-        } catch (AuthenticationException e) {
+        } catch (HospitalException e) {
             LOGGER.error(e);
             display();
             return;
@@ -154,15 +154,10 @@ public class UserMenu implements Menu {
 
             Patient updatedPatient = patientService.updateUserId(patient.getId(), user.getId());
             new PatientMenu(updatedPatient).display();
-        } catch (EntityAlreadyExistsException | EntityNotFoundException e) {
-            LOGGER.info("Registration failed\n" + e);
+        } catch (HospitalException e) {
+            LOGGER.info("Registration failed: " + e);
             display();
         }
-    }
-
-    private void registerNewPatient() {
-        Patient patient = new PatientMenuHandler().createPatientFromConsole();
-        new PatientMenu(patient).display();
     }
 
     private void registerDoctor() {
@@ -194,14 +189,29 @@ public class UserMenu implements Menu {
 
             Doctor updatedDoctor = doctorService.updateUserId(doctor.getId(), user.getId());
             new DoctorMenu(updatedDoctor).display();
-        } catch (EntityAlreadyExistsException | EntityNotFoundException e) {
-            LOGGER.info("Registration failed\n" + e);
+        } catch (HospitalException e) {
+            LOGGER.info("Registration failed: " + e);
             display();
         }
     }
 
-    private static void registerNewDoctor() {
+    private void registerNewDoctor() {
         Doctor doctor = new DoctorMenuHandler().createDoctorFromConsole();
-        new DoctorMenu(doctor).display();
+        if (doctor != null) {
+            new DoctorMenu(doctor).display();
+        } else {
+            LOGGER.info("Register failed");
+            display();
+        }
+    }
+
+    private void registerNewPatient() {
+        Patient patient = new PatientMenuHandler().createPatientFromConsole();
+        if (patient != null) {
+            new PatientMenu(patient).display();
+        } else {
+            LOGGER.info("Register failed");
+            display();
+        }
     }
 }

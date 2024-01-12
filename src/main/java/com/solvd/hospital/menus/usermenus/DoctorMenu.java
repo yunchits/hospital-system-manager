@@ -159,7 +159,7 @@ public class DoctorMenu implements Menu {
         } catch (EntityAlreadyExistsException e) {
             LOGGER.info("Your patient already has this diagnosis");
         } catch (RelatedEntityNotFound e) {
-            LOGGER.info(e);
+            LOGGER.info(e.getMessage());
         }
     }
 
@@ -189,7 +189,7 @@ public class DoctorMenu implements Menu {
         try {
             hospitalizationService.create(patient.getId(), admissionDate, dischargeDate);
         } catch (RelatedEntityNotFound | InvalidArgumentException e) {
-            LOGGER.error("Failed to create hospitalization record\n" + e);
+            LOGGER.error("Failed to create hospitalization record: " + e.getMessage());
         }
     }
 

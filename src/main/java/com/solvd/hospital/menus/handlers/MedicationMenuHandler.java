@@ -3,8 +3,8 @@ package com.solvd.hospital.menus.handlers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Hospital;
 import com.solvd.hospital.entities.Medication;
@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class MedicationMenuHandler implements Menu {
-
     private static final Logger LOGGER = LogManager.getLogger(MedicationMenuHandler.class);
 
     private final InputScanner scanner;
@@ -100,17 +99,16 @@ public class MedicationMenuHandler implements Menu {
             JsonNode jsonNode = objectMapper.readTree(file);
 
             if (jsonNode.isArray()) {
-                List<Medication> medications = objectMapper.readValue(file, new TypeReference<>() {
-                });
+                List<Medication> medications = objectMapper.readValue(file, new TypeReference<>() {});
 
                 for (Medication medication : medications) {
-                    medicationService.create(getName(), medication.getDescription());
+                    medicationService.create(medication.getName(), medication.getDescription());
                 }
             } else {
                 Medication medication = objectMapper.readValue(file, Medication.class);
                 medicationService.create(medication.getName(), medication.getDescription());
             }
-        } catch (IOException | EntityAlreadyExistsException e) {
+        } catch (IOException | HospitalException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
@@ -122,7 +120,7 @@ public class MedicationMenuHandler implements Menu {
 
         try {
             medicationService.create(name, description);
-        } catch (EntityAlreadyExistsException e) {
+        } catch (HospitalException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
     }
@@ -144,7 +142,7 @@ public class MedicationMenuHandler implements Menu {
                 medicationService.create(medication.getDescription(), medication.getName());
             }
             LOGGER.info("Medications created successfully from XML file");
-        } catch (JAXBException | FileNotFoundException | EntityAlreadyExistsException e) {
+        } catch (JAXBException | FileNotFoundException | HospitalException e) {
             LOGGER.info("Creation failed: " + e.getMessage());
         }
     }
@@ -159,7 +157,7 @@ public class MedicationMenuHandler implements Menu {
 
         try {
             medicationService.update(id, name, description);
-        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+        } catch (HospitalException e) {
             LOGGER.info("Update failed: " + e.getMessage());
         }
     }
@@ -175,10 +173,6 @@ public class MedicationMenuHandler implements Menu {
         }
     }
 
-    private void printMedications() {
-        LOGGER.info(medicationService.findAll());
-    }
-
     private String getDescription() {
         LOGGER.info("Enter medication description:");
         return scanner.scanString();
@@ -187,5 +181,9 @@ public class MedicationMenuHandler implements Menu {
     private String getName() {
         LOGGER.info("Enter medication name:");
         return scanner.scanString();
+    }
+
+    private void printMedications() {
+        LOGGER.info(medicationService.findAll());
     }
 }
