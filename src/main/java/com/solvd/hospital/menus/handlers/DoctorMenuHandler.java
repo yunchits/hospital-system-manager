@@ -101,15 +101,13 @@ public class DoctorMenuHandler implements Menu {
             JsonNode jsonNode = objectMapper.readTree(file);
 
             if (jsonNode.isArray()) {
-                List<DoctorDTO> doctorDTOs = objectMapper.readValue(file, new TypeReference<>() {
-                });
+                List<DoctorDTO> doctorDTOs = objectMapper.readValue(file, new TypeReference<>() {});
 
                 for (DoctorDTO doctorDTO : doctorDTOs) {
                     createDoctor(doctorDTO);
                 }
             } else {
                 DoctorDTO doctorDTO = objectMapper.readValue(file, DoctorDTO.class);
-
                 createDoctor(doctorDTO);
             }
         } catch (IOException | HospitalException e) {

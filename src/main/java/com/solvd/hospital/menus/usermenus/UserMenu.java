@@ -19,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class UserMenu implements Menu {
-
     private static final Logger LOGGER = LogManager.getLogger(UserMenu.class);
 
     private final InputScanner scanner;
@@ -161,11 +160,6 @@ public class UserMenu implements Menu {
         }
     }
 
-    private void registerNewPatient() {
-        Patient patient = new PatientMenuHandler().createPatientFromConsole();
-        new PatientMenu(patient).display();
-    }
-
     private void registerDoctor() {
         if (isDataInSystem()) {
             registerDoctorWithExistingData();
@@ -201,8 +195,23 @@ public class UserMenu implements Menu {
         }
     }
 
-    private static void registerNewDoctor() {
-        Doctor doctor = new DoctorMenuHandler().createDoctorFromConsole(); //todo not null
-        new DoctorMenu(doctor).display();
+    private void registerNewDoctor() {
+        Doctor doctor = new DoctorMenuHandler().createDoctorFromConsole();
+        if (doctor != null) {
+            new DoctorMenu(doctor).display();
+        } else {
+            LOGGER.info("Register failed");
+            display();
+        }
+    }
+
+    private void registerNewPatient() {
+        Patient patient = new PatientMenuHandler().createPatientFromConsole();
+        if (patient != null) {
+            new PatientMenu(patient).display();
+        } else {
+            LOGGER.info("Register failed");
+            display();
+        }
     }
 }

@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class MedicationMenuHandler implements Menu {
-
     private static final Logger LOGGER = LogManager.getLogger(MedicationMenuHandler.class);
 
     private final InputScanner scanner;
@@ -100,11 +99,10 @@ public class MedicationMenuHandler implements Menu {
             JsonNode jsonNode = objectMapper.readTree(file);
 
             if (jsonNode.isArray()) {
-                List<Medication> medications = objectMapper.readValue(file, new TypeReference<>() {
-                });
+                List<Medication> medications = objectMapper.readValue(file, new TypeReference<>() {});
 
                 for (Medication medication : medications) {
-                    medicationService.create(getName(), medication.getDescription());
+                    medicationService.create(medication.getName(), medication.getDescription());
                 }
             } else {
                 Medication medication = objectMapper.readValue(file, Medication.class);
@@ -175,10 +173,6 @@ public class MedicationMenuHandler implements Menu {
         }
     }
 
-    private void printMedications() {
-        LOGGER.info(medicationService.findAll());
-    }
-
     private String getDescription() {
         LOGGER.info("Enter medication description:");
         return scanner.scanString();
@@ -187,5 +181,9 @@ public class MedicationMenuHandler implements Menu {
     private String getName() {
         LOGGER.info("Enter medication name:");
         return scanner.scanString();
+    }
+
+    private void printMedications() {
+        LOGGER.info(medicationService.findAll());
     }
 }
