@@ -1,25 +1,18 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
-import com.solvd.hospital.entities.Hospital;
 import com.solvd.hospital.entities.Medication;
+import com.solvd.hospital.json.JsonFileHandler;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.MedicationService;
-import jakarta.xml.bind.JAXBContext;
+import com.solvd.hospital.xml.jaxb.XmlJAXBFileHandler;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -91,21 +84,11 @@ public class MedicationMenuHandler implements Menu {
         LOGGER.info("Enter JSON file path:");
         String path = scanner.scanString();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
         try {
-            File file = new File(path);
+            JsonFileHandler jfh = new JsonFileHandler();
+            List<Medication> medications = jfh.readFromJson(path, Medication.class);
 
-            JsonNode jsonNode = objectMapper.readTree(file);
-
-            if (jsonNode.isArray()) {
-                List<Medication> medications = objectMapper.readValue(file, new TypeReference<>() {});
-
-                for (Medication medication : medications) {
-                    medicationService.create(medication.getName(), medication.getDescription());
-                }
-            } else {
-                Medication medication = objectMapper.readValue(file, Medication.class);
+            for (Medication medication : medications) {
                 medicationService.create(medication.getName(), medication.getDescription());
             }
         } catch (IOException | HospitalException e) {
@@ -130,19 +113,14 @@ public class MedicationMenuHandler implements Menu {
         String xmlFilePath = scanner.scanString();
 
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Hospital.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            Hospital hospital = (Hospital) unmarshaller.unmarshal(new FileReader(xmlFilePath));
-
-            List<Medication> medications = hospital.getMedications();
+            XmlJAXBFileHandler jaxbFileHandler = new XmlJAXBFileHandler();
+            List<Medication> medications = jaxbFileHandler.read(xmlFilePath, Medication.class);
 
             for (Medication medication : medications) {
                 medicationService.create(medication.getDescription(), medication.getName());
             }
             LOGGER.info("Medications created successfully from XML file");
-        } catch (JAXBException | FileNotFoundException | HospitalException e) {
+        } catch (JAXBException | HospitalException | IOException e) {
             LOGGER.info("Creation failed: " + e.getMessage());
         }
     }

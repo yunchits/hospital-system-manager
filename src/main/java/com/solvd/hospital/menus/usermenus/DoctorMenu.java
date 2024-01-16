@@ -101,6 +101,7 @@ public class DoctorMenu implements Menu {
         Appointment appointment = getAppointment(appointmentId);
 
         if (appointment == null) {
+            LOGGER.info("Appointment not found");
             return;
         }
 
@@ -113,10 +114,10 @@ public class DoctorMenu implements Menu {
 
         int choice;
         do {
-            LOGGER.info("1 - Diagnose the Patient");
+            LOGGER.info("1 - Diagnose the patient");
             LOGGER.info("2 - Write out a prescription for medications");
             LOGGER.info("3 - Hospitalize the patient");
-            LOGGER.info("0 - Complete the appointment and set the Bill");
+            LOGGER.info("0 - Complete the appointment and set the bill");
 
             choice = scanner.scanInt(0, 3);
 
@@ -134,18 +135,22 @@ public class DoctorMenu implements Menu {
                     billingAmount += HOSPITALIZATION_COST;
                     break;
                 case 0:
-                    LOGGER.info("You have completed your appointment with the patient:");
-                    LOGGER.info(patient);
-                    Bill bill = createBill(patient.getId(), billingAmount);
-                    LOGGER.info("He will be billed for the amount: " + bill.getAmount());
-                    try {
-                        appointmentService.delete(appointment.getId());
-                    } catch (EntityNotFoundException e) {
-                        LOGGER.info(e);
-                    }
+                    endAppointment(appointment, patient, billingAmount);
                     break;
             }
         } while (choice != 0);
+    }
+
+    private void endAppointment(Appointment appointment, Patient patient, double billingAmount) {
+        LOGGER.info("You have completed your appointment with the patient:");
+        LOGGER.info(patient);
+        Bill bill = createBill(patient.getId(), billingAmount);
+        LOGGER.info("He will be billed for the amount: " + bill.getAmount());
+        try {
+            appointmentService.delete(appointment.getId());
+        } catch (EntityNotFoundException e) {
+            LOGGER.info(e.getMessage());
+        }
     }
 
     private void diagnosePatient(Patient patient) {
@@ -169,7 +174,7 @@ public class DoctorMenu implements Menu {
         LOGGER.info("Enter medication ID for which you want to write a prescription");
         int medicationId = scanner.scanInt(0, medications.size());
 
-        Medication medication = null;
+        Medication medication;
         try {
             medication = medicationService.findById(medicationId);
             prescriptionService.create(doctor, patient, medication);
@@ -180,10 +185,10 @@ public class DoctorMenu implements Menu {
     }
 
     private void hospitalizePatient(Patient patient) {
-        LOGGER.info("Enter Admission Date:");
+        LOGGER.info("Enter admission date:");
         LocalDate admissionDate = scanner.scanLocalDate();
 
-        LOGGER.info("Enter Discharge Date:");
+        LOGGER.info("Enter discharge date:");
         LocalDate dischargeDate = scanner.scanLocalDate();
 
         try {
@@ -213,6 +218,7 @@ public class DoctorMenu implements Menu {
                 id,
                 billingAmount,
                 LocalDate.now(),
-                PaymentStatus.UNPAID);
+                PaymentStatus.UNPAID
+        );
     }
 }

@@ -3,21 +3,18 @@ package com.solvd.hospital.menus.handlers;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
-import com.solvd.hospital.entities.Hospital;
 import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.InsuranceType;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.InsuranceService;
 import com.solvd.hospital.services.PatientService;
-import jakarta.xml.bind.JAXBContext;
+import com.solvd.hospital.xml.jaxb.XmlJAXBFileHandler;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -104,14 +101,8 @@ public class InsuranceMenuHandler implements Menu {
         String xmlFilePath = scanner.scanString();
 
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Hospital.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            Hospital hospital = (Hospital) unmarshaller.unmarshal(new FileReader(xmlFilePath));
-
-            List<Insurance> insurances = hospital.getInsurances();
-            LOGGER.info(insurances);
+            XmlJAXBFileHandler jaxbFileHandler = new XmlJAXBFileHandler();
+            List<Insurance> insurances = jaxbFileHandler.read(xmlFilePath, Insurance.class);
 
             for (Insurance insurance : insurances) {
                 insuranceService.create(
@@ -124,8 +115,7 @@ public class InsuranceMenuHandler implements Menu {
                 );
             }
             LOGGER.info("Insurances created successfully from XML file.");
-        } catch (JAXBException | HospitalException | FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (JAXBException | HospitalException | IOException e) {
             LOGGER.info("Creation failed: " + e.getMessage());
         }
     }

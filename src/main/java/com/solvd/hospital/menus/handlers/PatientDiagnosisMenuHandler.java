@@ -4,20 +4,17 @@ import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
-import com.solvd.hospital.entities.Hospital;
 import com.solvd.hospital.entities.PatientDiagnosis;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.PatientDiagnosisService;
 import com.solvd.hospital.services.PatientService;
-import jakarta.xml.bind.JAXBContext;
+import com.solvd.hospital.xml.jaxb.XmlJAXBFileHandler;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 public class PatientDiagnosisMenuHandler implements Menu {
@@ -70,10 +67,13 @@ public class PatientDiagnosisMenuHandler implements Menu {
         LOGGER.info("2 - Read from XML file (JAXB)");
         int choice = scanner.scanInt(1, 2);
 
-        if (choice == 1) {
-            createPatientDiagnosisFromConsole();
-        } else if (choice == 2) {
-            createMedicationFromXML();
+        switch (choice) {
+            case 1:
+                createPatientDiagnosisFromConsole();
+                break;
+            case 2:
+                createMedicationFromXML();
+                break;
         }
     }
 
@@ -94,19 +94,14 @@ public class PatientDiagnosisMenuHandler implements Menu {
         String xmlFilePath = scanner.scanString();
 
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Hospital.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            Hospital hospital = (Hospital) unmarshaller.unmarshal(new FileReader(xmlFilePath));
-
-            List<PatientDiagnosis> patientDiagnoses = hospital.getPatientDiagnoses();
+            XmlJAXBFileHandler jaxbFileHandler = new XmlJAXBFileHandler();
+            List<PatientDiagnosis> patientDiagnoses = jaxbFileHandler.read(xmlFilePath, PatientDiagnosis.class);
 
             for (PatientDiagnosis patientDiagnosis : patientDiagnoses) {
                 patientDiagnosisService.create(patientDiagnosis.getPatientId(), patientDiagnosis.getDiagnosis().getId());
             }
             LOGGER.info("Patient diagnoses created successfully from XML file.");
-        } catch (JAXBException | FileNotFoundException | RelatedEntityNotFound | EntityAlreadyExistsException e) {
+        } catch (JAXBException | RelatedEntityNotFound | EntityAlreadyExistsException | IOException e) {
             LOGGER.info("Creation failed: " + e.getMessage());
         }
     }

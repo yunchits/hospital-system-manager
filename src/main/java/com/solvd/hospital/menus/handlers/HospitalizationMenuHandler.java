@@ -1,15 +1,12 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.dto.HospitalizationDTO;
 import com.solvd.hospital.entities.Hospitalization;
+import com.solvd.hospital.json.JsonFileHandler;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.HospitalizationService;
@@ -19,7 +16,6 @@ import com.solvd.hospital.xml.sax.parser.handlers.HospitalizationSAXHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -93,23 +89,10 @@ public class HospitalizationMenuHandler implements Menu {
         LOGGER.info("Enter JSON file path:");
         String path = scanner.scanString();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-
         try {
-            File file = new File(path);
-
-            JsonNode jsonNode = objectMapper.readTree(file);
-
-            if (jsonNode.isArray()) {
-                List<HospitalizationDTO> hospitalizationDTOs = objectMapper.readValue(file, new TypeReference<>() {
-                });
-
-                for (HospitalizationDTO hospitalizationDTO : hospitalizationDTOs) {
-                    hospitalizationService.create(hospitalizationDTO);
-                }
-            } else {
-                HospitalizationDTO hospitalizationDTO = objectMapper.readValue(file, HospitalizationDTO.class);
+            JsonFileHandler jfh = new JsonFileHandler();
+            List<HospitalizationDTO> hospitalizationDTOs = jfh.readFromJson(path, HospitalizationDTO.class);
+            for (HospitalizationDTO hospitalizationDTO : hospitalizationDTOs) {
                 hospitalizationService.create(hospitalizationDTO);
             }
         } catch (IOException | InvalidArgumentException | RelatedEntityNotFound e) {

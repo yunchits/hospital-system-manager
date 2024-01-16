@@ -6,10 +6,10 @@ import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
-import com.solvd.hospital.xml.sax.parser.handlers.BillSAXHandler;
 import com.solvd.hospital.services.BillService;
 import com.solvd.hospital.services.PatientService;
+import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.xml.sax.parser.handlers.BillSAXHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,10 +66,13 @@ public class BillMenuHandler implements Menu {
         LOGGER.info("2 - Read from XML file (SAX)");
         int choice = scanner.scanInt(1, 2);
 
-        if (choice == 1) {
-            createBillFromConsole();
-        } else if (choice == 2) {
-            createBillFromXML();
+        switch (choice) {
+            case 1:
+                createBillFromConsole();
+                break;
+            case 2:
+                createBillFromXML();
+                break;
         }
     }
 

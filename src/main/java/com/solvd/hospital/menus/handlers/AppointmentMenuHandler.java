@@ -1,26 +1,22 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.dto.AppointmentDTO;
 import com.solvd.hospital.entities.Appointment;
+import com.solvd.hospital.json.JsonFileHandler;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
-import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
-import com.solvd.hospital.xml.sax.parser.handlers.AppointmentSAXHandler;
 import com.solvd.hospital.services.AppointmentService;
 import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.PatientService;
+import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.xml.sax.parser.handlers.AppointmentSAXHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -93,25 +89,13 @@ public class AppointmentMenuHandler implements Menu {
         LOGGER.info("Enter JSON file path:");
         String path = scanner.scanString();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-
         try {
-            File file = new File(path);
+            JsonFileHandler jfh = new JsonFileHandler();
+            List<AppointmentDTO> appointmentDTOs = jfh.readFromJson(path, AppointmentDTO.class);
 
-            JsonNode jsonNode = objectMapper.readTree(file);
-
-            if (jsonNode.isArray()) {
-                List<AppointmentDTO> appointmentDTOs = objectMapper.readValue(file, new TypeReference<>() {});
-
-                for (AppointmentDTO appointmentDTO : appointmentDTOs) {
-                    appointmentService.create(appointmentDTO);
-                }
-            } else {
-                AppointmentDTO appointmentDTO = objectMapper.readValue(file, AppointmentDTO.class);
+            for (AppointmentDTO appointmentDTO : appointmentDTOs) {
                 appointmentService.create(appointmentDTO);
             }
-
         } catch (IOException | InvalidArgumentException | EntityNotFoundException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
@@ -158,7 +142,6 @@ public class AppointmentMenuHandler implements Menu {
         try {
             saxParser.parse(xmlFilePath);
             List<Appointment> appointments = appointmentSAXHandler.getAppointments();
-            LOGGER.debug(appointments);
             if (appointments != null && !appointments.isEmpty()) {
                 createAppointmentsFromList(appointments);
                 LOGGER.info("Appointments created successfully from XML file");

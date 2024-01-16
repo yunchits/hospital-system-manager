@@ -1,25 +1,18 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Diagnosis;
-import com.solvd.hospital.entities.Hospital;
+import com.solvd.hospital.json.JsonFileHandler;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.DiagnosisService;
-import jakarta.xml.bind.JAXBContext;
+import com.solvd.hospital.xml.jaxb.XmlJAXBFileHandler;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 
@@ -90,22 +83,12 @@ public class DiagnosisMenuHandler implements Menu {
     private void createDiagnosisFromJSON() {
         LOGGER.info("Enter JSON file path:");
         String path = scanner.scanString();
-        ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            File file = new File(path);
+            JsonFileHandler jfh = new JsonFileHandler();
+            List<Diagnosis> diagnoses = jfh.readFromJson(path, Diagnosis.class);
 
-            JsonNode jsonNode = objectMapper.readTree(file);
-
-            if (jsonNode.isArray()) {
-                List<Diagnosis> diagnoses = objectMapper.readValue(file, new TypeReference<>() {
-                });
-
-                for (Diagnosis diagnosis : diagnoses) {
-                    diagnosisService.create(diagnosis.getName(), diagnosis.getDescription());
-                }
-            } else {
-                Diagnosis diagnosis = objectMapper.readValue(file, Diagnosis.class);
+            for (Diagnosis diagnosis : diagnoses) {
                 diagnosisService.create(diagnosis.getName(), diagnosis.getDescription());
             }
 
@@ -133,13 +116,8 @@ public class DiagnosisMenuHandler implements Menu {
         String xmlFilePath = scanner.scanString();
 
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Hospital.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            Hospital hospital = (Hospital) unmarshaller.unmarshal(new FileReader(xmlFilePath));
-
-            List<Diagnosis> diagnoses = hospital.getDiagnoses();
+            XmlJAXBFileHandler jaxbFileHandler = new XmlJAXBFileHandler();
+            List<Diagnosis> diagnoses = jaxbFileHandler.read(xmlFilePath, Diagnosis.class);
 
             for (Diagnosis diagnosis : diagnoses) {
                 diagnosisService.create(
@@ -148,7 +126,7 @@ public class DiagnosisMenuHandler implements Menu {
                 );
             }
             LOGGER.info("Diagnoses created successfully from XML file.");
-        } catch (JAXBException | FileNotFoundException | HospitalException e) {
+        } catch (JAXBException | HospitalException | IOException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
     }

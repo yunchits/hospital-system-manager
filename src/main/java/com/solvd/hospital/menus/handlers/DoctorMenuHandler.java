@@ -1,15 +1,12 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.dto.DoctorDTO;
 import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.user.User;
+import com.solvd.hospital.json.JsonFileHandler;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.DoctorService;
@@ -19,7 +16,6 @@ import com.solvd.hospital.xml.sax.parser.handlers.DoctorSAXHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -91,23 +87,11 @@ public class DoctorMenuHandler implements Menu {
         LOGGER.info("Enter JSON file path:");
         String path = scanner.scanString();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-
         try {
+            JsonFileHandler jfh = new JsonFileHandler();
+            List<DoctorDTO> doctorDTOs = jfh.readFromJson(path, DoctorDTO.class);
 
-            File file = new File(path);
-
-            JsonNode jsonNode = objectMapper.readTree(file);
-
-            if (jsonNode.isArray()) {
-                List<DoctorDTO> doctorDTOs = objectMapper.readValue(file, new TypeReference<>() {});
-
-                for (DoctorDTO doctorDTO : doctorDTOs) {
-                    createDoctor(doctorDTO);
-                }
-            } else {
-                DoctorDTO doctorDTO = objectMapper.readValue(file, DoctorDTO.class);
+            for (DoctorDTO doctorDTO : doctorDTOs) {
                 createDoctor(doctorDTO);
             }
         } catch (IOException | HospitalException e) {
@@ -150,6 +134,7 @@ public class DoctorMenuHandler implements Menu {
         } catch (HospitalException e) {
             LOGGER.error("Creation failed: " + e.getMessage());
         }
+
         return null;
     }
 

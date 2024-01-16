@@ -67,10 +67,13 @@ public class PatientMenuHandler implements Menu {
         LOGGER.info("2 - Read from XML file (SAX)");
         int choice = scanner.scanInt(1, 2);
 
-        if (choice == 1) {
-            createPatientFromConsole();
-        } else if (choice == 2) {
-            createPatientFromXML();
+        switch (choice) {
+            case 1:
+                createPatientFromConsole();
+                break;
+            case 2:
+                createPatientFromXML();
+                break;
         }
     }
 

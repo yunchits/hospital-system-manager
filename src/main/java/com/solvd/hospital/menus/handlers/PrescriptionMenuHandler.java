@@ -4,7 +4,6 @@ import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.Doctor;
-import com.solvd.hospital.entities.Hospital;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.entities.Prescription;
 import com.solvd.hospital.entities.patient.Patient;
@@ -14,14 +13,12 @@ import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.MedicationService;
 import com.solvd.hospital.services.PatientService;
 import com.solvd.hospital.services.PrescriptionService;
-import jakarta.xml.bind.JAXBContext;
+import com.solvd.hospital.xml.jaxb.XmlJAXBFileHandler;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 public class PrescriptionMenuHandler implements Menu {
@@ -80,10 +77,13 @@ public class PrescriptionMenuHandler implements Menu {
         LOGGER.info("2 - Read from XML file (JAXB)");
         int choice = scanner.scanInt(1, 2);
 
-        if (choice == 1) {
-            createPrescriptionFromConsole();
-        } else if (choice == 2) {
-            createPrescriptionFromXML();
+        switch (choice) {
+            case 1:
+                createPrescriptionFromConsole();
+                break;
+            case 2:
+                createPrescriptionFromXML();
+                break;
         }
     }
 
@@ -96,7 +96,7 @@ public class PrescriptionMenuHandler implements Menu {
 
         long medicationId = getMedicationId();
         Medication medication = getMedicationById(medicationId);
-        
+
         try {
             prescriptionService.create(doctor, patient, medication);
         } catch (EntityAlreadyExistsException e) {
@@ -109,13 +109,8 @@ public class PrescriptionMenuHandler implements Menu {
         String xmlFilePath = scanner.scanString();
 
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(Hospital.class);
-
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-
-            Hospital hospital = (Hospital) unmarshaller.unmarshal(new FileReader(xmlFilePath));
-
-            List<Prescription> prescriptions = hospital.getPrescriptions();
+            XmlJAXBFileHandler jaxbFileHandler = new XmlJAXBFileHandler();
+            List<Prescription> prescriptions = jaxbFileHandler.read(xmlFilePath, Prescription.class);
 
             for (Prescription prescription : prescriptions) {
                 prescriptionService.create(
@@ -125,7 +120,7 @@ public class PrescriptionMenuHandler implements Menu {
                 );
             }
             LOGGER.info("Prescription created successfully from XML file");
-        } catch (JAXBException | FileNotFoundException | EntityAlreadyExistsException e) {
+        } catch (JAXBException | EntityAlreadyExistsException | IOException e) {
             LOGGER.info("Creation failed: " + e.getMessage());
         }
     }
