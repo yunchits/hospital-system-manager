@@ -1,12 +1,10 @@
 package com.solvd.hospital.services;
 
-import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.dao.DAOFactory;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
 import com.solvd.hospital.dao.HospitalizationDAO;
-import com.solvd.hospital.dao.jdbc.impl.JDBCHospitalizationDAOImpl;
-import com.solvd.hospital.dao.mybatis.impl.MyBatisHospitalizationDAOImpl;
 import com.solvd.hospital.dto.HospitalizationDTO;
 import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.entities.patient.Patient;
@@ -20,16 +18,7 @@ public class HospitalizationService {
     private final PatientService patientService;
 
     public HospitalizationService() {
-        switch (AppProperties.getProperty("dao.type")) {
-            case "mybatis":
-                this.dao = new MyBatisHospitalizationDAOImpl();
-                break;
-            case "jdbc":
-                this.dao = new JDBCHospitalizationDAOImpl();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DAO type");
-        }
+        this.dao = DAOFactory.createHospitalizationDAO();
         this.patientService = new PatientService();
     }
 

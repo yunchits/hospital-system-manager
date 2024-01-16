@@ -1,10 +1,8 @@
 package com.solvd.hospital.services;
 
-import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.dao.DAOFactory;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.BillDAO;
-import com.solvd.hospital.dao.jdbc.impl.JDBCBillDAOImpl;
-import com.solvd.hospital.dao.mybatis.impl.MyBatisBillDAOImpl;
 import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 
@@ -16,16 +14,7 @@ public class BillService {
     private final BillDAO dao;
 
     public BillService() {
-        switch (AppProperties.getProperty("dao.type")) {
-            case "mybatis":
-                this.dao = new MyBatisBillDAOImpl();
-                break;
-            case "jdbc":
-                this.dao = new JDBCBillDAOImpl();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DAO type");
-        }
+        this.dao = DAOFactory.createBillDAO();
     }
     
     public Bill create(long patientId, double amount, LocalDate billingDate, PaymentStatus paymentStatus) {

@@ -1,11 +1,9 @@
 package com.solvd.hospital.services;
 
-import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.dao.DAOFactory;
 import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.PrescriptionDAO;
-import com.solvd.hospital.dao.jdbc.impl.JDBCPrescriptionDAOImpl;
-import com.solvd.hospital.dao.mybatis.impl.MyBatisPrescriptionDAOImpl;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.entities.Prescription;
 import com.solvd.hospital.entities.Doctor;
@@ -17,16 +15,7 @@ public class PrescriptionService {
     private final PrescriptionDAO dao;
 
     public PrescriptionService() {
-        switch (AppProperties.getProperty("dao.type")) {
-            case "mybatis":
-                this.dao = new MyBatisPrescriptionDAOImpl();
-                break;
-            case "jdbc":
-                this.dao = new JDBCPrescriptionDAOImpl();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DAO type");
-        }
+        this.dao = DAOFactory.createPrescriptionDAO();
     }
 
     public Prescription create(Doctor doctor, Patient patient, Medication medication)

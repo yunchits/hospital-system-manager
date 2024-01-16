@@ -188,7 +188,7 @@ public class AppointmentMenuHandler implements Menu {
         try {
             appointmentService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Update failed: " + e);
+            LOGGER.error("Update failed: " + e.getMessage());
         }
     }
 

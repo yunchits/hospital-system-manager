@@ -1,31 +1,20 @@
 package com.solvd.hospital.services;
 
-import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.dao.DAOFactory;
 import com.solvd.hospital.common.PasswordHashing;
 import com.solvd.hospital.common.ValidationUtils;
 import com.solvd.hospital.common.exceptions.*;
-import com.solvd.hospital.dao.UsersDAO;
-import com.solvd.hospital.dao.jdbc.impl.JDBCUserDAOImpl;
-import com.solvd.hospital.dao.mybatis.impl.MyBatisUserDAOImpl;
+import com.solvd.hospital.dao.UserDAO;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
 
 import java.util.Optional;
 
 public class UserService {
-    private final UsersDAO dao;
+    private final UserDAO dao;
 
     public UserService() {
-        switch (AppProperties.getProperty("dao.type")) {
-            case "mybatis":
-                this.dao = new MyBatisUserDAOImpl();
-                break;
-            case "jdbc":
-                this.dao = new JDBCUserDAOImpl();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DAO type");
-        }
+        this.dao = DAOFactory.createUserDAO();
     }
 
     public User register(String username, String password, Role role) throws HospitalException {

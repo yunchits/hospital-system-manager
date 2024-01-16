@@ -1,11 +1,9 @@
 package com.solvd.hospital.services;
 
-import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.dao.DAOFactory;
 import com.solvd.hospital.common.ValidationUtils;
 import com.solvd.hospital.common.exceptions.*;
 import com.solvd.hospital.dao.InsuranceDAO;
-import com.solvd.hospital.dao.jdbc.impl.JDBCInsuranceDAOImpl;
-import com.solvd.hospital.dao.mybatis.impl.MyBatisInsuranceDAOImpl;
 import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.InsuranceType;
 
@@ -19,16 +17,7 @@ public class InsuranceService {
     private final PatientService patientService;
 
     public InsuranceService() {
-        switch (AppProperties.getProperty("dao.type")) {
-            case "mybatis":
-                this.dao = new MyBatisInsuranceDAOImpl();
-                break;
-            case "jdbc":
-                this.dao = new JDBCInsuranceDAOImpl();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DAO type");
-        }
+        this.dao = DAOFactory.createInsuranceDAO();
         this.patientService = new PatientService();
     }
 

@@ -4,7 +4,7 @@ import com.solvd.hospital.entities.user.User;
 
 import java.util.Optional;
 
-public interface UsersDAO {
+public interface UserDAO {
     Optional<User> getById(long id);
 
     Optional<User> getByUsername(String username);

@@ -2,7 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
-import com.solvd.hospital.dao.UsersDAO;
+import com.solvd.hospital.dao.UserDAO;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
 
@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
-public class JDBCUserDAOImpl implements UsersDAO {
+public class JDBCUserDAOImpl implements UserDAO {
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
     private static final String CREATE_USER_QUERY = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";

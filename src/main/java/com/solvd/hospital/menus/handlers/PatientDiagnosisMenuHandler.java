@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class PatientDiagnosisMenuHandler implements Menu {
-
     private static final Logger LOGGER = LogManager.getLogger(PatientDiagnosisMenuHandler.class);
 
     private final InputScanner scanner;

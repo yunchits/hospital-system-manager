@@ -1,13 +1,11 @@
 package com.solvd.hospital.services;
 
-import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.dao.DAOFactory;
 import com.solvd.hospital.common.ValidationUtils;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.exceptions.InvalidArgumentException;
 import com.solvd.hospital.dao.PatientDAO;
-import com.solvd.hospital.dao.jdbc.impl.JDBCPatientDAOImpl;
-import com.solvd.hospital.dao.mybatis.impl.MyBatisPatientDAOImpl;
 import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.entities.user.Role;
@@ -23,16 +21,7 @@ public class PatientService {
     private final UserService userService;
 
     public PatientService() {
-        switch (AppProperties.getProperty("dao.type")) {
-            case "mybatis":
-                this.dao = new MyBatisPatientDAOImpl();
-                break;
-            case "jdbc":
-                this.dao = new JDBCPatientDAOImpl();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DAO type");
-        }
+        this.dao = DAOFactory.createPatientDAO();
         this.userService = new UserService();
     }
 
