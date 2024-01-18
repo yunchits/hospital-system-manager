@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.dao.PatientDAO;
@@ -54,7 +55,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating patient", e);
+            throw new DataAccessException("Error creating patient", e);
         }
         return patient;
     }
@@ -84,7 +85,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating patient", e);
+            throw new DataAccessException("Error creating patient", e);
         }
         return patient;
     }
@@ -102,7 +103,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting all patients.", e);
+            throw new DataAccessException("Error getting all patients.", e);
         }
         return patients;
     }
@@ -134,7 +135,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating doctor", e);
+            throw new DataAccessException("Error updating doctor", e);
         }
         return patient;
     }
@@ -153,7 +154,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating doctor", e);
+            throw new DataAccessException("Error updating doctor", e);
         }
         return patient;
     }
@@ -167,7 +168,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
     }
 
@@ -184,7 +185,7 @@ public class JDBCPatientDAOImpl implements PatientDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }

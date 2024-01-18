@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.entities.Diagnosis;
 import com.solvd.hospital.dao.DiagnosisDAO;
 
@@ -46,7 +47,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating diagnosis", e);
+            throw new DataAccessException("Error creating diagnosis", e);
         }
         return diagnosis;
     }
@@ -64,7 +65,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error executing diagnosis query", e);
+            throw new DataAccessException("Error executing diagnosis query", e);
         }
         return diagnoses;
     }
@@ -83,7 +84,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting patient diagnoses by patient ID", e);
+            throw new DataAccessException("Error getting patient diagnoses by patient ID", e);
         }
         return Optional.empty();
     }
@@ -102,7 +103,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting patient diagnoses by patient ID", e);
+            throw new DataAccessException("Error getting patient diagnoses by patient ID", e);
         }
         return Optional.empty();
     }
@@ -122,7 +123,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating diagnosis", e);
+            throw new DataAccessException("Error updating diagnosis", e);
         }
         return diagnosis;
     }
@@ -136,7 +137,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting diagnosis", e);
+            throw new DataAccessException("Error deleting diagnosis", e);
         }
     }
 
@@ -154,7 +155,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error checking diagnosis name uniqueness", e);
+            throw new DataAccessException("Error checking diagnosis name uniqueness", e);
         }
         return false;
     }

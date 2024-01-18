@@ -31,12 +31,11 @@ public class AppointmentService {
         validateDateTime(appointmentDateTime);
 
         Appointment appointment = new Appointment();
-
         Patient patient = patientService.findById(patientId);
         Doctor doctor = doctorService.findById(doctorId);
+
         appointment.setPatient(patient);
         appointment.setDoctor(doctor);
-
         appointment.setAppointmentDateTime(appointmentDateTime);
 
         return dao.create(appointment);
@@ -47,12 +46,11 @@ public class AppointmentService {
         validateDateTime(appointmentDateTime);
 
         Appointment appointment = new Appointment();
-
         Patient patient = patientService.findById(appointmentDTO.getPatientId());
         Doctor doctor = doctorService.findById(appointmentDTO.getDoctorId());
+
         appointment.setPatient(patient);
         appointment.setDoctor(doctor);
-
         appointment.setAppointmentDateTime(appointmentDateTime);
 
         return dao.create(appointment);
@@ -70,27 +68,22 @@ public class AppointmentService {
 
     public List<Appointment> findByPatientId(long patientId) throws EntityNotFoundException {
         List<Appointment> appointments = dao.findByPatientId(patientId);
-
         if (appointments.isEmpty()) {
             throw new EntityNotFoundException("Appointments not found for patient with ID: " + patientId);
         }
-
         return appointments;
     }
 
     public List<Appointment> findByDoctorId(long doctorId) throws EntityNotFoundException {
         List<Appointment> appointments = dao.findByDoctorId(doctorId);
-
         if (appointments.isEmpty()) {
             throw new EntityNotFoundException("Appointments not found for doctor with ID: " + doctorId);
         }
-
         return appointments;
     }
 
     public Appointment update(long id, long patientId, long doctorId, LocalDateTime appointmentDateTime) throws RelatedEntityNotFound, EntityNotFoundException, InvalidArgumentException {
         validateDateTime(appointmentDateTime);
-
         Appointment appointment = new Appointment();
 
         findById(id);
@@ -108,7 +101,6 @@ public class AppointmentService {
         appointment.setId(id);
         appointment.setPatient(patient);
         appointment.setDoctor(doctor);
-
         appointment.setAppointmentDateTime(appointmentDateTime);
 
         return dao.update(appointment);

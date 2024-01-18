@@ -38,7 +38,6 @@ public class XmlJAXBFileHandler {
                 result.addAll((List<T>) hospital.getPrescriptions());
             }
         }
-
         return result;
     }
 }

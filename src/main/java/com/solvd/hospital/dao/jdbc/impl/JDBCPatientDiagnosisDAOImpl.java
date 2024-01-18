@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.PatientDiagnosisDAO;
 import com.solvd.hospital.entities.Diagnosis;
@@ -46,7 +47,7 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating patient diagnosis", e);
+            throw new DataAccessException("Error creating patient diagnosis", e);
         }
         return patientDiagnosis;
     }
@@ -64,7 +65,7 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
             }
 
         } catch (SQLException | EntityNotFoundException e) {
-            throw new RuntimeException("Error getting all doctors", e);
+            throw new DataAccessException("Error getting all doctors", e);
         }
         return patientDiagnoses;
     }
@@ -82,12 +83,9 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
                 while (resultSet.next()) {
                     patientDiagnoses.add(resultSetToPatientDiagnosis(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Error getting patient diagnoses by patient ID", e);
+        } catch (SQLException | EntityNotFoundException e) {
+            throw new DataAccessException("Error getting patient diagnoses by patient ID", e);
         }
         return patientDiagnoses;
     }
@@ -104,12 +102,9 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
                 if (resultSet.next()) {
                     return Optional.of(resultSetToPatientDiagnosis(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | EntityNotFoundException e) {
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -129,7 +124,7 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating doctor", e);
+            throw new DataAccessException("Error updating doctor", e);
         }
         return patientDiagnosis;
     }
@@ -144,7 +139,7 @@ public class JDBCPatientDiagnosisDAOImpl implements PatientDiagnosisDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting patient diagnosis", e);
+            throw new DataAccessException("Error deleting patient diagnosis", e);
         }
     }
 

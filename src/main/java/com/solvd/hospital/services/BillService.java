@@ -19,12 +19,10 @@ public class BillService {
     
     public Bill create(long patientId, double amount, LocalDate billingDate, PaymentStatus paymentStatus) {
         Bill bill = new Bill();
-
         bill.setPatientId(patientId);
         bill.setAmount(amount);
         bill.setBillingDate(billingDate);
         bill.setPaymentStatus(paymentStatus);
-
         return dao.create(bill);
     }
 
@@ -49,10 +47,9 @@ public class BillService {
     }
 
     public Bill update(long id, long patientId, double amount, LocalDate billingDate, PaymentStatus paymentStatus) throws EntityNotFoundException {
-        Bill bill = new Bill();
-
         findById(id);
 
+        Bill bill = new Bill();
         bill.setId(id);
         bill.setPatientId(patientId);
         bill.setAmount(amount);

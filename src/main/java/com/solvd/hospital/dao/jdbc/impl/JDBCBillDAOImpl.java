@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.entities.bill.Bill;
 import com.solvd.hospital.entities.bill.PaymentStatus;
 import com.solvd.hospital.dao.BillDAO;
@@ -54,7 +55,7 @@ public class JDBCBillDAOImpl implements BillDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating bill", e);
+            throw new DataAccessException("Error creating bill", e);
         }
         return bill;
     }
@@ -72,7 +73,7 @@ public class JDBCBillDAOImpl implements BillDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting all bills", e);
+            throw new DataAccessException("Error getting all bills", e);
         }
         return bills;
     }
@@ -91,7 +92,7 @@ public class JDBCBillDAOImpl implements BillDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -105,14 +106,14 @@ public class JDBCBillDAOImpl implements BillDAO {
 
             statement.setLong(1, patientId);
 
-            try (ResultSet resultSet = statement.executeQuery();) {
+            try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     bills.add(resultSetToBill(resultSet));
                 }
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding bills", e);
+            throw new DataAccessException("Error finding bills", e);
         }
         return bills;
     }
@@ -134,7 +135,7 @@ public class JDBCBillDAOImpl implements BillDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error finding bills", e);
+            throw new DataAccessException("Error finding bills", e);
         }
         return bills;
     }
@@ -156,7 +157,7 @@ public class JDBCBillDAOImpl implements BillDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting all bills", e);
+            throw new DataAccessException("Error getting all bills", e);
         }
         return bills;
     }
@@ -177,7 +178,7 @@ public class JDBCBillDAOImpl implements BillDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating bill", e);
+            throw new DataAccessException("Error updating bill", e);
         }
         return bill;
     }
@@ -191,7 +192,7 @@ public class JDBCBillDAOImpl implements BillDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting bill", e);
+            throw new DataAccessException("Error deleting bill", e);
         }
     }
 

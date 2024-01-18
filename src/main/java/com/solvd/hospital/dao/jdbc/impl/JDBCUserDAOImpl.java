@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.dao.UserDAO;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
@@ -46,7 +47,7 @@ public class JDBCUserDAOImpl implements UserDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating user", e);
+            throw new DataAccessException("Error creating user", e);
         }
         return user;
     }
@@ -65,7 +66,7 @@ public class JDBCUserDAOImpl implements UserDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -84,7 +85,7 @@ public class JDBCUserDAOImpl implements UserDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -105,7 +106,7 @@ public class JDBCUserDAOImpl implements UserDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating user", e);
+            throw new DataAccessException("Error updating user", e);
         }
         return user;
     }
@@ -119,7 +120,7 @@ public class JDBCUserDAOImpl implements UserDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting user", e);
+            throw new DataAccessException("Error deleting user", e);
         }
     }
 
@@ -138,7 +139,7 @@ public class JDBCUserDAOImpl implements UserDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error checking username uniqueness", e);
+            throw new DataAccessException("Error checking username uniqueness", e);
         }
         return false;
     }

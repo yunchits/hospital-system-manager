@@ -7,9 +7,9 @@ import com.solvd.hospital.entities.bill.PaymentStatus;
 import java.time.LocalDate;
 
 public class BillingService {
-    private final BillService billService;
 
-    double billingAmount;
+    private final BillService billService;
+    private double billingAmount;
 
     public BillingService() {
         this.billService = new BillService();

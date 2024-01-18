@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.dao.DoctorDAO;
 import com.solvd.hospital.entities.Doctor;
 
@@ -54,7 +55,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating doctor", e);
+            throw new DataAccessException("Error creating doctor", e);
         }
         return doctor;
     }
@@ -83,7 +84,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating doctor", e);
+            throw new DataAccessException("Error creating doctor", e);
         }
         return doctor;
     }
@@ -101,7 +102,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting all doctors", e);
+            throw new DataAccessException("Error getting all doctors", e);
         }
         return doctors;
     }
@@ -132,7 +133,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating doctor", e);
+            throw new DataAccessException("Error updating doctor", e);
         }
         return doctor;
     }
@@ -151,7 +152,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating doctor", e);
+            throw new DataAccessException("Error updating doctor", e);
         }
         return doctor;
     }
@@ -165,7 +166,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
     }
 
@@ -182,7 +183,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -222,7 +223,7 @@ public class JDBCDoctorDAOImpl implements DoctorDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating doctor", e);
+            throw new DataAccessException("Error creating doctor", e);
         }
         return doctor;
     }

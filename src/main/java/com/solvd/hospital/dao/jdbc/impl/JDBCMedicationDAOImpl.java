@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.dao.MedicationDAO;
 
@@ -46,7 +47,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating medication", e);
+            throw new DataAccessException("Error creating medication", e);
         }
         return medication;
     }
@@ -64,7 +65,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting all medications.", e);
+            throw new DataAccessException("Error getting all medications.", e);
         }
         return medications;
     }
@@ -83,7 +84,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -103,7 +104,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating medication", e);
+            throw new DataAccessException("Error updating medication", e);
         }
         return medication;
     }
@@ -117,7 +118,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting medication", e);
+            throw new DataAccessException("Error deleting medication", e);
         }
     }
 
@@ -135,7 +136,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error checking medication name uniqueness", e);
+            throw new DataAccessException("Error checking medication name uniqueness", e);
         }
         return false;
     }

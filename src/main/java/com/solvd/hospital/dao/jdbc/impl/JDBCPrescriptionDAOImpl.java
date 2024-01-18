@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.PrescriptionDAO;
 import com.solvd.hospital.entities.Prescription;
@@ -62,7 +63,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating prescription", e);
+            throw new DataAccessException("Error creating prescription", e);
         }
         return prescription;
     }
@@ -78,12 +79,10 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
                 if (resultSet.next()) {
                     return Optional.of(resultSetToPrescription(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | EntityNotFoundException e) {
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -101,7 +100,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
             }
 
         } catch (SQLException | EntityNotFoundException e) {
-            throw new RuntimeException("Error getting all doctors", e);
+            throw new DataAccessException("Error getting all doctors", e);
         }
         return prescriptions;
     }
@@ -118,12 +117,9 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
                 while (resultSet.next()) {
                     prescriptions.add(resultSetToPrescription(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | EntityNotFoundException e) {
+            throw new DataAccessException(e);
         }
         return prescriptions;
     }
@@ -144,7 +140,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating prescription", e);
+            throw new DataAccessException("Error updating prescription", e);
         }
         return prescription;
     }
@@ -158,7 +154,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
     }
 
@@ -171,7 +167,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
     }
 
@@ -189,9 +185,8 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
                     return count == 0;
                 }
             }
-
         } catch (SQLException e) {
-            throw new RuntimeException("Error checking username uniqueness", e);
+            throw new DataAccessException("Error checking username uniqueness", e);
         }
         return false;
     }
