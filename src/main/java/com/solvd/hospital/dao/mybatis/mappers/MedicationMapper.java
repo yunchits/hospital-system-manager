@@ -34,4 +34,7 @@ public interface MedicationMapper {
 
     @Delete("DELETE FROM medications WHERE id = #{id}")
     void delete(long id);
+
+    @Select("SELECT COUNT(*) = 0 FROM medications WHERE medication_name = #{name}")
+    boolean isMedicationUnique(String name);
 }

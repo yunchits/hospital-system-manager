@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.entities.Diagnosis;
 import com.solvd.hospital.dao.DiagnosisDAO;
 
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
-
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
     private static final String CREATE_DIAGNOSIS_QUERY = "INSERT INTO diagnoses (diagnosis_name, diagnosis_description) " +
@@ -22,6 +22,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
     private static final String UPDATE_DIAGNOSIS_QUERY = "UPDATE diagnoses " +
         "SET diagnosis_name = ?, diagnosis_description = ? WHERE id = ?";
     private static final String DELETE_DIAGNOSIS_QUERY = "DELETE FROM diagnoses WHERE id = ?";
+    private static final String COUNT_DIAGNOSIS = "SELECT COUNT(*) FROM diagnoses WHERE diagnoses_name = ?";
 
     @Override
     public Diagnosis create(Diagnosis diagnosis) {
@@ -46,7 +47,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating diagnosis", e);
+            throw new DataAccessException("Error creating diagnosis", e);
         }
         return diagnosis;
     }
@@ -64,7 +65,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error executing diagnosis query", e);
+            throw new DataAccessException("Error executing diagnosis query", e);
         }
         return diagnoses;
     }
@@ -83,7 +84,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting patient diagnoses by patient ID", e);
+            throw new DataAccessException("Error getting patient diagnoses by patient ID", e);
         }
         return Optional.empty();
     }
@@ -102,7 +103,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting patient diagnoses by patient ID", e);
+            throw new DataAccessException("Error getting patient diagnoses by patient ID", e);
         }
         return Optional.empty();
     }
@@ -122,7 +123,7 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating diagnosis", e);
+            throw new DataAccessException("Error updating diagnosis", e);
         }
         return diagnosis;
     }
@@ -136,8 +137,27 @@ public class JDBCDiagnosisDAOImpl implements DiagnosisDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting diagnosis", e);
+            throw new DataAccessException("Error deleting diagnosis", e);
         }
+    }
+
+    @Override
+    public boolean isDiagnosisUnique(String name) {
+        try (ReusableConnection connection = POOL.getConnection();
+             PreparedStatement statement = connection.prepareStatement(COUNT_DIAGNOSIS)) {
+
+            statement.setString(1, name);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count == 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking diagnosis name uniqueness", e);
+        }
+        return false;
     }
 
     private Diagnosis resultSetToDiagnosis(ResultSet resultSet) throws SQLException {

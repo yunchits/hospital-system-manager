@@ -1,17 +1,20 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.patient.Gender;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.PatientService;
+import com.solvd.hospital.xml.sax.parser.HospitalSAXParser;
+import com.solvd.hospital.xml.sax.parser.handlers.PatientSAXHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class PatientMenuHandler implements Menu {
 
@@ -58,52 +61,89 @@ public class PatientMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    public Patient createPatient() {
-        LOGGER.info("Enter Patient's First Name:");
-        String firstName = scanner.scanName();
+    private void createPatient() {
+        LOGGER.info("Choose source for patient creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (SAX)");
+        int choice = scanner.scanInt(1, 2);
 
-        LOGGER.info("Enter Patient's Last Name:");
-        String lastName = scanner.scanName();
+        switch (choice) {
+            case 1:
+                createPatientFromConsole();
+                break;
+            case 2:
+                createPatientFromXML();
+                break;
+        }
+    }
 
-        LOGGER.info("Enter Patient's birth date: ");
-        LocalDate date = scanner.scanLocalDate();
+    public Patient createPatientFromConsole() {
+        String firstName = getFirstName();
+
+        String lastName = getLastName();
+
+        LocalDate date = getLocalDate();
 
         Gender gender = selectGender();
 
-        while (true) {
-            LOGGER.info("Enter Patient's username:");
-            String username = scanner.scanString();
+        LOGGER.info("Enter patient's username:");
+        String username = scanner.scanString();
 
-            LOGGER.info("Enter Patient's password:");
-            String password = scanner.scanString();
+        LOGGER.info("Enter patient's password:");
+        String password = scanner.scanString();
 
-            try {
-                return patientService.create(firstName, lastName, date, gender, username, password);
-            } catch (EntityAlreadyExistsException e) {
-                LOGGER.info("Please try again with a different username");
+        try {
+            return patientService.createWithUser(firstName, lastName, date, gender, username, password);
+        } catch (HospitalException e) {
+            LOGGER.info("Creation failed: " + e);
+        }
+        return null;
+    }
+
+    private void createPatientFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        PatientSAXHandler patientSAXHandler = new PatientSAXHandler();
+        HospitalSAXParser saxParser = new HospitalSAXParser(patientSAXHandler);
+
+        try {
+            saxParser.parse(xmlFilePath);
+            List<Patient> patients = patientSAXHandler.getPatients();
+            if (patients != null && !patients.isEmpty()) {
+                for (Patient patient : patients) {
+                    patientService.create(
+                            patient.getFirstName(),
+                            patient.getLastName(),
+                            patient.getBirthDate(),
+                            patient.getGender()
+                    );
+                }
+                LOGGER.info("Patients created successfully from XML file.");
+            } else {
+                LOGGER.info("No patients found in the XML file.");
             }
+        } catch (Exception e) {
+            LOGGER.error("Error parsing XML file: " + e.getMessage());
         }
     }
 
     private void updatePatient() {
-        LOGGER.info("Enter Patient ID to update:");
+        LOGGER.info("Enter patient ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter Patient's First Name:");
-        String firstName = scanner.scanName();
+        String firstName = getFirstName();
 
-        LOGGER.info("Enter Patient's Last Name:");
-        String lastName = scanner.scanName();
+        String lastName = getLastName();
 
-        LOGGER.info("Enter Patient's birth date: ");
-        LocalDate date = scanner.scanLocalDate();
+        LocalDate date = getLocalDate();
 
         Gender gender = selectGender();
 
         try {
             patientService.update(id, firstName, lastName, date, gender);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed\n" + e);
+        } catch (HospitalException e) {
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -126,11 +166,26 @@ public class PatientMenuHandler implements Menu {
         try {
             patientService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 
     private void printPatients() {
         LOGGER.info(patientService.findAll());
+    }
+
+    private LocalDate getLocalDate() {
+        LOGGER.info("Enter Patient's birth date (dd.MM.yyyy):");
+        return scanner.scanLocalDate();
+    }
+
+    private String getLastName() {
+        LOGGER.info("Enter patient's last name:");
+        return scanner.scanName();
+    }
+
+    private String getFirstName() {
+        LOGGER.info("Enter patient's first name:");
+        return scanner.scanName();
     }
 }

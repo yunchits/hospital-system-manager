@@ -78,4 +78,12 @@ public class MyBatisPrescriptionDAOImpl implements PrescriptionDAO {
             session.commit();
         }
     }
+
+    @Override
+    public boolean isPrescriptionUnique(long patientId, long medicationId) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            PrescriptionMapper prescriptionMapper = session.getMapper(PrescriptionMapper.class);
+            return prescriptionMapper.isPrescriptionUnique(patientId, medicationId);
+        }
+    }
 }

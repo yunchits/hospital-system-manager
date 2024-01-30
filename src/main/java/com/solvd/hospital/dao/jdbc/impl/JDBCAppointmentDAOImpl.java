@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.entities.Appointment;
 import com.solvd.hospital.dao.AppointmentDAO;
@@ -53,7 +54,7 @@ public class JDBCAppointmentDAOImpl implements AppointmentDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return appointment;
     }
@@ -71,7 +72,7 @@ public class JDBCAppointmentDAOImpl implements AppointmentDAO {
             }
 
         } catch (SQLException | EntityNotFoundException e) {
-            throw new RuntimeException("Error getting appointments", e);
+            throw new DataAccessException("Error getting appointments", e);
         }
 
         return appointments;
@@ -91,7 +92,7 @@ public class JDBCAppointmentDAOImpl implements AppointmentDAO {
             }
 
         } catch (SQLException | EntityNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -122,7 +123,7 @@ public class JDBCAppointmentDAOImpl implements AppointmentDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating appointment", e);
+            throw new DataAccessException("Error updating appointment", e);
         }
         return appointment;
     }
@@ -136,7 +137,7 @@ public class JDBCAppointmentDAOImpl implements AppointmentDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
     }
 
@@ -149,27 +150,24 @@ public class JDBCAppointmentDAOImpl implements AppointmentDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
     }
 
     private List<Appointment> findAppointmentsById(long id, String query) {
         List<Appointment> appointments = new ArrayList<>();
         try (ReusableConnection connection = POOL.getConnection();
-             PreparedStatement statement = connection.prepareStatement(query)) {
+             PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
 
             statement.setLong(1, id);
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                while (resultSet.next()) {
-                    appointments.add(resultSetToAppointment(resultSet));
-                }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
+            while (resultSet.next()) {
+                appointments.add(resultSetToAppointment(resultSet));
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (EntityNotFoundException | SQLException e) {
+            throw new DataAccessException(e);
         }
         return appointments;
     }

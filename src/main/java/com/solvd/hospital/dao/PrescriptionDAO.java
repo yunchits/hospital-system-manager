@@ -19,4 +19,6 @@ public interface PrescriptionDAO {
     void deleteByPatientId(long patientId);
 
     void delete(long id);
+
+    boolean isPrescriptionUnique(long patientId, long medicationId);
 }

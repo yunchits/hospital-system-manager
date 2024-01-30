@@ -2,9 +2,10 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
-import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.dao.HospitalizationDAO;
+import com.solvd.hospital.entities.Hospitalization;
 import com.solvd.hospital.services.PatientService;
 
 import java.sql.*;
@@ -22,7 +23,7 @@ public class JDBCHospitalizationDAOImpl implements HospitalizationDAO {
     private static final String FIND_HOSPITALIZATION_BY_PATIENT_ID_QUERY = "SELECT * FROM hospitalizations WHERE patient_id = ?";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM hospitalizations WHERE id = ?";
     private static final String UPDATE_DOCTOR_QUERY = "UPDATE hospitalizations " +
-        "SET patient_id = ?, admission_date = ?, discharge_date = ?  WHERE id = ?";
+            "SET patient_id = ?, admission_date = ?, discharge_date = ?  WHERE id = ?";
     private static final String DELETE_HOSPITALIZATION_BY_ID_QUERY = "DELETE FROM hospitalizations WHERE id = ?";
 
     private final PatientService patientService = new PatientService();
@@ -51,7 +52,7 @@ public class JDBCHospitalizationDAOImpl implements HospitalizationDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating hospitalization", e);
+            throw new DataAccessException("Error creating hospitalization", e);
         }
         return hospitalization;
     }
@@ -69,7 +70,7 @@ public class JDBCHospitalizationDAOImpl implements HospitalizationDAO {
             }
 
         } catch (SQLException | EntityNotFoundException e) {
-            throw new RuntimeException("Error getting all hospitalizations", e);
+            throw new DataAccessException("Error getting all hospitalizations", e);
         }
         return hospitalizations;
     }
@@ -87,13 +88,11 @@ public class JDBCHospitalizationDAOImpl implements HospitalizationDAO {
                 while (resultSet.next()) {
                     hospitalizations.add(resultSetToHospitalization(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | EntityNotFoundException e) {
+            throw new DataAccessException(e);
         }
+
         return hospitalizations;
     }
 
@@ -108,12 +107,10 @@ public class JDBCHospitalizationDAOImpl implements HospitalizationDAO {
                 if (resultSet.next()) {
                     return Optional.of(resultSetToHospitalization(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | EntityNotFoundException e) {
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -134,7 +131,7 @@ public class JDBCHospitalizationDAOImpl implements HospitalizationDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating hospitalization", e);
+            throw new DataAccessException("Error updating hospitalization", e);
         }
         return hospitalization;
     }
@@ -148,7 +145,7 @@ public class JDBCHospitalizationDAOImpl implements HospitalizationDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting hospitalization", e);
+            throw new DataAccessException("Error deleting hospitalization", e);
         }
     }
 

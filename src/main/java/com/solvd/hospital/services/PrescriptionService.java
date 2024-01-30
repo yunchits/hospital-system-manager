@@ -1,13 +1,12 @@
 package com.solvd.hospital.services;
 
-import com.solvd.hospital.common.AppProperties;
+import com.solvd.hospital.dao.DAOFactory;
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.dao.PrescriptionDAO;
-import com.solvd.hospital.dao.jdbc.impl.JDBCPrescriptionDAOImpl;
-import com.solvd.hospital.dao.mybatis.impl.MyBatisPrescriptionDAOImpl;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.entities.Prescription;
-import com.solvd.hospital.entities.doctor.Doctor;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 
 import java.util.List;
@@ -16,19 +15,12 @@ public class PrescriptionService {
     private final PrescriptionDAO dao;
 
     public PrescriptionService() {
-        switch (AppProperties.getProperty("dao.type")) {
-            case "mybatis":
-                this.dao = new MyBatisPrescriptionDAOImpl();
-                break;
-            case "jdbc":
-                this.dao = new JDBCPrescriptionDAOImpl();
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid DAO type");
-        }
+        this.dao = DAOFactory.createPrescriptionDAO();
     }
 
-    public Prescription create(Doctor doctor, Patient patient, Medication medication) {
+    public Prescription create(Doctor doctor, Patient patient, Medication medication)
+            throws EntityAlreadyExistsException {
+        checkPrescriptionUniqueness(patient, medication);
         return dao.create(new Prescription()
                 .setDoctor(doctor)
                 .setPatient(patient)
@@ -55,8 +47,9 @@ public class PrescriptionService {
         return prescriptions;
     }
 
-    public Prescription update(long id, Doctor doctor, Patient patient, Medication medication) throws EntityNotFoundException {
+    public Prescription update(long id, Doctor doctor, Patient patient, Medication medication) throws EntityNotFoundException, EntityAlreadyExistsException {
         findById(id);
+        checkPrescriptionUniqueness(patient, medication);
         return dao.update(new Prescription()
                 .setId(id)
                 .setDoctor(doctor)
@@ -67,5 +60,11 @@ public class PrescriptionService {
     public void delete(long id) throws EntityNotFoundException {
         findById(id);
         dao.delete(id);
+    }
+
+    private void checkPrescriptionUniqueness(Patient patient, Medication medication) throws EntityAlreadyExistsException {
+        if (dao.isPrescriptionUnique(patient.getId(), medication.getId())) {
+            throw new EntityAlreadyExistsException("Patient has already been prescribed this medication");
+        }
     }
 }

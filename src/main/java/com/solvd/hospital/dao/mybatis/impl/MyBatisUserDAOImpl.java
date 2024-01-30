@@ -1,7 +1,7 @@
 package com.solvd.hospital.dao.mybatis.impl;
 
 import com.solvd.hospital.common.MyBatisConfig;
-import com.solvd.hospital.dao.UsersDAO;
+import com.solvd.hospital.dao.UserDAO;
 import com.solvd.hospital.dao.mybatis.mappers.UserMapper;
 import com.solvd.hospital.entities.user.User;
 import org.apache.ibatis.session.SqlSession;
@@ -9,7 +9,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import java.util.Optional;
 
-public class MyBatisUserDAOImpl implements UsersDAO {
+public class MyBatisUserDAOImpl implements UserDAO {
     private final SqlSessionFactory sqlSessionFactory;
 
     public MyBatisUserDAOImpl() {
@@ -58,6 +58,14 @@ public class MyBatisUserDAOImpl implements UsersDAO {
             UserMapper userMapper = session.getMapper(UserMapper.class);
             userMapper.delete(id);
             session.commit();
+        }
+    }
+
+    @Override
+    public boolean isUsernameUnique(String username) {
+        try (SqlSession session = sqlSessionFactory.openSession()) {
+            UserMapper userMapper = session.getMapper(UserMapper.class);
+            return userMapper.isUsernameUnique(username);
         }
     }
 }

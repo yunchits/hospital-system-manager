@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.dao.MedicationDAO;
 
@@ -22,6 +23,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
     private static final String GET_MEDICATION_BY_ID_QUERY = "SELECT * FROM medications WHERE id = ?";
     private static final String UPDATE_MEDICATION_QUERY = "UPDATE medications SET medication_name = ?, medication_description = ? WHERE id = ?";
     private static final String DELETE_MEDICATION_QUERY = "DELETE FROM medications WHERE id = ?";
+    private static final String COUNT_MEDICATIONS = "SELECT COUNT(*) FROM medications WHERE medication_name = ?";
 
     @Override
     public Medication create(Medication medication) {
@@ -45,7 +47,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating medication", e);
+            throw new DataAccessException("Error creating medication", e);
         }
         return medication;
     }
@@ -63,7 +65,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting all medications.", e);
+            throw new DataAccessException("Error getting all medications.", e);
         }
         return medications;
     }
@@ -82,7 +84,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -102,7 +104,7 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating medication", e);
+            throw new DataAccessException("Error updating medication", e);
         }
         return medication;
     }
@@ -116,8 +118,27 @@ public class JDBCMedicationDAOImpl implements MedicationDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting medication", e);
+            throw new DataAccessException("Error deleting medication", e);
         }
+    }
+
+    @Override
+    public boolean isMedicationUnique(String name) {
+        try (ReusableConnection connection = POOL.getConnection();
+             PreparedStatement statement = connection.prepareStatement(COUNT_MEDICATIONS)) {
+
+            statement.setString(1, name);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count == 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking medication name uniqueness", e);
+        }
+        return false;
     }
 
     private Medication resultSetToMedication(ResultSet resultSet) throws SQLException {

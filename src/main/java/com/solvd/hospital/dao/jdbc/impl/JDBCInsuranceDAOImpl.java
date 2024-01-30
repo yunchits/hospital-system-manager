@@ -2,6 +2,7 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.InsuranceType;
 import com.solvd.hospital.dao.InsuranceDAO;
@@ -42,7 +43,7 @@ public class JDBCInsuranceDAOImpl implements InsuranceDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating insurance", e);
+            throw new DataAccessException("Error creating insurance", e);
         }
         return insurance;
     }
@@ -60,7 +61,7 @@ public class JDBCInsuranceDAOImpl implements InsuranceDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error getting all doctors", e);
+            throw new DataAccessException("Error getting all doctors", e);
         }
         return insurances;
     }
@@ -79,7 +80,7 @@ public class JDBCInsuranceDAOImpl implements InsuranceDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -102,7 +103,7 @@ public class JDBCInsuranceDAOImpl implements InsuranceDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating insurance", e);
+            throw new DataAccessException("Error updating insurance", e);
         }
         return insurance;
     }
@@ -116,7 +117,7 @@ public class JDBCInsuranceDAOImpl implements InsuranceDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting insurance", e);
+            throw new DataAccessException("Error deleting insurance", e);
         }
     }
 

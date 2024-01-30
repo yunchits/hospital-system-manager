@@ -2,9 +2,10 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
+import com.solvd.hospital.common.exceptions.DataAccessException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
-import com.solvd.hospital.entities.Prescription;
 import com.solvd.hospital.dao.PrescriptionDAO;
+import com.solvd.hospital.entities.Prescription;
 import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.MedicationService;
 import com.solvd.hospital.services.PatientService;
@@ -22,14 +23,17 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
     private static final String CREATE_PRESCRIPTION_QUERY = "INSERT INTO prescriptions (doctor_id, patient_id, medication_id) " +
-        "VALUES (?, ?, ?)";
+            "VALUES (?, ?, ?)";
     private static final String FIND_ALL_PRESCRIPTIONS_QUERY = "SELECT * FROM prescriptions";
     private static final String FIND_BY_ID_QUERY = "SELECT * FROM prescriptions WHERE id = ?";
     private static final String FIND_PRESCRIPTION_BY_PATIENT_ID_QUERY = "SELECT * FROM prescriptions WHERE patient_id = ?";
     private static final String UPDATE_PRESCRIPTION_QUERY = "UPDATE prescriptions " +
-        "SET doctor_id = ?, patient_id = ?, medication_id = ? WHERE id = ?";
+            "SET doctor_id = ?, patient_id = ?, medication_id = ? WHERE id = ?";
     private static final String DELETE_PRESCRIPTIONS_BY_PATIENT_ID_QUERY = "DELETE FROM prescriptions WHERE patient_id = ?";
     private static final String DELETE_PRESCRIPTIONS_BY_ID_QUERY = "DELETE FROM prescriptions WHERE id = ?";
+    private static final String COUNT_PRESCRIPTIONS_BY_PATIENT_AND_MEDICATION =
+            "SELECT COUNT(*) FROM prescriptions " +
+                    "WHERE patient_id = ? AND medication_id = ?";
 
     private final PatientService patientService = new PatientService();
     private final DoctorService doctorService = new DoctorService();
@@ -39,7 +43,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
     public Prescription create(Prescription prescription) {
         try (ReusableConnection connection = POOL.getConnection();
              PreparedStatement statement = connection
-                 .prepareStatement(CREATE_PRESCRIPTION_QUERY, Statement.RETURN_GENERATED_KEYS)) {
+                     .prepareStatement(CREATE_PRESCRIPTION_QUERY, Statement.RETURN_GENERATED_KEYS)) {
 
             statement.setLong(1, prescription.getDoctor().getId());
             statement.setLong(2, prescription.getPatient().getId());
@@ -59,7 +63,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating prescription", e);
+            throw new DataAccessException("Error creating prescription", e);
         }
         return prescription;
     }
@@ -75,12 +79,10 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
                 if (resultSet.next()) {
                     return Optional.of(resultSetToPrescription(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
 
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | EntityNotFoundException e) {
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -98,7 +100,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
             }
 
         } catch (SQLException | EntityNotFoundException e) {
-            throw new RuntimeException("Error getting all doctors", e);
+            throw new DataAccessException("Error getting all doctors", e);
         }
         return prescriptions;
     }
@@ -115,12 +117,9 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
                 while (resultSet.next()) {
                     prescriptions.add(resultSetToPrescription(resultSet));
                 }
-            } catch (EntityNotFoundException e) {
-                throw new RuntimeException(e);
             }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException | EntityNotFoundException e) {
+            throw new DataAccessException(e);
         }
         return prescriptions;
     }
@@ -141,7 +140,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating prescription", e);
+            throw new DataAccessException("Error updating prescription", e);
         }
         return prescription;
     }
@@ -155,7 +154,7 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
     }
 
@@ -168,15 +167,35 @@ public class JDBCPrescriptionDAOImpl implements PrescriptionDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
+    }
+
+    @Override
+    public boolean isPrescriptionUnique(long patientId, long medicationId) {
+        try (ReusableConnection connection = POOL.getConnection();
+             PreparedStatement statement = connection.prepareStatement(COUNT_PRESCRIPTIONS_BY_PATIENT_AND_MEDICATION)) {
+
+            statement.setLong(1, patientId);
+            statement.setLong(2, medicationId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count == 0;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking username uniqueness", e);
+        }
+        return false;
     }
 
     private Prescription resultSetToPrescription(ResultSet resultSet) throws SQLException, EntityNotFoundException {
         return new Prescription()
-            .setId(resultSet.getLong("id"))
-            .setPatient(patientService.findById(resultSet.getLong("patient_id")))
-            .setDoctor(doctorService.findById(resultSet.getLong("doctor_id")))
-            .setMedication(medicationService.findById(resultSet.getLong("medication_id")));
+                .setId(resultSet.getLong("id"))
+                .setPatient(patientService.findById(resultSet.getLong("patient_id")))
+                .setDoctor(doctorService.findById(resultSet.getLong("doctor_id")))
+                .setMedication(medicationService.findById(resultSet.getLong("medication_id")));
     }
 }

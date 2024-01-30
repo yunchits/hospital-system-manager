@@ -1,8 +1,7 @@
 package com.solvd.hospital.menus.handlers;
 
-import com.solvd.hospital.common.exceptions.DuplicateKeyException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
-import com.solvd.hospital.common.exceptions.RelatedEntityNotFound;
+import com.solvd.hospital.common.exceptions.HospitalException;
 import com.solvd.hospital.common.input.InputScanner;
 import com.solvd.hospital.entities.patient.Insurance;
 import com.solvd.hospital.entities.patient.InsuranceType;
@@ -10,10 +9,14 @@ import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
 import com.solvd.hospital.services.InsuranceService;
 import com.solvd.hospital.services.PatientService;
+import com.solvd.hospital.xml.jaxb.XmlJAXBFileHandler;
+import jakarta.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 public class InsuranceMenuHandler implements Menu {
 
@@ -42,7 +45,7 @@ public class InsuranceMenuHandler implements Menu {
 
             switch (choice) {
                 case 1:
-                    LOGGER.info(createHospitalization());
+                    createInsurance();
                     break;
                 case 2:
                     printInsurance();
@@ -60,55 +63,81 @@ public class InsuranceMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    private Insurance createHospitalization() {
-        LOGGER.info(new PatientService().findAll());
-        LOGGER.info("Enter Patient ID:");
-        long id = scanner.scanPositiveInt();
+    private void createInsurance() {
+        LOGGER.info("Choose source for patient creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (JAXB)");
+        int choice = scanner.scanInt(1, 2);
 
-        LOGGER.info("Enter Policy Number:");
-        String policyNumber = scanner.scanString();
+        if (choice == 1) {
+            createInsuranceFromConsole();
+        } else if (choice == 2) {
+            createInsuranceFromXML();
+        }
+    }
 
-        LOGGER.info("Enter Insurance Expiration Date:");
-        LocalDate expirationDate = scanner.scanLocalDate();
+    private void createInsuranceFromConsole() {
+        long id = getId();
 
-        LOGGER.info("Enter Coverage Amount:");
-        double coverageAmount = scanner.scanPositiveDouble();
+        String policyNumber = getPolicyNumber();
+
+        LocalDate expirationDate = getExpirationDate();
+
+        double coverageAmount = getCoverageAmount();
 
         InsuranceType type = selectInsuranceType();
 
-        LOGGER.info("Enter Insurance Provider:");
-        String insuranceProvider = scanner.scanString();
+        String insuranceProvider = getProvider();
 
         try {
-            return insuranceService.create(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
-        } catch (DuplicateKeyException | RelatedEntityNotFound e) {
-            LOGGER.info("Creation failed\n" + e);
+            insuranceService.create(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
+        } catch (HospitalException e) {
+            LOGGER.info("Creation failed: " + e.getMessage());
         }
-        return null;
+    }
+
+    private void createInsuranceFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
+
+        try {
+            XmlJAXBFileHandler jaxbFileHandler = new XmlJAXBFileHandler();
+            List<Insurance> insurances = jaxbFileHandler.read(xmlFilePath, Insurance.class);
+
+            for (Insurance insurance : insurances) {
+                insuranceService.create(
+                        insurance.getPatientId(),
+                        insurance.getPolicyNumber(),
+                        insurance.getExpirationDate(),
+                        insurance.getCoverageAmount(),
+                        insurance.getType(),
+                        insurance.getInsuranceProvider()
+                );
+            }
+            LOGGER.info("Insurances created successfully from XML file.");
+        } catch (JAXBException | HospitalException | IOException e) {
+            LOGGER.info("Creation failed: " + e.getMessage());
+        }
     }
 
     private void updateInsurance() {
-        LOGGER.info("Enter Patient ID to update Insurance:");
+        LOGGER.info("Enter patient ID to update insurance:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info("Enter Policy Number:");
-        String policyNumber = scanner.scanString();
+        String policyNumber = getPolicyNumber();
 
-        LOGGER.info("Enter Insurance Expiration Date:");
-        LocalDate expirationDate = scanner.scanLocalDate();
+        LocalDate expirationDate = getExpirationDate();
 
-        LOGGER.info("Enter Coverage Amount:");
-        double coverageAmount = scanner.scanPositiveDouble();
+        double coverageAmount = getCoverageAmount();
 
         InsuranceType type = selectInsuranceType();
 
-        LOGGER.info("Enter Insurance Provider:");
-        String insuranceProvider = scanner.scanString();
+        String insuranceProvider = getProvider();
 
         try {
             insuranceService.update(id, policyNumber, expirationDate, coverageAmount, type, insuranceProvider);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed\n" + e);
+        } catch (HospitalException e) {
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -119,7 +148,7 @@ public class InsuranceMenuHandler implements Menu {
         try {
             insuranceService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 
@@ -137,5 +166,31 @@ public class InsuranceMenuHandler implements Menu {
         int choice = scanner.scanInt(0, values.length);
 
         return values[choice];
+    }
+
+    private String getProvider() {
+        LOGGER.info("Enter insurance provider:");
+        return scanner.scanString();
+    }
+
+    private double getCoverageAmount() {
+        LOGGER.info("Enter coverage amount:");
+        return scanner.scanPositiveDouble();
+    }
+
+    private LocalDate getExpirationDate() {
+        LOGGER.info("Enter insurance expiration date (dd.MM.yyyy):");
+        return scanner.scanLocalDate();
+    }
+
+    private String getPolicyNumber() {
+        LOGGER.info("Enter policy number:");
+        return scanner.scanString();
+    }
+
+    private long getId() {
+        LOGGER.info(new PatientService().findAll());
+        LOGGER.info("Enter patient ID:");
+        return scanner.scanPositiveInt();
     }
 }

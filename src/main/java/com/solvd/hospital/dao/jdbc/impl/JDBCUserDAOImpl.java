@@ -2,7 +2,8 @@ package com.solvd.hospital.dao.jdbc.impl;
 
 import com.solvd.hospital.common.database.ConnectionPool;
 import com.solvd.hospital.common.database.ReusableConnection;
-import com.solvd.hospital.dao.UsersDAO;
+import com.solvd.hospital.common.exceptions.DataAccessException;
+import com.solvd.hospital.dao.UserDAO;
 import com.solvd.hospital.entities.user.Role;
 import com.solvd.hospital.entities.user.User;
 
@@ -12,7 +13,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
-public class JDBCUserDAOImpl implements UsersDAO {
+public class JDBCUserDAOImpl implements UserDAO {
     private static final ConnectionPool POOL = ConnectionPool.getInstance();
 
     private static final String CREATE_USER_QUERY = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
@@ -20,6 +21,7 @@ public class JDBCUserDAOImpl implements UsersDAO {
     private static final String GET_USER_BY_USERNAME_QUERY = "SELECT * FROM users WHERE username = ?";
     private static final String UPDATE_USER_QUERY = "UPDATE users SET username = ?, password = ?, role = ? WHERE id = ?";
     private static final String DELETE_USER_QUERY = "DELETE FROM users WHERE id = ?";
+    private static final String COUNT_USERS_BY_USERNAME = "SELECT COUNT(*) FROM users WHERE username = ?";
 
     @Override
     public User create(User user) {
@@ -45,7 +47,7 @@ public class JDBCUserDAOImpl implements UsersDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error creating user", e);
+            throw new DataAccessException("Error creating user", e);
         }
         return user;
     }
@@ -64,7 +66,7 @@ public class JDBCUserDAOImpl implements UsersDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -83,7 +85,7 @@ public class JDBCUserDAOImpl implements UsersDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException(e);
         }
         return Optional.empty();
     }
@@ -104,7 +106,7 @@ public class JDBCUserDAOImpl implements UsersDAO {
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error updating user", e);
+            throw new DataAccessException("Error updating user", e);
         }
         return user;
     }
@@ -118,8 +120,28 @@ public class JDBCUserDAOImpl implements UsersDAO {
 
             statement.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Error deleting user", e);
+            throw new DataAccessException("Error deleting user", e);
         }
+    }
+
+    @Override
+    public boolean isUsernameUnique(String username) {
+        try (ReusableConnection connection = POOL.getConnection();
+             PreparedStatement statement = connection.prepareStatement(COUNT_USERS_BY_USERNAME)) {
+
+            statement.setString(1, username);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int count = resultSet.getInt(1);
+                    return count == 0;
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error checking username uniqueness", e);
+        }
+        return false;
     }
 
     private User resultSetToUser(ResultSet resultSet) throws SQLException {

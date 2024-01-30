@@ -1,10 +1,11 @@
 package com.solvd.hospital.menus.handlers;
 
+import com.solvd.hospital.common.exceptions.EntityAlreadyExistsException;
 import com.solvd.hospital.common.exceptions.EntityNotFoundException;
 import com.solvd.hospital.common.input.InputScanner;
+import com.solvd.hospital.entities.Doctor;
 import com.solvd.hospital.entities.Medication;
 import com.solvd.hospital.entities.Prescription;
-import com.solvd.hospital.entities.doctor.Doctor;
 import com.solvd.hospital.entities.patient.Patient;
 import com.solvd.hospital.menus.Menu;
 import com.solvd.hospital.menus.MenuMessages;
@@ -12,8 +13,13 @@ import com.solvd.hospital.services.DoctorService;
 import com.solvd.hospital.services.MedicationService;
 import com.solvd.hospital.services.PatientService;
 import com.solvd.hospital.services.PrescriptionService;
+import com.solvd.hospital.xml.jaxb.XmlJAXBFileHandler;
+import jakarta.xml.bind.JAXBException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+import java.util.List;
 
 public class PrescriptionMenuHandler implements Menu {
 
@@ -47,7 +53,7 @@ public class PrescriptionMenuHandler implements Menu {
 
             switch (choice) {
                 case 1:
-                    LOGGER.info(createPrescription());
+                    createPrescription();
                     break;
                 case 2:
                     printPrescriptions();
@@ -65,84 +71,77 @@ public class PrescriptionMenuHandler implements Menu {
         } while (choice != 0);
     }
 
-    private Prescription createPrescription() {
-        LOGGER.info(doctorService.findAll());
-        LOGGER.info("Enter Doctor ID from list:");
-        long doctorId = scanner.scanPositiveInt();
+    private void createPrescription() {
+        LOGGER.info("Choose source for appointment creation:");
+        LOGGER.info("1 - Console input");
+        LOGGER.info("2 - Read from XML file (JAXB)");
+        int choice = scanner.scanInt(1, 2);
 
-        Doctor doctor = null;
-        try {
-            doctor = doctorService.findById(doctorId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Wrong Doctor ID");
+        switch (choice) {
+            case 1:
+                createPrescriptionFromConsole();
+                break;
+            case 2:
+                createPrescriptionFromXML();
+                break;
         }
+    }
 
-        LOGGER.info(patientService.findAll());
-        LOGGER.info("Enter Patient ID from list:");
-        long patientId = scanner.scanPositiveInt();
+    private void createPrescriptionFromConsole() {
+        long doctorId = getDoctorId();
+        Doctor doctor = getDoctorById(doctorId);
 
-        Patient patient = null;
+        long patientId = getPatientId();
+        Patient patient = getPatientById(patientId);
+
+        long medicationId = getMedicationId();
+        Medication medication = getMedicationById(medicationId);
+
         try {
-            patient = patientService.findById(patientId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Patient Doctor ID");
+            prescriptionService.create(doctor, patient, medication);
+        } catch (EntityAlreadyExistsException e) {
+            LOGGER.error("Creation failed: " + e.getMessage());
         }
+    }
 
-        LOGGER.info("Enter Medication ID from list:");
-        LOGGER.info(medicationService.findAll());
-        long medicationId = scanner.scanPositiveInt();
+    private void createPrescriptionFromXML() {
+        LOGGER.info("Enter XML file path:");
+        String xmlFilePath = scanner.scanString();
 
-        Medication medication = null;
         try {
-            medication = medicationService.findById(medicationId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Patient Medication ID");
-        }
+            XmlJAXBFileHandler jaxbFileHandler = new XmlJAXBFileHandler();
+            List<Prescription> prescriptions = jaxbFileHandler.read(xmlFilePath, Prescription.class);
 
-        return prescriptionService.create(doctor, patient, medication);
+            for (Prescription prescription : prescriptions) {
+                prescriptionService.create(
+                        prescription.getDoctor(),
+                        prescription.getPatient(),
+                        prescription.getMedication()
+                );
+            }
+            LOGGER.info("Prescription created successfully from XML file");
+        } catch (JAXBException | EntityAlreadyExistsException | IOException e) {
+            LOGGER.info("Creation failed: " + e.getMessage());
+        }
     }
 
     private void updatePrescription() {
         LOGGER.info("Enter Prescription ID to update:");
         long id = scanner.scanPositiveInt();
 
-        LOGGER.info(doctorService.findAll());
-        LOGGER.info("Enter Doctor ID from list:");
-        long doctorId = scanner.scanPositiveInt();
+        long doctorId = getDoctorId();
+        Doctor doctor = getDoctorById(doctorId);
 
-        Doctor doctor = null;
-        try {
-            doctor = doctorService.findById(doctorId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Wrong Doctor ID");
-        }
+        long patientId = getPatientId();
+        Patient patient = getPatientById(patientId);
 
-        LOGGER.info(patientService.findAll());
-        LOGGER.info("Enter Patient ID from list:");
-        long patientId = scanner.scanPositiveInt();
-
-        Patient patient = null;
-        try {
-            patient = patientService.findById(patientId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Patient Doctor ID");
-        }
-
-        LOGGER.info(medicationService.findAll());
-        LOGGER.info("Enter Medication ID from list:");
-        long medicationId = scanner.scanPositiveInt();
-
-        Medication medication = null;
-        try {
-            medication = medicationService.findById(medicationId);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Patient Medication ID");
-        }
+        long medicationId = getMedicationId();
+        Medication medication = getMedicationById(medicationId);
 
         try {
             prescriptionService.update(id, doctor, patient, medication);
-        } catch (EntityNotFoundException e) {
-            LOGGER.info("Update failed\n" + e);
+        } catch (EntityNotFoundException | EntityAlreadyExistsException e) {
+            LOGGER.info("Update failed: " + e.getMessage());
         }
     }
 
@@ -153,11 +152,56 @@ public class PrescriptionMenuHandler implements Menu {
         try {
             prescriptionService.delete(id);
         } catch (EntityNotFoundException e) {
-            LOGGER.error("Delete failed \n" + e);
+            LOGGER.error("Delete failed: " + e.getMessage());
         }
     }
 
     private void printPrescriptions() {
         LOGGER.info(prescriptionService.findAll());
+    }
+
+    private long getDoctorId() {
+        LOGGER.info(doctorService.findAll());
+        LOGGER.info("Enter Doctor ID from list:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getPatientId() {
+        LOGGER.info(patientService.findAll());
+        LOGGER.info("Enter Patient ID from list:");
+        return scanner.scanPositiveInt();
+    }
+
+    private long getMedicationId() {
+        LOGGER.info(medicationService.findAll());
+        LOGGER.info("Enter Medication ID from list:");
+        return scanner.scanPositiveInt();
+    }
+
+    private Medication getMedicationById(long medicationId) {
+        try {
+            return medicationService.findById(medicationId);
+        } catch (EntityNotFoundException e) {
+            LOGGER.error("Medication not found with ID: " + medicationId);
+            return null;
+        }
+    }
+
+    private Doctor getDoctorById(long doctorId) {
+        try {
+            return doctorService.findById(doctorId);
+        } catch (EntityNotFoundException e) {
+            LOGGER.error("Doctor not found with ID: " + doctorId);
+            return null;
+        }
+    }
+
+    private Patient getPatientById(long patientId) {
+        try {
+            return patientService.findById(patientId);
+        } catch (EntityNotFoundException e) {
+            LOGGER.error("Patient not found with ID: " + patientId);
+            return null;
+        }
     }
 }

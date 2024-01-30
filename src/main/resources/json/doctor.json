@@ -1,0 +1,10 @@
+{
+  "user": {
+    "username" : "p2",
+    "password": "123",
+    "role": "PATIENT"
+  },
+  "firstName": "Dr. Robert",
+  "lastName": "Johnson",
+  "specialization": "Pediatrics"
+}
